@@ -1,0 +1,33 @@
+{
+  "name": "opentelemetry-operations-js",
+  "description": "OpenTelemetry is a distributed tracing and stats collection framework.",
+  "scripts": {
+    "clean": "lerna run clean",
+    "postinstall": "npm run bootstrap",
+    "precompile": "tsc --version",
+    "compile": "lerna run compile",
+    "test": "lerna run test",
+    "bootstrap": "lerna bootstrap",
+    "lint": "lerna run lint",
+    "lint:fix": "lerna run lint:fix"
+  },
+  "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
+  "keywords": [
+    "opentelemetry",
+    "nodejs",
+    "tracing",
+    "monitoring",
+    "logs",
+    "stackdriver-trace",
+    "stackdriver-monitoring",
+    "stackdriver-logs"
+  ],
+  "author": "Google Inc.",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "devDependencies": {
+    "lerna": "^3.10.5"
+  }
+}

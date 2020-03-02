@@ -1,0 +1,46 @@
+# IntelliJ IDEA
+.idea
+*.iml
+
+# Eclipse
+.classpath
+.project
+.settings
+bin
+
+# OS X
+.DS_Store
+
+# Emacs
+*~
+\#*\#
+
+# Vim
+.swp
+
+#VScode
+.vscode/
+
+# nodejs
+node_modules/
+!packages/opencensus-nodejs-base/test/instrumentation/node_modules
+npm-debug.log
+.nyc_output/
+build/
+
+#backup files
+*--
+*_backup
+
+#log files
+*.log
+
+#istanbul files
+coverage/
+
+#docs files
+docs
+
+# lock files
+package-lock.json
+packages/**/package-lock.json
