@@ -27,7 +27,7 @@ unit_tests: &unit_tests
         command: npm run test
     - run:
         name: report coverage
-        command: if [ "$CIRCLE_NODE_VERSION" = "v12" ]; then npm run codecov:browser; fi
+        command: if [ "${CIRCLE_NODE_VERSION}" = "v12" ]; then npm run codecov; fi
 
 jobs:
   lint:
