@@ -1,7 +1,7 @@
 {
-  "name": "@google-cloud/opentelemetry-operations-exporter-monitoring",
+  "name": "@google-cloud/opentelemetry-cloud-monitoring-exporter",
   "version": "0.1.0",
-  "description": "OpenTelemetry Stackdriver Monitoring Exporter allows the user to send collected metrics to Stackdriver Monitoring.",
+  "description": "OpenTelemetry Google Cloud Monitoring Exporter allows the user to send collected metrics to Google Cloud Monitoring.",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
   "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
