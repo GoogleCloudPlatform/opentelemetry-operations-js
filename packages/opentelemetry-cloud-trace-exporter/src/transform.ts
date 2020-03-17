@@ -13,10 +13,21 @@
 // limitations under the License.
 
 import * as ot from '@opentelemetry/api';
-import { hrTimeToTimeStamp, VERSION as CORE_VERSION } from '@opentelemetry/core';
+import {
+  hrTimeToTimeStamp,
+  VERSION as CORE_VERSION,
+} from '@opentelemetry/core';
 import { Resource } from '@opentelemetry/resources';
 import { ReadableSpan } from '@opentelemetry/tracing';
-import { AttributeMap, Attributes, AttributeValue, Link, LinkType, Span, TruncatableString } from './types';
+import {
+  AttributeMap,
+  Attributes,
+  AttributeValue,
+  Link,
+  LinkType,
+  Span,
+  TruncatableString,
+} from './types';
 import { VERSION } from './version';
 
 const AGENT_LABEL_KEY = 'g.co/agent';
