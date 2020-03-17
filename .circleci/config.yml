@@ -1,0 +1,73 @@
+version: 2
+
+test_env: &test_env
+  NPM_CONFIG_UNSAFE_PERM: true
+
+unit_tests: &unit_tests
+  steps:
+    - checkout
+    - run:
+        name: Setup environment variables
+        command: |
+          echo "export CIRCLE_NODE_VERSION=\$(node --version | grep -oE 'v[0-9]+')" >> $BASH_ENV
+          source $BASH_ENV
+    - run:
+        name: Log out node.js version
+        command: |
+          node --version
+          echo "CIRCLE_NODE_VERSION=${CIRCLE_NODE_VERSION}"
+    - run:
+        name: Install Root Dependencies
+        command: npm install --ignore-scripts
+    - run:
+        name: Boostrap dependencies
+        command: npx lerna bootstrap --no-ci
+    - run:
+        name: Unit tests
+        command: npm run test
+    - run:
+        name: report coverage
+        command: if [ "${CIRCLE_NODE_VERSION}" = "v12" ]; then npm run codecov; fi
+
+jobs:
+  lint:
+    docker:
+      - image: node:12
+    steps:
+      - checkout
+      - run:
+          name: Install minimal modules globally
+          command: npm i -g lerna gts typescript
+      - run:
+          name: Check code style and linting
+          command: npm run lint
+  node8:
+    docker:
+      - image: node:8
+        environment: *test_env
+    <<: *unit_tests
+  node10:
+    docker:
+      - image: node:10
+        environment: *test_env
+    <<: *unit_tests
+  node12:
+    docker:
+      - image: node:12
+        environment: *test_env
+    <<: *unit_tests
+  node13:
+    docker:
+      - image: node:13
+        environment: *test_env
+    <<: *unit_tests
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - lint
+      - node8
+      - node10
+      - node12
+      - node13
