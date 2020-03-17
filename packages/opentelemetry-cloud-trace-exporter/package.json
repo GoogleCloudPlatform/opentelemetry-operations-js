@@ -39,14 +39,23 @@
     "@types/mocha": "^5.2.7",
     "@types/nock": "^11.1.0",
     "@types/node": "^12.6.9",
+    "@types/sinon": "^7.5.2",
     "codecov": "^3.6.1",
     "gts": "^1.1.0",
     "mocha": "^6.2.0",
     "nyc": "^14.1.1",
     "rimraf": "^3.0.0",
+    "sinon": "^9.0.1",
     "ts-mocha": "^6.0.0",
     "typescript": "3.7.2"
   },
   "dependencies": {
+    "@opentelemetry/api": "^0.5.0",
+    "@opentelemetry/base": "^0.5.0",
+    "@opentelemetry/core": "^0.5.0",
+    "@opentelemetry/resources": "^0.5.0",
+    "@opentelemetry/tracing": "^0.5.0",
+    "google-auth-library": "^5.7.0",
+    "googleapis": "^46.0.0"
   }
 }
