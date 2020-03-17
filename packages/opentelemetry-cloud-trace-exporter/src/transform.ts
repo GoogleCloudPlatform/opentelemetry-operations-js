@@ -12,23 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-  hrTimeToTimeStamp,
-  VERSION as CORE_VERSION,
-} from '@opentelemetry/core';
-import { ReadableSpan } from '@opentelemetry/tracing';
 import * as ot from '@opentelemetry/api';
-import {
-  AttributeMap,
-  Attributes,
-  AttributeValue,
-  Link,
-  LinkType,
-  Span,
-  TruncatableString,
-} from './types';
+import { hrTimeToTimeStamp, VERSION as CORE_VERSION } from '@opentelemetry/core';
+import { Resource } from '@opentelemetry/resources';
+import { ReadableSpan } from '@opentelemetry/tracing';
+import { AttributeMap, Attributes, AttributeValue, Link, LinkType, Span, TruncatableString } from './types';
 import { VERSION } from './version';
-// import { Resource } from '@opentelemetry/resources';
 
 const AGENT_LABEL_KEY = 'g.co/agent';
 const AGENT_LABEL_VALUE = `opentelemetry-js [${CORE_VERSION}]; stackdriver-trace-exporter [${VERSION}]`;
@@ -42,8 +31,8 @@ export function getReadableSpanTransformer(
       {
         project_id: projectId,
         [AGENT_LABEL_KEY]: AGENT_LABEL_VALUE,
-      }
-      // span.resource
+      },
+      span.resource
     );
 
     const out: Span = {
@@ -80,22 +69,22 @@ export function getReadableSpanTransformer(
 function transformLink(link: ot.Link): Link {
   return {
     attributes: transformAttributes(link.attributes),
-    spanId: link.spanContext.spanId,
-    traceId: link.spanContext.traceId,
+    spanId: link.context.spanId,
+    traceId: link.context.traceId,
     type: LinkType.UNSPECIFIED,
   };
 }
 
 function transformAttributes(
   requestAttributes: ot.Attributes = {},
-  serviceAttributes: ot.Attributes = {}
-  // resource: Resource = Resource.empty()
+  serviceAttributes: ot.Attributes = {},
+  resource: Resource = Resource.empty()
 ): Attributes {
   const attributes = Object.assign(
     {},
     requestAttributes,
-    serviceAttributes
-    // resource.labels
+    serviceAttributes,
+    resource.labels
   );
 
   const attributeMap = transformAttributeValues(attributes);

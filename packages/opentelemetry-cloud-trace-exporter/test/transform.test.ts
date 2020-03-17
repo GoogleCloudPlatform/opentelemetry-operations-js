@@ -16,10 +16,10 @@
 
 /* tslint:disable no-any */
 
-// import { Resource } from '@opentelemetry/resources'; REQUIRE 0.5.0
 import * as types from '@opentelemetry/api';
 import { TraceFlags } from '@opentelemetry/api';
 import { VERSION as CORE_VERSION } from '@opentelemetry/core';
+import { Resource } from '@opentelemetry/resources';
 import { ReadableSpan } from '@opentelemetry/tracing';
 import * as assert from 'assert';
 import { getReadableSpanTransformer } from '../src/transform';
@@ -35,8 +35,7 @@ describe('transform', () => {
     spanContext = {
       traceId: 'd4cda95b652f4a1592b449d5929fda1b',
       spanId: '6e0c63257de34c92',
-      // traceFlags: TraceFlags.NONE, REQUIRE 0.5.0
-      traceFlags: TraceFlags.UNSAMPLED,
+      traceFlags: TraceFlags.NONE,
       isRemote: true,
     };
 
@@ -47,19 +46,18 @@ describe('transform', () => {
       duration: [32, 800000000],
       startTime: [1566156729, 709],
       endTime: [1566156731, 709],
-      // ended: true, REQUIRE 0.5.0
+      ended: true,
       events: [],
       kind: types.SpanKind.CLIENT,
       links: [],
       name: 'my-span',
       spanContext,
       status: { code: types.CanonicalCode.OK },
-      // REQUIRE 0.5.0
-      // resource: new Resource({
-      //   service: 'ui',
-      //   version: 1,
-      //   cost: 112.12,
-      // }),
+      resource: new Resource({
+        service: 'ui',
+        version: 1,
+        cost: 112.12,
+      }),
     };
   });
 
@@ -75,10 +73,9 @@ describe('transform', () => {
               value: `opentelemetry-js [${CORE_VERSION}]; stackdriver-trace-exporter [${VERSION}]`,
             },
           },
-          // REQUIRE 0.5.0
-          // cost: { intValue: '112' },
-          // service: { stringValue: { value: 'ui' } },
-          // version: { intValue: '1' },
+          cost: { intValue: '112' },
+          service: { stringValue: { value: 'ui' } },
+          version: { intValue: '1' },
         },
         droppedAttributesCount: 0,
       },
@@ -142,23 +139,16 @@ describe('transform', () => {
     assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 1);
     assert.deepStrictEqual(
       Object.keys(result.attributes!.attributeMap!).length,
-      // REQUIRE 0.5.0
-      // 5
-      2
+      5
     );
   });
 
   it('should transform links', () => {
     readableSpan.links.push({
-      spanContext: {
+      context: {
         traceId: 'a4cda95b652f4a1592b449d5929fda1b',
         spanId: '3e0c63257de34c92',
       },
-      // REQUIRE 0.5.0
-      // context: {
-      //   traceId: 'a4cda95b652f4a1592b449d5929fda1b',
-      //   spanId: '3e0c63257de34c92',
-      // },
     });
 
     const result = transformer(readableSpan);
@@ -180,15 +170,10 @@ describe('transform', () => {
 
   it('should transform links with attributes', () => {
     readableSpan.links.push({
-      spanContext: {
+      context: {
         traceId: 'a4cda95b652f4a1592b449d5929fda1b',
         spanId: '3e0c63257de34c92',
       },
-      // REQUIRE 0.5.0
-      // context: {
-      //   traceId: 'a4cda95b652f4a1592b449d5929fda1b',
-      //   spanId: '3e0c63257de34c92',
-      // },
       attributes: {
         testAttr: 'value',
         droppedAttr: {},

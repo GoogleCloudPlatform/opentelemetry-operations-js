@@ -16,16 +16,16 @@
 
 /* tslint:disable no-any */
 
+import * as types from '@opentelemetry/api';
+import { TraceFlags } from '@opentelemetry/api';
 import { ExportResult } from '@opentelemetry/base';
 import { ConsoleLogger, LogLevel } from '@opentelemetry/core';
+import { Resource } from '@opentelemetry/resources';
 import { ReadableSpan } from '@opentelemetry/tracing';
-// import { Resource } from '@opentelemetry/resources'; REQUIRE 0.5.0
-import * as types from '@opentelemetry/api';
 import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import { StackdriverTraceExporter } from '../src';
-import { TraceFlags } from '@opentelemetry/api';
 
 describe('Stackdriver Trace Exporter', () => {
   beforeEach(() => {
@@ -112,22 +112,19 @@ describe('Stackdriver Trace Exporter', () => {
         duration: [32, 800000000],
         startTime: [1566156729, 709],
         endTime: [1566156731, 709],
-        // ended: true, REQUIRE 0.5.0
+        ended: true,
         events: [],
         kind: types.SpanKind.CLIENT,
         links: [],
         name: 'my-span',
-        // REQUIRE 0.5.0
-        // context: {
         spanContext: {
           traceId: 'd4cda95b652f4a1592b449d5929fda1b',
           spanId: '6e0c63257de34c92',
-          // traceFlags: TraceFlags.NONE, REQUIRE 0.5.0
-          traceFlags: TraceFlags.UNSAMPLED,
+          traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
         status: { code: types.CanonicalCode.OK },
-        // resource: Resource.empty(), REQUIRE 0.5.0
+        resource: Resource.empty(),
       };
 
       const result = await new Promise((resolve, reject) => {
@@ -150,22 +147,19 @@ describe('Stackdriver Trace Exporter', () => {
         duration: [32, 800000000],
         startTime: [1566156729, 709],
         endTime: [1566156731, 709],
-        // ended: true, REQUIRE 0.5.0
+        ended: true,
         events: [],
         kind: types.SpanKind.CLIENT,
         links: [],
         name: 'my-span',
-        // REQUIRE 0.5.0
-        // context: {
         spanContext: {
           traceId: 'd4cda95b652f4a1592b449d5929fda1b',
           spanId: '6e0c63257de34c92',
-          // traceFlags: TraceFlags.NONE, REQUIRE 0.5.0
-          traceFlags: TraceFlags.UNSAMPLED,
+          traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
         status: { code: types.CanonicalCode.OK },
-        // resource: Resource.empty(), REQUIRE 0.5.0
+        resource: Resource.empty(),
       };
 
       getClientShouldFail = true;
@@ -187,22 +181,19 @@ describe('Stackdriver Trace Exporter', () => {
         duration: [32, 800000000],
         startTime: [1566156729, 709],
         endTime: [1566156731, 709],
-        // ended: true, REQUIRE 0.5.0
+        ended: true,
         events: [],
         kind: types.SpanKind.CLIENT,
         links: [],
         name: 'my-span',
-        // REQUIRE 0.5.0
-        // context: {
         spanContext: {
           traceId: 'd4cda95b652f4a1592b449d5929fda1b',
           spanId: '6e0c63257de34c92',
-          // traceFlags: TraceFlags.NONE, REQUIRE 0.5.0
-          traceFlags: TraceFlags.UNSAMPLED,
+          traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
         status: { code: types.CanonicalCode.OK },
-        // resource: Resource.empty(), REQUIRE 0.5.0
+        resource: Resource.empty(),
       };
 
       batchWriteShouldFail = true;
@@ -222,22 +213,19 @@ describe('Stackdriver Trace Exporter', () => {
         duration: [32, 800000000],
         startTime: [1566156729, 709],
         endTime: [1566156731, 709],
-        // ended: true, REQUIRE 0.5.0
+        ended: true,
         events: [],
         kind: types.SpanKind.CLIENT,
         links: [],
         name: 'my-span',
-        // REQUIRE 0.5.0
-        // context: {
         spanContext: {
           traceId: 'd4cda95b652f4a1592b449d5929fda1b',
           spanId: '6e0c63257de34c92',
-          // traceFlags: TraceFlags.NONE, REQUIRE 0.5.0
-          traceFlags: TraceFlags.UNSAMPLED,
+          traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
         status: { code: types.CanonicalCode.OK },
-        // resource: Resource.empty(), REQUIRE 0.5.0
+        resource: Resource.empty(),
       };
 
       await exporter['_projectId'];
