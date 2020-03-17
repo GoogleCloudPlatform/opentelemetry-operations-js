@@ -6,6 +6,7 @@
     "postinstall": "npm run bootstrap",
     "precompile": "tsc --version",
     "compile": "lerna run compile",
+    "codecov": "lerna run codecov",
     "test": "lerna run test",
     "bootstrap": "lerna bootstrap",
     "lint": "lerna run lint",
