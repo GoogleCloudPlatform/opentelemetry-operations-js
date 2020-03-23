@@ -1,0 +1,18 @@
+{
+  "name": "nodejs-example-stackdriver-trace",
+  "private": true,
+  "license": "Apache-2.0",
+  "author": "Google Inc.",
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "engines": {
+    "node": ">=8"
+  },
+  "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
+  "dependencies": {
+    "@google-cloud/opentelemetry-cloud-trace-exporter": "^0.1.0",
+    "@opentelemetry/api": "^0.5.1",
+    "@opentelemetry/tracing": "^0.5.1"
+  }
+}
