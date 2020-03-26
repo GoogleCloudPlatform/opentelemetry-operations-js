@@ -95,6 +95,7 @@ export class StackdriverMetricExporter implements MetricExporter {
     }
 
     if (!this._projectId) {
+      this._logger.error('expecting a non-blank ProjectID');
       return cb(ExportResult.FAILED_NOT_RETRYABLE);
     }
 
