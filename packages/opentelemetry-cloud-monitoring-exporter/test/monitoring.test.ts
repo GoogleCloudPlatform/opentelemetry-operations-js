@@ -133,7 +133,6 @@ describe('StackdriverMetricExporter', () => {
           resolve(result);
         });
       });
-      console.log(metricDescriptors.getCall(0).args[0]);
       assert.deepStrictEqual(
         metricDescriptors.getCall(0).args[0].resource.type,
         'custom.googleapis.com/opentelemetry/name'
