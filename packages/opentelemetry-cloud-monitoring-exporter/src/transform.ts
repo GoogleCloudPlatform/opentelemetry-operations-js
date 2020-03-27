@@ -17,6 +17,7 @@ import {
   MetricKind as OTMetricKind,
   MetricRecord,
   Distribution as OTDistribution,
+  Point as OTPoint,
 } from '@opentelemetry/metrics';
 import { ValueType as OTValueType } from '@opentelemetry/api';
 import {
@@ -113,12 +114,7 @@ export function createTimeSeries(
     metricKind: transformMetricKind(metric.descriptor.metricKind),
     valueType: transformValueType(metric.descriptor.valueType),
     points: [
-      transformPoint(
-        metric.descriptor.valueType,
-        metric.aggregator.value(),
-        metric.descriptor.metricKind,
-        startTime
-      ),
+      transformPoint(metric.aggregator.toPoint(), metric.descriptor, startTime),
     ],
   };
 }
@@ -146,23 +142,27 @@ function transformMetric(
  * Transform timeseries's point, so that metric can be uploaded to StackDriver.
  */
 function transformPoint(
-  valueType: OTValueType,
-  value: number | OTDistribution,
-  metricKind: OTMetricKind,
+  point: OTPoint,
+  metricDescriptor: OTMetricDescriptor,
   startTime: string
 ): Point {
   // TODO: Add endTime and startTime support, once available in OpenTelemetry
   // Related issues: https://github.com/open-telemetry/opentelemetry-js/pull/893
   // and https://github.com/open-telemetry/opentelemetry-js/issues/488
-  if (metricKind === OTMetricKind.COUNTER) {
+  if (metricDescriptor.metricKind === OTMetricKind.COUNTER) {
     return {
-      value: transformValue(valueType, value),
-      interval: { startTime, endTime: new Date().toISOString() },
+      value: transformValue(metricDescriptor.valueType, point.value),
+      interval: {
+        startTime,
+        endTime: new Date().toISOString(),
+      },
     };
   }
   return {
-    value: transformValue(valueType, value),
-    interval: { endTime: new Date().toISOString() },
+    value: transformValue(metricDescriptor.valueType, point.value),
+    interval: {
+      endTime: new Date().toISOString(),
+    },
   };
 }
 
