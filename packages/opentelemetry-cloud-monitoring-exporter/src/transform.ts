@@ -64,14 +64,12 @@ function transformDisplayName(displayNamePrefix: string, name: string): string {
 function transformLabelDescriptor(labelKeys: string[]): LabelDescriptor[] {
   const labelDescriptorList: LabelDescriptor[] = labelKeys.map(labelKey => ({
     key: labelKey,
-    valueType: 'STRING', // Now we only support String type.
-    description: labelKey,
+    description: labelKey, // TODO: add more descriptive description
   }));
 
   // add default "opentelemetry_task" label.
   labelDescriptorList.push({
     key: OPENTELEMETRY_TASK,
-    valueType: 'STRING',
     description: OPENTELEMETRY_TASK_DESCRIPTION,
   });
   return labelDescriptorList;
@@ -84,6 +82,7 @@ function transformMetricKind(kind: OTMetricKind): MetricKind {
   } else if (kind === OTMetricKind.OBSERVER) {
     return MetricKind.GAUGE;
   }
+  // TODO: add support from OTMetricKind.MEASURE
   return MetricKind.UNSPECIFIED;
 }
 
@@ -177,6 +176,7 @@ function transformValue(
   } else if (valueType === OTValueType.DOUBLE) {
     return { doubleValue: value as number };
   }
+  // TODO: Add support for Distribution
   throw Error(`unsupported value type: ${valueType}`);
 }
 

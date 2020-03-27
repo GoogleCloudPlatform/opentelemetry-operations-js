@@ -80,12 +80,11 @@ describe('transform', () => {
 
     it('should return a Stackdriver LabelDescriptor', () => {
       assert.deepStrictEqual(TEST_ONLY.transformLabelDescriptor(labelKeys), [
-        { description: 'key1', key: 'key1', valueType: 'STRING' },
-        { description: 'key2', key: 'key2', valueType: 'STRING' },
+        { description: 'key1', key: 'key1' },
+        { description: 'key2', key: 'key2' },
         {
           description: 'OpenTelemetry task identifier',
           key: 'opentelemetry_task',
-          valueType: 'STRING',
         },
       ]);
     });
