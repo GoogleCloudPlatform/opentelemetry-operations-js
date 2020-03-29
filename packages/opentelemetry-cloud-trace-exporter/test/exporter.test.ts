@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/* tslint:disable no-any */
+
 import * as types from '@opentelemetry/api';
 import { TraceFlags } from '@opentelemetry/api';
 import { ExportResult } from '@opentelemetry/base';
