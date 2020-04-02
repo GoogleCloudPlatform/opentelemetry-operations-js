@@ -69,7 +69,7 @@ describe('Stackdriver Trace Exporter', () => {
 
       
       batchWrite = sinon.spy(
-        (spans:/* tslint:disable-next-line:no-any */ any, callback: (err: Error | null) => void):  /* tslint:disable-next-line:no-any */ any => {
+        (spans:/* tslint:disable-next-line:no-any */any, callback: (err: Error | null) => void):  /* tslint:disable-next-line:no-any */ any => {
           if (batchWriteShouldFail) {
             callback(new Error('fail'));
           } else {
@@ -81,7 +81,7 @@ describe('Stackdriver Trace Exporter', () => {
       sinon.replace(
         StackdriverTraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
-        batchWrite as  /* tslint:disable-next-line:no-any */ any
+        batchWrite as  /* tslint:disable-next-line:no-any */any
       );
 
       sinon.replace(exporter['_auth'], 'getClient', () => {
