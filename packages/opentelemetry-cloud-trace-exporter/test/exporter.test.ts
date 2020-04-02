@@ -50,6 +50,7 @@ describe('Stackdriver Trace Exporter', () => {
   describe('export', () => {
     let exporter: StackdriverTraceExporter;
     let logger: ConsoleLogger;
+    /* tslint:disable-next-line:no-any */
     let batchWrite: sinon.SinonSpy<[any, any], any>;
     let debug: sinon.SinonSpy;
     let info: sinon.SinonSpy;
@@ -66,6 +67,7 @@ describe('Stackdriver Trace Exporter', () => {
         logger,
       });
 
+      /* tslint:disable-next-line:no-any */
       batchWrite = sinon.spy(
         (spans: any, callback: (err: Error | null) => void): any => {
           if (batchWriteShouldFail) {
@@ -75,7 +77,7 @@ describe('Stackdriver Trace Exporter', () => {
           }
         }
       );
-
+      /* tslint:disable-next-line:no-any */
       sinon.replace(
         StackdriverTraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
