@@ -89,7 +89,8 @@ describe('transform', () => {
       sameProcessAsParentSpan: false,
     });
   });
-
+  
+  /* tslint:disable-next-line:no-any */
   it('should transform spans with parent', () => {
     (readableSpan as any).parentSpanId = '3e0c63257de34c92';
     const result = transformer(readableSpan);
