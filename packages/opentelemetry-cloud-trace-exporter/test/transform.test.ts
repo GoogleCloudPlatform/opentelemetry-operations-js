@@ -90,8 +90,9 @@ describe('transform', () => {
     });
   });
   
-  /* tslint:disable-next-line:no-any */
+  
   it('should transform spans with parent', () => {
+  /* tslint:disable-next-line:no-any */
     (readableSpan as any).parentSpanId = '3e0c63257de34c92';
     const result = transformer(readableSpan);
     assert.deepStrictEqual(result.parentSpanId, '3e0c63257de34c92');

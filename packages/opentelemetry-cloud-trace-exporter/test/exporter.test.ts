@@ -67,9 +67,9 @@ describe('Google Cloud Trace Exporter', () => {
         logger,
       });
 
-      /* tslint:disable-next-line:no-any */
+      
       batchWrite = sinon.spy(
-        (spans: any, callback: (err: Error | null) => void): any => {
+        (spans:/* tslint:disable-next-line:no-any */ any, callback: (err: Error | null) => void):  /* tslint:disable-next-line:no-any */ any => {
           if (batchWriteShouldFail) {
             callback(new Error('fail'));
           } else {
@@ -77,18 +77,18 @@ describe('Google Cloud Trace Exporter', () => {
           }
         }
       );
-      /* tslint:disable-next-line:no-any */
+     
       sinon.replace(
         TraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
-        batchWrite as any
+        batchWrite as  /* tslint:disable-next-line:no-any */ any
       );
 
       sinon.replace(exporter['_auth'], 'getClient', () => {
         if (getClientShouldFail) {
           throw new Error('fail');
         }
-        return {} as any;
+        return {} as  /* tslint:disable-next-line:no-any */ any;
       });
 
       debug = sinon.spy();
