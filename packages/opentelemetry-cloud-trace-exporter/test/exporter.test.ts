@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-
 import * as types from '@opentelemetry/api';
 import { TraceFlags } from '@opentelemetry/api';
 import { ExportResult } from '@opentelemetry/base';
@@ -77,10 +75,11 @@ describe('Google Cloud Trace Exporter', () => {
           }
         }
       );
-     /* tslint:disable-next-line:no-any */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
       sinon.replace(
         TraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
+        /* tslint:disable-next-line:no-any */
         batchWrite as any
       );
 
