@@ -82,7 +82,8 @@ describe('Google Cloud Trace Exporter', () => {
       sinon.replace(
         TraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
-        batchWrite as  any
+        /* tslint:disable-next-line:no-any */
+        batchWrite as any
       );
 
       sinon.replace(exporter['_auth'], 'getClient', () => {
