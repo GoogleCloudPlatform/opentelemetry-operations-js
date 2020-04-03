@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {
-  MetricExporter,
+  MetricExporter as IMetricExporter,
   MetricRecord,
   MetricDescriptor as OTMetricDescriptor,
 } from '@opentelemetry/metrics';
@@ -36,9 +36,9 @@ const OT_REQUEST_HEADER = {
 google.options({ headers: OT_REQUEST_HEADER });
 
 /**
- * Format and sends metrics information to StackDriver Monitoring.
+ * Format and sends metrics information to Google Cloud Monitoring.
  */
-export class StackdriverMetricExporter implements MetricExporter {
+export class MetricExporter implements IMetricExporter {
   private _projectId: string | void | Promise<string | void>;
   private readonly _metricPrefix: string;
   private readonly _displayNamePrefix: string;
@@ -57,12 +57,12 @@ export class StackdriverMetricExporter implements MetricExporter {
 
   private static readonly _monitoring = google.monitoring('v3');
 
-  constructor(options: StackdriverExporterOptions = {}) {
+  constructor(options: ExporterOptions = {}) {
     this._logger = options.logger || new NoopLogger();
     this._metricPrefix =
-      options.prefix || StackdriverMetricExporter.CUSTOM_OPENTELEMETRY_DOMAIN;
+      options.prefix || MetricExporter.CUSTOM_OPENTELEMETRY_DOMAIN;
     this._displayNamePrefix =
-      options.prefix || StackdriverMetricExporter.DEFAULT_DISPLAY_NAME_PREFIX;
+      options.prefix || MetricExporter.DEFAULT_DISPLAY_NAME_PREFIX;
 
     this._auth = new GoogleAuth({
       credentials: options.credentials,
@@ -99,7 +99,7 @@ export class StackdriverMetricExporter implements MetricExporter {
       return cb(ExportResult.FAILED_NOT_RETRYABLE);
     }
 
-    this._logger.debug('StackDriver Monitoring export');
+    this._logger.debug('Google Cloud Monitoring export');
     const timeSeries: TimeSeries[] = [];
     for (const metric of metrics) {
       const isRegistered = await this._registerMetricDescriptor(
@@ -119,7 +119,7 @@ export class StackdriverMetricExporter implements MetricExporter {
 
   /**
    * Returns true if the given metricDescriptor is successfully registered to
-   * Stackdriver Monitoring, or the exact same metric has already been
+   * Google Cloud Monitoring, or the exact same metric has already been
    * registered. Returns false otherwise.
    * @param metricDescriptor The OpenTelemetry MetricDescriptor.
    */
@@ -173,7 +173,7 @@ export class StackdriverMetricExporter implements MetricExporter {
     };
     try {
       return new Promise((resolve, reject) => {
-        StackdriverMetricExporter._monitoring.projects.metricDescriptors.create(
+        MetricExporter._monitoring.projects.metricDescriptors.create(
           request,
           { headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT] },
           (err: Error | null) => {
@@ -184,7 +184,7 @@ export class StackdriverMetricExporter implements MetricExporter {
       });
     } catch (err) {
       this._logger.error(
-        `StackdriverMetricExporter: Failed to write data: ${err.message}`
+        `MetricExporter: Failed to write data: ${err.message}`
       );
     }
   }
@@ -202,7 +202,7 @@ export class StackdriverMetricExporter implements MetricExporter {
       };
 
       return new Promise((resolve, reject) => {
-        StackdriverMetricExporter._monitoring.projects.timeSeries.create(
+        MetricExporter._monitoring.projects.timeSeries.create(
           request,
           { headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT] },
           (err: Error | null) => {

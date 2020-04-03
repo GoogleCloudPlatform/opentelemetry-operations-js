@@ -15,13 +15,13 @@
 import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
-import { StackdriverMetricExporter } from '../src';
+import { MetricExporter } from '../src';
 import { ConsoleLogger, LogLevel } from '@opentelemetry/core';
 import { ExportResult } from '@opentelemetry/base';
 import { MeterProvider } from '@opentelemetry/metrics';
 import { Labels } from '@opentelemetry/api';
 
-describe('StackdriverMetricExporter', () => {
+describe('MetricExporter', () => {
   beforeEach(() => {
     process.env.GCLOUD_PROJECT = 'not-real';
     nock.disableNetConnect();
@@ -29,13 +29,13 @@ describe('StackdriverMetricExporter', () => {
 
   describe('constructor', () => {
     it('should construct an exporter', () => {
-      const exporter = new StackdriverMetricExporter();
+      const exporter = new MetricExporter();
       assert.ok(typeof exporter.export === 'function');
       assert.ok(typeof exporter.shutdown === 'function');
     });
 
     it('should construct an exporter', async () => {
-      const exporter = new StackdriverMetricExporter({
+      const exporter = new MetricExporter({
         credentials: {
           client_email: 'noreply@fake.example.com',
           private_key: 'this is a key',
@@ -50,7 +50,7 @@ describe('StackdriverMetricExporter', () => {
   });
 
   describe('export', () => {
-    let exporter: StackdriverMetricExporter;
+    let exporter: MetricExporter;
     let logger: ConsoleLogger;
     /* tslint:disable no-any */
     let metricDescriptors: sinon.SinonSpy<[any, any], any>;
@@ -63,7 +63,7 @@ describe('StackdriverMetricExporter', () => {
     beforeEach(() => {
       getClientShouldFail = false;
       logger = new ConsoleLogger(LogLevel.ERROR);
-      exporter = new StackdriverMetricExporter({
+      exporter = new MetricExporter({
         logger,
       });
 
@@ -75,7 +75,7 @@ describe('StackdriverMetricExporter', () => {
       );
 
       sinon.replace(
-        StackdriverMetricExporter['_monitoring'].projects.metricDescriptors,
+        MetricExporter['_monitoring'].projects.metricDescriptors,
         'create',
         /* tslint:disable no-any */
         metricDescriptors as any
