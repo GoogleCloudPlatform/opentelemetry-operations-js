@@ -82,7 +82,8 @@ describe('Stackdriver Trace Exporter', () => {
       sinon.replace(
         StackdriverTraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
-        batchWrite as  any
+        /* tslint:disable-next-line:no-any */
+        batchWrite as any
       );
 
       sinon.replace(exporter['_auth'], 'getClient', () => {
