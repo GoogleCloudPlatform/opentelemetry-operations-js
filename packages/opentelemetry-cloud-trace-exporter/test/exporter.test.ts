@@ -77,11 +77,10 @@ describe('Google Cloud Trace Exporter', () => {
           }
         }
       );
-     
+     /* tslint:disable-next-line:no-any */
       sinon.replace(
         TraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
-        /* tslint:disable-next-line:no-any */
         batchWrite as any
       );
 
