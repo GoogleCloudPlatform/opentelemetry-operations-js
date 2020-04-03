@@ -31,7 +31,7 @@ import {
 import { VERSION } from './version';
 
 const AGENT_LABEL_KEY = 'g.co/agent';
-const AGENT_LABEL_VALUE = `opentelemetry-js [${CORE_VERSION}]; stackdriver-trace-exporter [${VERSION}]`;
+const AGENT_LABEL_VALUE = `opentelemetry-js [${CORE_VERSION}]; google-cloud-trace-exporter [${VERSION}]`;
 
 export function getReadableSpanTransformer(
   projectId: string

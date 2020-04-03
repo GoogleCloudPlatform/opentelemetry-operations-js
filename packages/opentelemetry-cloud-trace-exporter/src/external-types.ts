@@ -14,7 +14,7 @@
 
 import { Logger } from '@opentelemetry/api';
 
-export interface StackdriverExporterOptions {
+export interface TraceExporterOptions {
   /**
    * Google Cloud Platform project ID where your traces will be stored.
    * This is optional and will be inferred from your authentication
