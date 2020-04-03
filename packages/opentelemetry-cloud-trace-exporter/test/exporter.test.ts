@@ -77,11 +77,10 @@ describe('Stackdriver Trace Exporter', () => {
           }
         }
       );
-     
+     /* tslint:disable-next-line:no-any */
       sinon.replace(
         StackdriverTraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
-        /* tslint:disable-next-line:no-any */
         batchWrite as any
       );
 
