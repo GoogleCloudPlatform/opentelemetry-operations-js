@@ -30,7 +30,6 @@ describe('Google Cloud Trace Exporter', () => {
     process.env.GCLOUD_PROJECT = 'not-real';
     nock.disableNetConnect();
   });
-
   describe('constructor', () => {
     it('should construct an exporter', async () => {
       const exporter = new TraceExporter({
@@ -78,7 +77,7 @@ describe('Google Cloud Trace Exporter', () => {
           }
         }
       );
-     /* tslint:disable-next-line:no-any */
+     
       sinon.replace(
         TraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
