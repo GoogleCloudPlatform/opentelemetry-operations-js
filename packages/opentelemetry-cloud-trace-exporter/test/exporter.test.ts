@@ -82,7 +82,7 @@ describe('Stackdriver Trace Exporter', () => {
       sinon.replace(
         StackdriverTraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
-        batchWrite as any
+        batchWrite as  any
       );
 
       sinon.replace(exporter['_auth'], 'getClient', () => {
