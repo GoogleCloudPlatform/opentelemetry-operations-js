@@ -52,7 +52,7 @@ describe('transform', () => {
       labelKeys,
     };
 
-    it('should return a Stackdriver MetricKind', () => {
+    it('should return a Google Cloud Monitoring MetricKind', () => {
       assert.strictEqual(
         TEST_ONLY.transformMetricKind(OTMetricKind.COUNTER),
         MetricKind.CUMULATIVE
@@ -67,7 +67,7 @@ describe('transform', () => {
       );
     });
 
-    it('should return a Stackdriver ValueType', () => {
+    it('should return a Google Cloud Monitoring ValueType', () => {
       assert.strictEqual(
         TEST_ONLY.transformValueType(OTValueType.INT),
         ValueType.INT64
@@ -78,7 +78,7 @@ describe('transform', () => {
       );
     });
 
-    it('should return a Stackdriver LabelDescriptor', () => {
+    it('should return a Google Cloud Monitoring LabelDescriptor', () => {
       assert.deepStrictEqual(TEST_ONLY.transformLabelDescriptor(labelKeys), [
         { description: 'key1', key: 'key1' },
         { description: 'key2', key: 'key2' },
@@ -89,7 +89,7 @@ describe('transform', () => {
       ]);
     });
 
-    it('should return a Stackdriver DisplayName', () => {
+    it('should return a Google Cloud Monitoring DisplayName', () => {
       assert.strictEqual(
         TEST_ONLY.transformDisplayName(
           'custom.googleapis.com/opentelemetry',
@@ -99,14 +99,14 @@ describe('transform', () => {
       );
     });
 
-    it('should return a Stackdriver MetricType', () => {
+    it('should return a Google Cloud Monitoring MetricType', () => {
       assert.strictEqual(
         TEST_ONLY.transformMetricType('opentelemetry', 'demo/latency'),
         'opentelemetry/demo/latency'
       );
     });
 
-    it('should return a Cumulative Stackdriver MetricDescriptor', () => {
+    it('should return a Cumulative Google Cloud Monitoring MetricDescriptor', () => {
       const descriptor: MetricDescriptor = transformMetricDescriptor(
         metricDescriptor,
         'custom.googleapis.com/myorg/',
@@ -124,7 +124,7 @@ describe('transform', () => {
       assert.strictEqual(descriptor.valueType, ValueType.INT64);
     });
 
-    it('should return a Gauge Stackdriver MetricDescriptor', () => {
+    it('should return a Gauge Google Cloud Monitoring MetricDescriptor', () => {
       const descriptor: MetricDescriptor = transformMetricDescriptor(
         metricDescriptor1,
         'custom.googleapis.com/myorg/',
@@ -144,7 +144,7 @@ describe('transform', () => {
   });
 
   describe('TimeSeries', () => {
-    it('should return a Stackdriver Metric', () => {
+    it('should return a Google Cloud Monitoring Metric', () => {
       const meter = new MeterProvider().getMeter('test-meter');
       const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
       const labelSet = meter.labels(labels);

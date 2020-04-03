@@ -20,7 +20,7 @@ import {
 import { ExportResult } from '@opentelemetry/base';
 import { NoopLogger, VERSION } from '@opentelemetry/core';
 import { Logger } from '@opentelemetry/api';
-import { StackdriverExporterOptions } from './external-types';
+import { ExporterOptions } from './external-types';
 import { GoogleAuth, JWT } from 'google-auth-library';
 import { google } from 'googleapis';
 import { transformMetricDescriptor, createTimeSeries } from './transform';
@@ -81,9 +81,9 @@ export class MetricExporter implements IMetricExporter {
 
   /**
    * Saves the current values of all exported {@link MetricRecord}s so that
-   * they can be pulled by the Stackdriver backend.
+   * they can be pulled by the Google Cloud Monitoring backend.
    *
-   * @param metrics Metrics to be sent to the Stackdriver backend
+   * @param metrics Metrics to be sent to the Google Cloud Monitoring backend
    * @param cb result callback to be called on finish
    */
   async export(
