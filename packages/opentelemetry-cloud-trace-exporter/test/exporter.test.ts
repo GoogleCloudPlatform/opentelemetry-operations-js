@@ -30,7 +30,6 @@ describe('Stackdriver Trace Exporter', () => {
     process.env.GCLOUD_PROJECT = 'not-real';
     nock.disableNetConnect();
   });
-
   describe('constructor', () => {
     it('should construct an exporter', async () => {
       const exporter = new StackdriverTraceExporter({
@@ -78,7 +77,7 @@ describe('Stackdriver Trace Exporter', () => {
           }
         }
       );
-     /* tslint:disable-next-line:no-any */
+     
       sinon.replace(
         StackdriverTraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
