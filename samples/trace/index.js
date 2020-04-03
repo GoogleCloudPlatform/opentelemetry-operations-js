@@ -20,9 +20,7 @@
 const opentelemetry = require('@opentelemetry/api');
 const {NodeTracerProvider} = require('@opentelemetry/node');
 const {SimpleSpanProcessor} = require('@opentelemetry/tracing');
-const {
-  StackdriverTraceExporter,
-} = require('@google-cloud/opentelemetry-cloud-trace-exporter');
+const { TraceExporter } = require('@google-cloud/opentelemetry-cloud-trace-exporter');
 // [END opentelemetry_trace_import]
 
 // [START setup_exporter]
@@ -31,11 +29,10 @@ const {
 // See https://developers.google.com/identity/protocols/application-default-credentials
 // for more details.
 // Expects ADCs to be provided through the environment as ${GOOGLE_APPLICATION_CREDENTIALS}
-// A Stackdriver workspace is required and provided through the environment as ${GOOGLE_PROJECT_ID}
 const projectId = process.env.GOOGLE_PROJECT_ID;
 
 // GOOGLE_APPLICATION_CREDENTIALS are expected by a dependency of this code
-// Not this code itself. Checking for existence here but not retaining (as not needed)
+// and not this code itself. Checking for existence here but not retaining (as not needed)
 if (!projectId || !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
   throw Error('Unable to proceed without a Project ID');
 }
@@ -43,7 +40,7 @@ if (!projectId || !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
 const provider = new NodeTracerProvider();
 
 // Initialize the exporter
-const exporter = new StackdriverTraceExporter({projectId: projectId});
+const exporter = new TraceExporter({projectId: projectId});
 
 // Configure the span processor to send spans to the exporter
 provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
@@ -65,6 +62,9 @@ span.setAttribute('key', 'value');
 
 // Annotate our span to capture metadata about our operation
 span.addEvent('invoking work');
+
+// simulate some random work.
+for (let i = 0; i <= Math.floor(Math.random() * 40000000); i += 1) { }
 
 // Be sure to end the span.
 span.end();

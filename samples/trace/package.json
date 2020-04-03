@@ -1,5 +1,5 @@
 {
-  "name": "nodejs-example-stackdriver-trace",
+  "name": "nodejs-example-google-cloud-trace",
   "private": true,
   "license": "Apache-2.0",
   "author": "Google Inc.",
