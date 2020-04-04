@@ -18,7 +18,7 @@
     "opentelemetry",
     "nodejs",
     "Monitoring",
-    "stackdriver-monitoring"
+    "google-cloud-monitoring"
   ],
   "author": "Google Inc.",
   "license": "Apache-2.0",

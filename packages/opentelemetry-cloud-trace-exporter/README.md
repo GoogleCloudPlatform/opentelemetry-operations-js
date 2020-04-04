@@ -18,9 +18,9 @@ npm install --save @google-cloud/opentelemetry-cloud-trace-exporter
 Install the exporter on your application, register the exporter, and start tracing. If you are running in a GCP environment, the exporter will automatically authenticate using the environment's service account. If not, you will need to follow the instructions in  [Authentication](#Authentication).
 
 ```js
-const { StackdriverTraceExporter } = require('@google-cloud/opentelemetry-cloud-trace-exporter');
+const { TraceExporter } = require('@google-cloud/opentelemetry-cloud-trace-exporter');
 
-const exporter = new StackdriverTraceExporter({
+const exporter = new TraceExporter({
   // If you are not in a GCP environment, you will need to provide your
   // service account key here. See the Authentication section below.
 });
@@ -39,16 +39,16 @@ You can use built-in `SimpleSpanProcessor` or `BatchSpanProcessor` or write your
 
 ## Authentication
 
-The Stackdriver Trace exporter supports authentication using service accounts. These can either be defined in a keyfile (usually called `service_account_key.json` or similar), or by the environment. If your application runs in a GCP environment, such as Compute Engine, you don't need to provide any application credentials. The client library will find the credentials by itself. For more information, go to <https://cloud.google.com/docs/authentication/>.
+The Google Cloud Trace exporter supports authentication using service accounts. These can either be defined in a keyfile (usually called `service_account_key.json` or similar), or by the environment. If your application runs in a GCP environment, such as Compute Engine, you don't need to provide any application credentials. The client library will find the credentials by itself. For more information, go to <https://cloud.google.com/docs/authentication/>.
 
 ### Service account key
 
 If you are not running in a GCP environment, you will need to give the service account credentials to the exporter.
 
 ```js
-const { StackdriverTraceExporter } = require('@google-cloud/opentelemetry-cloud-trace-exporter');
+const { TraceExporter } = require('@google-cloud/opentelemetry-cloud-trace-exporter');
 
-const exporter = new StackdriverTraceExporter({
+const exporter = new TraceExporter({
   /** option 1. provide a service account key json */
   keyFile: './service_account_key.json',
   keyFileName: './service_account_key.json',

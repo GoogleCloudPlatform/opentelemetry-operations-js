@@ -23,9 +23,9 @@ import { ReadableSpan } from '@opentelemetry/tracing';
 import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
-import { StackdriverTraceExporter } from '../src';
+import { TraceExporter } from '../src';
 
-describe('Stackdriver Trace Exporter', () => {
+describe('Google Cloud Trace Exporter', () => {
   beforeEach(() => {
     process.env.GCLOUD_PROJECT = 'not-real';
     nock.disableNetConnect();
@@ -33,7 +33,7 @@ describe('Stackdriver Trace Exporter', () => {
 
   describe('constructor', () => {
     it('should construct an exporter', async () => {
-      const exporter = new StackdriverTraceExporter({
+      const exporter = new TraceExporter({
         credentials: {
           client_email: 'noreply@fake.example.com',
           private_key: 'this is a key',
@@ -48,7 +48,7 @@ describe('Stackdriver Trace Exporter', () => {
   });
 
   describe('export', () => {
-    let exporter: StackdriverTraceExporter;
+    let exporter: TraceExporter;
     let logger: ConsoleLogger;
     let batchWrite: sinon.SinonSpy<[any, any], any>;
     let debug: sinon.SinonSpy;
@@ -62,7 +62,7 @@ describe('Stackdriver Trace Exporter', () => {
       getClientShouldFail = false;
       batchWriteShouldFail = false;
       logger = new ConsoleLogger(LogLevel.ERROR);
-      exporter = new StackdriverTraceExporter({
+      exporter = new TraceExporter({
         logger,
       });
 
@@ -77,7 +77,7 @@ describe('Stackdriver Trace Exporter', () => {
       );
 
       sinon.replace(
-        StackdriverTraceExporter['_cloudTrace'].projects.traces,
+        TraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
         batchWrite as any
       );
