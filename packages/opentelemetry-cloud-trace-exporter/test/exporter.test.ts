@@ -64,7 +64,6 @@ describe('Google Cloud Trace Exporter', () => {
         logger,
       });
 
-      
       batchWrite = sinon.spy(
         /* tslint:disable-next-line:no-any */
         (spans: any, callback: (err: Error | null) => void): any => {
@@ -75,7 +74,7 @@ describe('Google Cloud Trace Exporter', () => {
           }
         }
       );
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+
       sinon.replace(
         TraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
