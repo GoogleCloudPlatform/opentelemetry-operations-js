@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/* tslint:disable no-any */
-
 import * as types from '@opentelemetry/api';
 import { TraceFlags } from '@opentelemetry/api';
 import { ExportResult } from '@opentelemetry/base';
@@ -30,7 +28,6 @@ describe('Google Cloud Trace Exporter', () => {
     process.env.GCLOUD_PROJECT = 'not-real';
     nock.disableNetConnect();
   });
-
   describe('constructor', () => {
     it('should construct an exporter', async () => {
       const exporter = new TraceExporter({
@@ -50,6 +47,7 @@ describe('Google Cloud Trace Exporter', () => {
   describe('export', () => {
     let exporter: TraceExporter;
     let logger: ConsoleLogger;
+    /* tslint:disable-next-line:no-any */
     let batchWrite: sinon.SinonSpy<[any, any], any>;
     let debug: sinon.SinonSpy;
     let info: sinon.SinonSpy;
@@ -67,6 +65,7 @@ describe('Google Cloud Trace Exporter', () => {
       });
 
       batchWrite = sinon.spy(
+        /* tslint:disable-next-line:no-any */
         (spans: any, callback: (err: Error | null) => void): any => {
           if (batchWriteShouldFail) {
             callback(new Error('fail'));
@@ -79,6 +78,7 @@ describe('Google Cloud Trace Exporter', () => {
       sinon.replace(
         TraceExporter['_cloudTrace'].projects.traces,
         'batchWrite',
+        /* tslint:disable-next-line:no-any */
         batchWrite as any
       );
 
@@ -86,6 +86,7 @@ describe('Google Cloud Trace Exporter', () => {
         if (getClientShouldFail) {
           throw new Error('fail');
         }
+        /* tslint:disable-next-line:no-any */
         return {} as any;
       });
 

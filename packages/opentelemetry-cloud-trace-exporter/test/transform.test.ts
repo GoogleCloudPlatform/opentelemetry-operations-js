@@ -11,9 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-/* tslint:disable no-any */
-
 import * as types from '@opentelemetry/api';
 import { TraceFlags } from '@opentelemetry/api';
 import { VERSION as CORE_VERSION } from '@opentelemetry/core';
@@ -89,8 +86,8 @@ describe('transform', () => {
       sameProcessAsParentSpan: false,
     });
   });
-
   it('should transform spans with parent', () => {
+    /* tslint:disable-next-line:no-any */
     (readableSpan as any).parentSpanId = '3e0c63257de34c92';
     const result = transformer(readableSpan);
     assert.deepStrictEqual(result.parentSpanId, '3e0c63257de34c92');
