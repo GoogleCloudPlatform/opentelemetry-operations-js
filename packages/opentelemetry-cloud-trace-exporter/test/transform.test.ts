@@ -65,7 +65,7 @@ describe('transform', () => {
           project_id: { stringValue: { value: 'project-id' } },
           'g.co/agent': {
             stringValue: {
-              value: `opentelemetry-js [${CORE_VERSION}]; stackdriver-trace-exporter [${VERSION}]`,
+              value: `opentelemetry-js [${CORE_VERSION}]; google-cloud-trace-exporter [${VERSION}]`,
             },
           },
           cost: { intValue: '112' },

@@ -19,9 +19,9 @@
     "tracing",
     "monitoring",
     "logs",
-    "stackdriver-trace",
-    "stackdriver-monitoring",
-    "stackdriver-logs"
+    "google-cloud-trace",
+    "google-cloud-monitoring",
+    "google-cloud-logs"
   ],
   "author": "Google Inc.",
   "license": "Apache-2.0",

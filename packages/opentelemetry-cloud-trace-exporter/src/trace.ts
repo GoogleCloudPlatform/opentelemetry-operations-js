@@ -18,7 +18,7 @@ import { ReadableSpan, SpanExporter } from '@opentelemetry/tracing';
 import { Logger } from '@opentelemetry/api';
 import { GoogleAuth } from 'google-auth-library';
 import { google } from 'googleapis';
-import { StackdriverExporterOptions } from './external-types';
+import { TraceExporterOptions } from './external-types';
 import { getReadableSpanTransformer } from './transform';
 import { Span, SpansWithCredentials } from './types';
 
@@ -26,16 +26,16 @@ const OT_REQUEST_HEADER = 'x-opentelemetry-outgoing-request';
 google.options({ headers: { [OT_REQUEST_HEADER]: 1 } });
 
 /**
- * Format and sends span information to StackDriver Trace.
+ * Format and sends span information to Google Cloud Trace.
  */
-export class StackdriverTraceExporter implements SpanExporter {
+export class TraceExporter implements SpanExporter {
   private _projectId: string | void | Promise<string | void>;
   private readonly _logger: Logger;
   private readonly _auth: GoogleAuth;
 
   private static readonly _cloudTrace = google.cloudtrace('v2');
 
-  constructor(options: StackdriverExporterOptions = {}) {
+  constructor(options: TraceExporterOptions = {}) {
     this._logger = options.logger || new NoopLogger();
 
     this._auth = new GoogleAuth({
@@ -54,8 +54,8 @@ export class StackdriverTraceExporter implements SpanExporter {
   }
 
   /**
-   * Publishes a list of spans to Stackdriver.
-   * @param spans The list of spans to transmit to Stackdriver
+   * Publishes a list of spans to Google Cloud Trace.
+   * @param spans The list of spans to transmit to Google Cloud Trace
    */
   async export(
     spans: ReadableSpan[],
@@ -69,7 +69,7 @@ export class StackdriverTraceExporter implements SpanExporter {
       return resultCallback(ExportResult.FAILED_NOT_RETRYABLE);
     }
 
-    this._logger.debug('StackDriver Trace export');
+    this._logger.debug('Google Cloud Trace export');
     const authorizedSpans = await this._authorize(
       spans.map(getReadableSpanTransformer(this._projectId))
     );
@@ -77,13 +77,13 @@ export class StackdriverTraceExporter implements SpanExporter {
     if (!authorizedSpans) {
       return resultCallback(ExportResult.FAILED_NOT_RETRYABLE);
     }
-    this._logger.debug('StackDriver Trace got span authorization');
+    this._logger.debug('Google Cloud Trace got span authorization');
 
     try {
       await this._batchWriteSpans(authorizedSpans);
       resultCallback(ExportResult.SUCCESS);
     } catch (err) {
-      this._logger.error(`Stackdriver Trace failed to export ${err}`);
+      this._logger.error(`Google Cloud Trace failed to export ${err}`);
       resultCallback(ExportResult.FAILED_RETRYABLE);
     }
   }
@@ -91,19 +91,19 @@ export class StackdriverTraceExporter implements SpanExporter {
   shutdown(): void {}
 
   /**
-   * Sends new spans to new or existing traces in the Stackdriver format to the
+   * Sends new spans to new or existing traces in the Google Cloud Trace format to the
    * service.
    * @param spans
    */
   private _batchWriteSpans(spans: SpansWithCredentials) {
-    this._logger.debug('StackDriver Trace batch writing traces');
+    this._logger.debug('Google Cloud Trace batch writing traces');
 
     return new Promise((resolve, reject) => {
       // @todo Consider to use gRPC call (BatchWriteSpansRequest) for sending
       // data to backend :
       // https://cloud.google.com/trace/docs/reference/v2/rpc/google.devtools.
       // cloudtrace.v2#google.devtools.cloudtrace.v2.TraceService
-      StackdriverTraceExporter._cloudTrace.projects.traces.batchWrite(
+      TraceExporter._cloudTrace.projects.traces.batchWrite(
         spans,
         (err: Error | null) => {
           if (err) {
@@ -123,7 +123,7 @@ export class StackdriverTraceExporter implements SpanExporter {
   /**
    * Gets the Google Application Credentials from the environment variables,
    * authenticates the client and calls a method to send the spans data.
-   * @param stackdriverSpans The spans to export
+   * @param spans The spans to export
    */
   private async _authorize(
     spans: Span[]

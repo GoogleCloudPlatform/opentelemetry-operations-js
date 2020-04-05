@@ -18,7 +18,7 @@
     "opentelemetry",
     "nodejs",
     "tracing",
-    "stackdriver-trace"
+    "google-cloud-trace"
   ],
   "author": "Google Inc.",
   "license": "Apache-2.0",
