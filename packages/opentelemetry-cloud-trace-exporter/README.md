@@ -1,5 +1,6 @@
 # OpenTelemetry Google Cloud Trace Exporter
-
++[![NPM Published Version][npm-img]][npm-url]
++[![Apache License][license-image]][license-image]
 OpenTelemetry Google Cloud Trace Exporter allows the user to send collected traces to Google Cloud.
 
 [Google Cloud Trace](https://cloud.google.com/trace) is a distributed tracing system. It helps gather timing data needed to troubleshoot latency problems in microservice architectures. It manages both the collection and lookup of this data.
@@ -65,3 +66,7 @@ const exporter = new StackdriverTraceExporter({
 - For more information on OpenTelemetry, visit: <https://opentelemetry.io/>
 - For more about OpenTelemetry JavaScript: <https://github.com/open-telemetry/opentelemetry-js>
 - Learn more about Google Cloud Trace at https://cloud.google.com/trace
+[npm-url]: https://www.npmjs.com/package/@google-cloud/opentelemetry-cloud-trace-exporter
+[npm-img]: https://badge.fury.io/js/%40google-cloud%2Fopentelemetry-cloud-trace-exporter.svg
+[license-url]: https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/master/LICENSE
+[license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat
