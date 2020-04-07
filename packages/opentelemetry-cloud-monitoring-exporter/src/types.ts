@@ -60,8 +60,8 @@ export enum ValueType {
 /** A description of a label. */
 export interface LabelDescriptor {
   key: string;
-  valueType: string;
   description: string;
+  valueType?: string; // 'STRING' is default value type.
 }
 
 /** Resource information. */
