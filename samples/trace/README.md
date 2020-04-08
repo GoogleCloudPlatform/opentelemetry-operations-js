@@ -1,10 +1,10 @@
 # Overview
 
-This example shows how to use [@opentelemetry/node](https://github.com/open-telemetry/opentelemetry-js/tree/master/packages/opentelemetry-node) to instrument a simple Node.js application - e.g. a batch job - and export spans either to [Google Cloud Trace](https://cloud.google.com/trace/).
+This example shows how to use [@opentelemetry/node](https://github.com/open-telemetry/opentelemetry-js/tree/master/packages/opentelemetry-node) to instrument a simple Node.js application - e.g. a batch job - and export spans to [Google Cloud Trace](https://cloud.google.com/trace/).
 
 ## Installation
 
-sh
+'''sh
 $ # from this directory
 $ npm install
 
@@ -17,7 +17,7 @@ If you are not running in a GCP environment you will need to create a service ac
 
 ## Run the Application
 
-sh
+'''sh
 $ # from this directory
 $ npm start
 
