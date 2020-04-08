@@ -4,10 +4,10 @@ This example shows how to use [@opentelemetry/node](https://github.com/open-tele
 
 ## Installation
 
-'''sh
+```sh
 $ # from this directory
 $ npm install
-
+```
 
 ## Authenticate
 
@@ -17,10 +17,10 @@ If you are not running in a GCP environment you will need to create a service ac
 
 ## Run the Application
 
-'''sh
+```sh
 $ # from this directory
 $ npm start
-
+```
 
 ## View traces
 
