@@ -126,12 +126,10 @@ function transformMetric(
   const type = transformMetricType(metricPrefix, metric.descriptor.name);
   const labels: { [key: string]: string } = {};
 
-  const labelSet = metric.labels.labels;
-
   const keys = metric.descriptor.labelKeys;
   for (let i = 0; i < keys.length; i++) {
-    if (labelSet[keys[i]] !== null) {
-      labels[keys[i]] = labelSet[keys[i]];
+    if (metric.labels[keys[i]] !== null) {
+      labels[keys[i]] = metric.labels[keys[i]];
     }
   }
   labels[OPENTELEMETRY_TASK] = OPENTELEMETRY_TASK_VALUE_DEFAULT;
