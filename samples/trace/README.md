@@ -4,23 +4,17 @@ This example shows how to use [@opentelemetry/node](https://github.com/open-tele
 
 ## Installation
 
-'''sh
+```sh
 $ # from this directory
 $ npm install
-
-
-## Authenticate
-
-If you are running in a GCP environment, the exporter will automatically authenticate as the service account of your environment. Please make sure that it has permission to access Google Cloud Trace.
-
-If you are not running in a GCP environment you will need to create a service account and save the service account key json in the root of this example named `service_account_key.json`. For more information, visit <https://cloud.google.com/docs/authentication/>.
+```
 
 ## Run the Application
 
-'''sh
+```sh
 $ # from this directory
 $ npm start
-
+```
 
 ## View traces
 
