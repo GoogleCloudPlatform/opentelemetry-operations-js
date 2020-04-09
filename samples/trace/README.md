@@ -8,8 +8,6 @@ This example shows how to use [@opentelemetry/node](https://github.com/open-tele
 $ # from this directory
 $ npm install
 ```
-<<<<<<< HEAD
-=======
 
 ## Run the Application
 
