@@ -120,11 +120,10 @@ describe('MetricExporter', () => {
     it('should export metrics', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
       const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
-      const labelSet = meter.labels(labels);
       const counter = meter.createCounter('name', {
         labelKeys: ['keya', 'keyb'],
       });
-      counter.bind(labelSet).add(10);
+      counter.bind(labels).add(10);
       meter.collect();
       const records = meter.getBatcher().checkPointSet();
 

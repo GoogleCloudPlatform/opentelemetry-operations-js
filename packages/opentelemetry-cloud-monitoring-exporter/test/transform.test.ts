@@ -147,13 +147,12 @@ describe('transform', () => {
     it('should return a Google Cloud Monitoring Metric', () => {
       const meter = new MeterProvider().getMeter('test-meter');
       const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
-      const labelSet = meter.labels(labels);
 
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
         labelKeys: ['keya', 'keyb'],
       });
-      counter.bind(labelSet).add(10);
+      counter.bind(labels).add(10);
       meter.collect();
       const [record] = meter.getBatcher().checkPointSet();
       const ts = createTimeSeries(record, 'otel', new Date().toISOString());
