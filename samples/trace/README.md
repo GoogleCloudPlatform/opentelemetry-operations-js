@@ -20,7 +20,8 @@ $ npm start
 
 https://console.cloud.google.com/traces/list?project=your-project-id
 
-> TODO
+<img width="1584" alt="Trace_Waterfall_View" src="images/Trace_Waterfall_View.png?raw=true"/>
+
 
 ## Useful links
 - For more information on OpenTelemetry, visit: <https://opentelemetry.io/>
