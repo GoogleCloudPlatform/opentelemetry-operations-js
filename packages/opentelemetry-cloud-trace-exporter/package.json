@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@opentelemetry/api": "^0.6.0",
-    "@opentelemetry/base": "^0.6.0",
+    "@opentelemetry/base": "^0.7.0",
     "@opentelemetry/core": "^0.7.0",
     "@opentelemetry/resources": "^0.6.0",
     "@opentelemetry/tracing": "^0.6.0",
