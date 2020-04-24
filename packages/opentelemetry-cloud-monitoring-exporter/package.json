@@ -53,7 +53,7 @@
   "dependencies": {
     "@opentelemetry/api": "^0.6.1",
     "@opentelemetry/base": "^0.6.1",
-    "@opentelemetry/core": "^0.6.1",
+    "@opentelemetry/core": "^0.7.0",
     "@opentelemetry/metrics": "^0.6.1",
     "google-auth-library": "^5.7.0",
     "googleapis": "^46.0.0"
