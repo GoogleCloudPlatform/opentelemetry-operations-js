@@ -37,17 +37,17 @@
     "registry": "https://wombat-dressing-room.appspot.com"
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.7",
-    "@types/nock": "^11.1.0",
-    "@types/node": "^12.6.9",
-    "@types/sinon": "^7.5.2",
-    "codecov": "^3.6.1",
+    "@types/mocha": "5.2.7",
+    "@types/nock": "11.1.0",
+    "@types/node": "12.12.37",
+    "@types/sinon": "7.5.2",
+    "codecov": "3.6.5",
     "gts": "1.1.2",
-    "mocha": "^6.2.0",
-    "nyc": "^14.1.1",
-    "rimraf": "^3.0.0",
-    "sinon": "^9.0.1",
-    "ts-mocha": "^6.0.0",
+    "mocha": "6.2.3",
+    "nyc": "14.1.1",
+    "rimraf": "3.0.2",
+    "sinon": "9.0.2",
+    "ts-mocha": "6.0.0",
     "typescript": "3.8.3"
   },
   "dependencies": {
