@@ -37,13 +37,13 @@
     "registry": "https://wombat-dressing-room.appspot.com"
   },
   "devDependencies": {
-    "@types/mocha": "5.2.7",
+    "@types/mocha": "7.0.2",
     "@types/nock": "11.1.0",
     "@types/node": "12.12.37",
     "@types/sinon": "9.0.0",
     "codecov": "3.6.5",
     "gts": "1.1.2",
-    "mocha": "6.2.3",
+    "mocha": "7.1.2",
     "nyc": "14.1.1",
     "rimraf": "3.0.2",
     "sinon": "9.0.2",
