@@ -10,16 +10,18 @@ OpenTelemetry Google Cloud Trace Exporter allows the user to send collected trac
 
 This exporter package assumes your application is [already instrumented](https://github.com/open-telemetry/opentelemetry-js/blob/master/getting-started/README.md) with the OpenTelemetry SDK. Once you are ready to export OpenTelemetry data, you can add this exporter to your application:
 
-sh
+```sh
 npm install --save @google-cloud/opentelemetry-cloud-trace-exporter
+```
 
 
 Add the exporter to your existing OpenTelemetry tracer provider (`NodeTracerProvider` / `BasicTracerProvider`)
 
-js
+```js
 const { TraceExporter } = require('@google-cloud/opentelemetry-cloud-trace-exporter');
 const { NodeTracerProvider } = require('@opentelemetry/node');
 const { BatchSpanProcessor } = require('@opentelemetry/tracing');
+
 
 // Enable OpenTelemetry exporters to export traces to Google Cloud Trace.
 // Exporters use Application Default Credentials (ADCs) to authenticate.
@@ -37,7 +39,7 @@ const exporter = new TraceExporter({projectId: projectId});
 
 // Add the exporter to the provider
 provider.addSpanProcessor(new BatchSpanProcessor(exporter);
-
+```
 See [README.md](https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/master/packages/opentelemetry-cloud-trace-exporter/README.md) for installation and usage information.
 
 ## OpenTelemetry Google Cloud Monitoring Exporter
