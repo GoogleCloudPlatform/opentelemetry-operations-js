@@ -17,6 +17,7 @@ import {
   MetricKind as OTMetricKind,
   MetricRecord,
   Distribution as OTDistribution,
+  Histogram as OTHistogram,
   Point as OTPoint,
 } from '@opentelemetry/metrics';
 import { ValueType as OTValueType } from '@opentelemetry/api';
@@ -167,14 +168,14 @@ function transformPoint(
 /** Transforms a OpenTelemetry Point's value to a StackDriver Point value. */
 function transformValue(
   valueType: OTValueType,
-  value: number | OTDistribution
+  value: number | OTDistribution | OTHistogram
 ) {
   if (valueType === OTValueType.INT) {
     return { int64Value: value as number };
   } else if (valueType === OTValueType.DOUBLE) {
     return { doubleValue: value as number };
   }
-  // TODO: Add support for Distribution
+  // TODO: Add support for Distribution and Histogram
   throw Error(`unsupported value type: ${valueType}`);
 }
 
