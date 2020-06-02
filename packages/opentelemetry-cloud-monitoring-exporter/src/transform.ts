@@ -107,12 +107,12 @@ function transformValueType(valueType: OTValueType): ValueType {
 export async function createTimeSeries(
   metric: MetricRecord,
   metricPrefix: string,
-  startTime: string
+  startTime: string,
+  projectId: string,
 ): Promise<TimeSeries> {
   return {
     metric: transformMetric(metric, metricPrefix),
-    // TODO: Use Resource API here, once available in OpenTelemetry
-    resource: await transformResource(),
+    resource: await transformResource(projectId),
     metricKind: transformMetricKind(metric.descriptor.metricKind),
     valueType: transformValueType(metric.descriptor.valueType),
     points: [
@@ -121,22 +121,22 @@ export async function createTimeSeries(
   };
 }
 
-async function transformResource(): Promise<{ type: string; labels: { [key: string]: string } }> {
+async function transformResource(projectId: string): Promise<{ type: string; labels: { [key: string]: string } }> {
   const resource: Resource = await detectResources();
-  const cloud_provider: String = `${resource.labels['cloud_provider']}`; 
+  const cloud_provider: String = `${resource.labels['cloud.provider']}`;
   const resource_labels: { [key: string]: string } = {};
   for (var cloud_key in resource.labels) {
     resource_labels[cloud_key] = `${resource.labels[cloud_key]}`;
   }
-
+  console.log(resource_labels);
   // These are the only supported resources
   if (cloud_provider === 'gcp') {
-    return {type: 'gce_instance', labels: resource_labels};
+    return { type: 'gce_instance', labels: { "instance_id": resource_labels['host.id'], "project_id": projectId, "zone": resource_labels['cloud.zone'] } };
   }
   else if (cloud_provider === 'aws') {
-    return {type: 'aws_ec2_instance', labels: resource_labels};
+    return { type: 'aws_ec2_instance', labels: {"instance_id":resource_labels['host.id'],"project_id": projectId, "region": resource_labels['cloud.region'], "aws_account": resource_labels['cloud.account.id'], } };
   }
-  return {type: 'global', labels: {}};
+  return { type: 'global', labels: {} };
 }
 
 function transformMetric(
