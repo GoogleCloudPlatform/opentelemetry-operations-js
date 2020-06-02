@@ -21,6 +21,7 @@ import {
   Point as OTPoint,
 } from '@opentelemetry/metrics';
 import { ValueType as OTValueType } from '@opentelemetry/api';
+import { Resource, detectResources } from '@opentelemetry/resources';
 import {
   MetricDescriptor,
   MetricKind,
@@ -103,21 +104,39 @@ function transformValueType(valueType: OTValueType): ValueType {
  * Converts metric's timeseries to a list of TimeSeries, so that metric can be
  * uploaded to StackDriver.
  */
-export function createTimeSeries(
+export async function createTimeSeries(
   metric: MetricRecord,
   metricPrefix: string,
   startTime: string
-): TimeSeries {
+): Promise<TimeSeries> {
   return {
     metric: transformMetric(metric, metricPrefix),
     // TODO: Use Resource API here, once available in OpenTelemetry
-    resource: { type: 'global', labels: {} },
+    resource: await transformResource(),
     metricKind: transformMetricKind(metric.descriptor.metricKind),
     valueType: transformValueType(metric.descriptor.valueType),
     points: [
       transformPoint(metric.aggregator.toPoint(), metric.descriptor, startTime),
     ],
   };
+}
+
+async function transformResource(): Promise<{ type: string; labels: { [key: string]: string } }> {
+  const resource: Resource = await detectResources();
+  const cloud_provider: String = `${resource.labels['cloud_provider']}`; 
+  const resource_labels: { [key: string]: string } = {};
+  for (var cloud_key in resource.labels) {
+    resource_labels[cloud_key] = `${resource.labels[cloud_key]}`;
+  }
+
+  // These are the only supported resources
+  if (cloud_provider === 'gcp') {
+    return {type: 'gce_instance', labels: resource_labels};
+  }
+  else if (cloud_provider === 'aws') {
+    return {type: 'aws_ec2_instance', labels: resource_labels};
+  }
+  return {type: 'global', labels: {}};
 }
 
 function transformMetric(

@@ -107,7 +107,7 @@ export class MetricExporter implements IMetricExporter {
       );
       if (isRegistered) {
         timeSeries.push(
-          createTimeSeries(metric, this._metricPrefix, this._startTime)
+          await createTimeSeries(metric, this._metricPrefix, this._startTime)
         );
       }
     }

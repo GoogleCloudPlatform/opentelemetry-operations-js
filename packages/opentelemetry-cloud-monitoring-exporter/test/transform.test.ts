@@ -143,8 +143,8 @@ describe('transform', () => {
     });
   });
 
-  describe('TimeSeries', () => {
-    it('should return a Google Cloud Monitoring Metric', () => {
+  describe('TimeSeries', async () => {
+    it('should return a Google Cloud Monitoring Metric', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
       const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
 
@@ -155,7 +155,7 @@ describe('transform', () => {
       counter.bind(labels).add(10);
       meter.collect();
       const [record] = meter.getBatcher().checkPointSet();
-      const ts = createTimeSeries(record, 'otel', new Date().toISOString());
+      const ts = await createTimeSeries(record, 'otel', new Date().toISOString());
       assert.strictEqual(ts.metric.type, 'otel/metric-name');
       assert.strictEqual(ts.metric.labels['keya'], 'value1');
       assert.strictEqual(ts.metric.labels['keyb'], 'value2');
