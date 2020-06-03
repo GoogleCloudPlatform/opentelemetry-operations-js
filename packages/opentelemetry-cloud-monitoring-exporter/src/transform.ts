@@ -108,7 +108,7 @@ export async function createTimeSeries(
   metric: MetricRecord,
   metricPrefix: string,
   startTime: string,
-  projectId: string,
+  projectId: string
 ): Promise<TimeSeries> {
   return {
     metric: transformMetric(metric, metricPrefix),
@@ -121,19 +121,31 @@ export async function createTimeSeries(
   };
 }
 
-async function transformResource(projectId: string): Promise<{ type: string; labels: { [key: string]: string } }> {
+async function transformResource(
+  projectId: string
+  ): Promise<{ type: string; labels: { [key: string]: string } }> {
   const resource: Resource = await detectResources();
-  const cloud_provider: String = `${resource.labels['cloud.provider']}`;
-  const resource_labels: { [key: string]: string } = {};
-  for (var cloud_key in resource.labels) {
-    resource_labels[cloud_key] = `${resource.labels[cloud_key]}`;
-  }
+  const cloudProvider: string = `${resource.labels['cloud.provider']}`;
   // These are the only supported resources
-  if (cloud_provider === 'gcp') {
-    return { type: 'gce_instance', labels: { "instance_id": resource_labels['host.id'], "project_id": projectId, "zone": resource_labels['cloud.zone'] } };
-  }
-  else if (cloud_provider === 'aws') {
-    return { type: 'aws_ec2_instance', labels: {"instance_id":resource_labels['host.id'],"project_id": projectId, "region": resource_labels['cloud.region'], "aws_account": resource_labels['cloud.account.id'], } };
+  if (cloudProvider === 'gcp') {
+    return {
+      type: 'gce_instance',
+      labels: {
+        instance_id: `${resource.labels['host.id']}`,
+        project_id: projectId, 
+        zone: `${resource.labels['cloud.zone']}`,
+      },
+    };
+  } else if (cloudProvider === 'aws') {
+    return { 
+      type: 'aws_ec2_instance',
+      labels: {
+        instance_id: `${resource.labels['host.id']}`,
+        project_id: projectId,
+        region: `${resource.labels['cloud.region']}`,
+        aws_account: `${resource.labels['cloud.account.id']}`,
+      },
+    };
   }
   return { type: 'global', labels: {} };
 }
