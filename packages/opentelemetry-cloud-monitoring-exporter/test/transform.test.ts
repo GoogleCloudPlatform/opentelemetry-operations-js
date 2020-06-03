@@ -155,7 +155,12 @@ describe('transform', () => {
       counter.bind(labels).add(10);
       meter.collect();
       const [record] = meter.getBatcher().checkPointSet();
-      const ts = await createTimeSeries(record, 'otel', new Date().toISOString(),'project_id');
+      const ts = await createTimeSeries(
+        record,
+        'otel',
+        new Date().toISOString(),
+        'project_id'
+      );
       assert.strictEqual(ts.metric.type, 'otel/metric-name');
       assert.strictEqual(ts.metric.labels['keya'], 'value1');
       assert.strictEqual(ts.metric.labels['keyb'], 'value2');

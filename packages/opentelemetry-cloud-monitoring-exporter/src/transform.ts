@@ -123,21 +123,21 @@ export async function createTimeSeries(
 
 async function transformResource(
   projectId: string
-  ): Promise<{ type: string; labels: { [key: string]: string } }> {
+): Promise<{ type: string; labels: { [key: string]: string } }> {
   const resource: Resource = await detectResources();
-  const cloudProvider: string = `${resource.labels['cloud.provider']}`;
+  const cloudProvider = `${resource.labels['cloud.provider']}`;
   // These are the only supported resources
   if (cloudProvider === 'gcp') {
     return {
       type: 'gce_instance',
       labels: {
         instance_id: `${resource.labels['host.id']}`,
-        project_id: projectId, 
+        project_id: projectId,
         zone: `${resource.labels['cloud.zone']}`,
       },
     };
   } else if (cloudProvider === 'aws') {
-    return { 
+    return {
       type: 'aws_ec2_instance',
       labels: {
         instance_id: `${resource.labels['host.id']}`,

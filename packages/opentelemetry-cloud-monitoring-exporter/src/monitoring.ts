@@ -110,7 +110,7 @@ export class MetricExporter implements IMetricExporter {
           await createTimeSeries(
             metric,
             this._metricPrefix,
-            this._startTime, 
+            this._startTime,
             this._projectId
           )
         );
