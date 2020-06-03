@@ -128,7 +128,6 @@ async function transformResource(projectId: string): Promise<{ type: string; lab
   for (var cloud_key in resource.labels) {
     resource_labels[cloud_key] = `${resource.labels[cloud_key]}`;
   }
-  console.log(resource_labels);
   // These are the only supported resources
   if (cloud_provider === 'gcp') {
     return { type: 'gce_instance', labels: { "instance_id": resource_labels['host.id'], "project_id": projectId, "zone": resource_labels['cloud.zone'] } };
