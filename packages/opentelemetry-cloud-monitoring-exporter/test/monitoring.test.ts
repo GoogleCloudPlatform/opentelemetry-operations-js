@@ -71,9 +71,13 @@ describe('MetricExporter', () => {
 
       metricDescriptors = sinon.spy(
         /* tslint:disable no-any */
-        (request: any, params: any, callback: (err: Error | null) => void): any => {
+        (
+          request: any,
+          params: any,
+          callback: (err: Error | null) => void
+        ): any => {
           callback(null);
-        }
+        } 
       );
 
       sinon.replace(
@@ -85,7 +89,11 @@ describe('MetricExporter', () => {
 
       timeSeries = sinon.spy(
         /* tslint:disable no-any */
-        (request: any, params: any, callback: (err: Error | null) => void): any => {
+        (
+          request: any,
+          params: any,
+          callback: (err: Error | null) => void
+        ): any => {
           callback(null);
         }
       );
@@ -153,20 +161,19 @@ describe('MetricExporter', () => {
         'custom.googleapis.com/opentelemetry/name'
       );
 
-      assert.equal(metricDescriptors.callCount, 1)
-      assert.equal(timeSeries.callCount, 1)
+      assert.equal(metricDescriptors.callCount, 1);
+      assert.equal(timeSeries.callCount, 1);
       
       assert.deepStrictEqual(result, ExportResult.SUCCESS);
     });
 
     it('should enforce batch size limit on metrics', async () => {
-
       const meter = new MeterProvider().getMeter('test-meter');
 
       const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
-      let nMetrics = 401
+      let nMetrics = 401;
       while (nMetrics > 0) {
-        nMetrics -= 1
+        nMetrics -= 1;
         const counter = meter.createCounter(`name${nMetrics.toString()}`, {
           labelKeys: ['keya', 'keyb'],
         });
@@ -194,8 +201,8 @@ describe('MetricExporter', () => {
         'custom.googleapis.com/opentelemetry/name0'
       );
 
-      assert.equal(metricDescriptors.callCount, 401)
-      assert.equal(timeSeries.callCount, 3)
+      assert.equal(metricDescriptors.callCount, 401);
+      assert.equal(timeSeries.callCount, 3);
 
       assert.deepStrictEqual(result, ExportResult.SUCCESS);
     });

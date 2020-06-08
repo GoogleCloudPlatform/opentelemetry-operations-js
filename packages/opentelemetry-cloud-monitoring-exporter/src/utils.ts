@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-  TimeSeries,
-} from './types';
+import { TimeSeries } from './types';
 
 /** Returns an array with arrays of the given size. */
 export function partitionList(list: TimeSeries[], chunkSize: number) {
