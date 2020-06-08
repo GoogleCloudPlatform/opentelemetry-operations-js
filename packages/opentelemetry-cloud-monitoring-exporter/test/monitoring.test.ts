@@ -77,7 +77,7 @@ describe('MetricExporter', () => {
           callback: (err: Error | null) => void
         ): any => {
           callback(null);
-        } 
+        }
       );
 
       sinon.replace(
@@ -163,7 +163,7 @@ describe('MetricExporter', () => {
 
       assert.equal(metricDescriptors.callCount, 1);
       assert.equal(timeSeries.callCount, 1);
-      
+
       assert.deepStrictEqual(result, ExportResult.SUCCESS);
     });
 
