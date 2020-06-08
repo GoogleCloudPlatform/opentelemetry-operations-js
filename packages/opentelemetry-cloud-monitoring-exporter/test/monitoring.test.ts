@@ -53,7 +53,9 @@ describe('MetricExporter', () => {
     let exporter: MetricExporter;
     let logger: ConsoleLogger;
     /* tslint:disable no-any */
-    let metricDescriptors: sinon.SinonSpy<[any, any], any>;
+    let metricDescriptors: sinon.SinonSpy<[any, any, any], any>;
+    /* tslint:disable no-any */
+    let timeSeries: sinon.SinonSpy<[any, any, any], any>;
     let debug: sinon.SinonSpy;
     let info: sinon.SinonSpy;
     let warn: sinon.SinonSpy;
@@ -69,7 +71,7 @@ describe('MetricExporter', () => {
 
       metricDescriptors = sinon.spy(
         /* tslint:disable no-any */
-        (request: any, callback: (err: Error | null) => void): any => {
+        (request: any, params: any, callback: (err: Error | null) => void): any => {
           callback(null);
         }
       );
@@ -79,6 +81,20 @@ describe('MetricExporter', () => {
         'create',
         /* tslint:disable no-any */
         metricDescriptors as any
+      );
+
+      timeSeries = sinon.spy(
+        /* tslint:disable no-any */
+        (request: any, params: any, callback: (err: Error | null) => void): any => {
+          callback(null);
+        }
+      );
+
+      sinon.replace(
+        MetricExporter['_monitoring'].projects.timeSeries,
+        'create',
+        /* tslint:disable no-any */
+        timeSeries as any
       );
 
       sinon.replace(exporter['_auth'], 'getClient', () => {
@@ -136,6 +152,47 @@ describe('MetricExporter', () => {
         metricDescriptors.getCall(0).args[0].resource.type,
         'custom.googleapis.com/opentelemetry/name'
       );
+
+      assert.deepStrictEqual(result, ExportResult.SUCCESS);
+    });
+
+    it('should enforce batch size limit on metrics', async () => {
+
+      const meter = new MeterProvider().getMeter('test-meter');
+
+      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
+      let nMetrics = 401
+      while (nMetrics > 0) {
+        nMetrics -= 1
+        const counter = meter.createCounter(`name${nMetrics.toString()}`, {
+          labelKeys: ['keya', 'keyb'],
+        });
+        counter.bind(labels).add(10);
+      }
+      meter.collect();
+      const records = meter.getBatcher().checkPointSet();
+
+      const result = await new Promise((resolve, reject) => {
+        exporter.export(records, result => {
+          resolve(result);
+        });
+      });
+
+      assert.deepStrictEqual(
+        metricDescriptors.getCall(0).args[0].resource.type,
+        'custom.googleapis.com/opentelemetry/name400'
+      );
+      assert.deepStrictEqual(
+        metricDescriptors.getCall(100).args[0].resource.type,
+        'custom.googleapis.com/opentelemetry/name300'
+      );
+      assert.deepStrictEqual(
+        metricDescriptors.getCall(400).args[0].resource.type,
+        'custom.googleapis.com/opentelemetry/name0'
+      );
+
+      assert.equal(metricDescriptors.callCount, 401)
+      assert.equal(timeSeries.callCount, 3)
 
       assert.deepStrictEqual(result, ExportResult.SUCCESS);
     });
