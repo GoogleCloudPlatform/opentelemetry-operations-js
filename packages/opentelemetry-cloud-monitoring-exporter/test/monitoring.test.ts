@@ -153,6 +153,9 @@ describe('MetricExporter', () => {
         'custom.googleapis.com/opentelemetry/name'
       );
 
+      assert.equal(metricDescriptors.callCount, 1)
+      assert.equal(timeSeries.callCount, 1)
+      
       assert.deepStrictEqual(result, ExportResult.SUCCESS);
     });
 
