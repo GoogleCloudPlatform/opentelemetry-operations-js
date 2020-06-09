@@ -224,8 +224,8 @@ describe('transform', () => {
       assert.deepStrictEqual(ts.resource, mockedAwsMonitoredResource);
     });
     it('should detect a Google Cloud VM instance', () => {
-      const meter = new MeterProvider(
-        {resource: new Resource(mockedGCResource),
+      const meter = new MeterProvider({
+        resource: new Resource(mockedGCResource),
       }).getMeter('test-meter');
       const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
       const counter = meter.createCounter(METRIC_NAME, {
