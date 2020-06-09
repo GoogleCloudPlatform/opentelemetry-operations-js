@@ -21,7 +21,11 @@ import {
   Point as OTPoint,
 } from '@opentelemetry/metrics';
 import { ValueType as OTValueType } from '@opentelemetry/api';
-import { Resource, CLOUD_RESOURCE, HOST_RESOURCE } from '@opentelemetry/resources';
+import {
+  Resource,
+  CLOUD_RESOURCE,
+  HOST_RESOURCE,
+} from '@opentelemetry/resources';
 import {
   MetricDescriptor,
   MetricKind,
