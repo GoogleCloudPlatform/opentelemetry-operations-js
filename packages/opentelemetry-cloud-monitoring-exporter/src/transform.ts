@@ -21,7 +21,7 @@ import {
   Point as OTPoint,
 } from '@opentelemetry/metrics';
 import { ValueType as OTValueType } from '@opentelemetry/api';
-import { Resource } from '@opentelemetry/resources';
+import { Resource, CLOUD_RESOURCE, HOST_RESOURCE } from '@opentelemetry/resources';
 import {
   MetricDescriptor,
   MetricKind,
@@ -35,6 +35,8 @@ import * as os from 'os';
 
 const OPENTELEMETRY_TASK = 'opentelemetry_task';
 const OPENTELEMETRY_TASK_DESCRIPTION = 'OpenTelemetry task identifier';
+const GCP_GCE_INSTANCE = 'gce_instance';
+const AWS_EC2_INSTANCE = 'aws_ec2_instance';
 export const OPENTELEMETRY_TASK_VALUE_DEFAULT = generateDefaultTaskValue();
 
 export function transformMetricDescriptor(
@@ -125,25 +127,25 @@ function transformResource(
   resource: Resource,
   projectId: string
 ): { type: string; labels: { [key: string]: string } } {
-  const cloudProvider = `${resource.labels['cloud.provider']}`;
+  const cloudProvider = `${resource.labels[CLOUD_RESOURCE.PROVIDER]}`;
   // These are the only supported resources
   if (cloudProvider === 'gcp') {
     return {
-      type: 'gce_instance',
+      type: GCP_GCE_INSTANCE,
       labels: {
-        instance_id: `${resource.labels['host.id']}`,
+        instance_id: `${resource.labels[HOST_RESOURCE.ID]}`,
         project_id: projectId,
-        zone: `${resource.labels['cloud.zone']}`,
+        zone: `${resource.labels[CLOUD_RESOURCE.ZONE]}`,
       },
     };
   } else if (cloudProvider === 'aws') {
     return {
-      type: 'aws_ec2_instance',
+      type: AWS_EC2_INSTANCE,
       labels: {
-        instance_id: `${resource.labels['host.id']}`,
+        instance_id: `${resource.labels[HOST_RESOURCE.ID]}`,
         project_id: projectId,
-        region: `${resource.labels['cloud.region']}`,
-        aws_account: `${resource.labels['cloud.account.id']}`,
+        region: `${resource.labels[CLOUD_RESOURCE.REGION]}`,
+        aws_account: `${resource.labels[CLOUD_RESOURCE.ACCOUNT_ID]}`,
       },
     };
   }
