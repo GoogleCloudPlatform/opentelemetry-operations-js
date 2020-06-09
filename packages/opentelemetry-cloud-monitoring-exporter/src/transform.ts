@@ -121,7 +121,7 @@ export function createTimeSeries(
   };
 }
 
- function transformResource(
+function transformResource(
   resource: Resource,
   projectId: string
 ): { type: string; labels: { [key: string]: string } } {

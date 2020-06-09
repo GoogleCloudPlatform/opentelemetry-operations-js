@@ -149,29 +149,29 @@ describe('transform', () => {
       'cloud.provider': 'aws',
       'host.id': 'host_id',
       'cloud.region': 'my-region',
-      'cloud.account.id': '12345'
+      'cloud.account.id': '12345',
     };
-    const mockedAwsConvertedResource = {
-      type: "aws_ec2_instance",
+    const mockedAwsMonitoredResource = {
+      type: 'aws_ec2_instance',
       labels: {
         instance_id: 'host_id',
-        project_id: 'project_id', 
+        project_id: 'project_id',
         region: 'my-region',
-        aws_account: '12345'
-      }
+        aws_account: '12345',
+      },
     };
     const mockedGCResource = {
       'cloud.provider': 'gcp',
       'host.id': 'host_id',
       'cloud.zone': 'my-zone',
     };
-    const mockedGCConvertedResource = {
+    const mockedGCMonitoredResource = {
       type: 'gce_instance',
       labels: {
         instance_id: 'host_id',
         project_id: 'project_id',
         zone: 'my-zone',
-      }
+      },
     };
 
     it('should return a Google Cloud Monitoring Metric with a default resource', () => {
@@ -204,7 +204,9 @@ describe('transform', () => {
       assert.deepStrictEqual(ts.points[0].value, { doubleValue: 10 });
     });
     it('should detect an AWS instance', () => {
-      const meter = new MeterProvider({resource: new Resource(mockedAwsResource)}).getMeter('test-meter');
+      const meter = new MeterProvider({
+        resource: new Resource(mockedAwsResource),
+      }).getMeter('test-meter');
       const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
@@ -219,10 +221,12 @@ describe('transform', () => {
         new Date().toISOString(),
         'project_id'
       );
-      assert.deepStrictEqual(ts.resource, mockedAwsConvertedResource);
+      assert.deepStrictEqual(ts.resource, mockedAwsMonitoredResource);
     });
     it('should detect a Google Cloud VM instance', () => {
-      const meter = new MeterProvider({resource: new Resource(mockedGCResource)}).getMeter('test-meter');
+      const meter = new MeterProvider(
+        {resource: new Resource(mockedGCResource),
+      }).getMeter('test-meter');
       const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
@@ -237,7 +241,7 @@ describe('transform', () => {
         new Date().toISOString(),
         'project_id'
       );
-      assert.deepStrictEqual(ts.resource, mockedGCConvertedResource);
+      assert.deepStrictEqual(ts.resource, mockedGCMonitoredResource);
     });
   });
 });
