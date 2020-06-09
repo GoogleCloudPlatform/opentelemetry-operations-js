@@ -21,7 +21,7 @@ import {
   Point as OTPoint,
 } from '@opentelemetry/metrics';
 import { ValueType as OTValueType } from '@opentelemetry/api';
-import { Resource, detectResources } from '@opentelemetry/resources';
+import { Resource } from '@opentelemetry/resources';
 import {
   MetricDescriptor,
   MetricKind,
@@ -104,15 +104,15 @@ function transformValueType(valueType: OTValueType): ValueType {
  * Converts metric's timeseries to a list of TimeSeries, so that metric can be
  * uploaded to StackDriver.
  */
-export async function createTimeSeries(
+export function createTimeSeries(
   metric: MetricRecord,
   metricPrefix: string,
   startTime: string,
   projectId: string
-): Promise<TimeSeries> {
+): TimeSeries {
   return {
     metric: transformMetric(metric, metricPrefix),
-    resource: await transformResource(projectId),
+    resource: transformResource(metric.resource, projectId),
     metricKind: transformMetricKind(metric.descriptor.metricKind),
     valueType: transformValueType(metric.descriptor.valueType),
     points: [
@@ -121,10 +121,10 @@ export async function createTimeSeries(
   };
 }
 
-async function transformResource(
+ function transformResource(
+  resource: Resource,
   projectId: string
-): Promise<{ type: string; labels: { [key: string]: string } }> {
-  const resource: Resource = await detectResources();
+): { type: string; labels: { [key: string]: string } } {
   const cloudProvider = `${resource.labels['cloud.provider']}`;
   // These are the only supported resources
   if (cloudProvider === 'gcp') {

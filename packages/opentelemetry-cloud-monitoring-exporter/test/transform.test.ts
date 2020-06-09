@@ -25,6 +25,7 @@ import {
 } from '@opentelemetry/metrics';
 import { ValueType as OTValueType, Labels } from '@opentelemetry/api';
 import { MetricKind, ValueType, MetricDescriptor } from '../src/types';
+import { Resource } from '@opentelemetry/resources';
 
 describe('transform', () => {
   const METRIC_NAME = 'metric-name';
@@ -143,8 +144,37 @@ describe('transform', () => {
     });
   });
 
-  describe('TimeSeries', async () => {
-    it('should return a Google Cloud Monitoring Metric', async () => {
+  describe('TimeSeries', () => {
+    const mockedAwsResource = {
+      'cloud.provider': 'aws',
+      'host.id': 'host_id',
+      'cloud.region': 'my-region',
+      'cloud.account.id': '12345'
+    };
+    const mockedAwsConvertedResource = {
+      type: "aws_ec2_instance",
+      labels: {
+        instance_id: 'host_id',
+        project_id: 'project_id', 
+        region: 'my-region',
+        aws_account: '12345'
+      }
+    };
+    const mockedGCResource = {
+      'cloud.provider': 'gcp',
+      'host.id': 'host_id',
+      'cloud.zone': 'my-zone',
+    };
+    const mockedGCConvertedResource = {
+      type: 'gce_instance',
+      labels: {
+        instance_id: 'host_id',
+        project_id: 'project_id',
+        zone: 'my-zone',
+      }
+    };
+
+    it('should return a Google Cloud Monitoring Metric with a default resource', () => {
       const meter = new MeterProvider().getMeter('test-meter');
       const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
 
@@ -155,7 +185,7 @@ describe('transform', () => {
       counter.bind(labels).add(10);
       meter.collect();
       const [record] = meter.getBatcher().checkPointSet();
-      const ts = await createTimeSeries(
+      const ts = createTimeSeries(
         record,
         'otel',
         new Date().toISOString(),
@@ -164,14 +194,50 @@ describe('transform', () => {
       assert.strictEqual(ts.metric.type, 'otel/metric-name');
       assert.strictEqual(ts.metric.labels['keya'], 'value1');
       assert.strictEqual(ts.metric.labels['keyb'], 'value2');
-      /*assert.deepStrictEqual(ts.resource, {
+      assert.deepStrictEqual(ts.resource, {
         labels: {},
         type: 'global',
-      });*/
+      });
       assert.strictEqual(ts.metricKind, MetricKind.CUMULATIVE);
       assert.strictEqual(ts.valueType, ValueType.DOUBLE);
       assert.strictEqual(ts.points.length, 1);
       assert.deepStrictEqual(ts.points[0].value, { doubleValue: 10 });
+    });
+    it('should detect an AWS instance', () => {
+      const meter = new MeterProvider({resource: new Resource(mockedAwsResource)}).getMeter('test-meter');
+      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
+      const counter = meter.createCounter(METRIC_NAME, {
+        description: METRIC_DESCRIPTION,
+        labelKeys: ['keya', 'keyb'],
+      });
+      counter.bind(labels).add(10);
+      meter.collect();
+      const [record] = meter.getBatcher().checkPointSet();
+      const ts = createTimeSeries(
+        record,
+        'otel',
+        new Date().toISOString(),
+        'project_id'
+      );
+      assert.deepStrictEqual(ts.resource, mockedAwsConvertedResource);
+    });
+    it('should detect a Google Cloud VM instance', () => {
+      const meter = new MeterProvider({resource: new Resource(mockedGCResource)}).getMeter('test-meter');
+      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
+      const counter = meter.createCounter(METRIC_NAME, {
+        description: METRIC_DESCRIPTION,
+        labelKeys: ['keya', 'keyb'],
+      });
+      counter.bind(labels).add(10);
+      meter.collect();
+      const [record] = meter.getBatcher().checkPointSet();
+      const ts = createTimeSeries(
+        record,
+        'otel',
+        new Date().toISOString(),
+        'project_id'
+      );
+      assert.deepStrictEqual(ts.resource, mockedGCConvertedResource);
     });
   });
 });
