@@ -16,9 +16,10 @@ import { TimeSeries } from './types';
 
 /** Returns an array with arrays of the given size. */
 export function partitionList(list: TimeSeries[], chunkSize: number) {
+  const listCopy = [...list];
   const results = [];
-  while (list.length) {
-    results.push(list.splice(0, chunkSize));
+  while (listCopy.length) {
+    results.push(listCopy.splice(0, chunkSize));
   }
   return results;
 }
