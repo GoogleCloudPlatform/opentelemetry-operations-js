@@ -38,7 +38,7 @@ provider.register();
 const exporter = new TraceExporter({projectId: projectId});
 
 // Add the exporter to the provider
-provider.addSpanProcessor(new BatchSpanProcessor(exporter);
+provider.addSpanProcessor(new BatchSpanProcessor(exporter));
 ```
 See [README.md](https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/master/packages/opentelemetry-cloud-trace-exporter/README.md) for installation and usage information.
 
