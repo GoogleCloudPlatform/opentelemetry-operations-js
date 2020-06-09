@@ -14,7 +14,7 @@
 
 import { TimeSeries } from './types';
 
-/** Returns an array with arrays of the given size. */
+/** Returns the minimum number of arrays of max size chunkSize, partitioned from the given array. */
 export function partitionList(list: TimeSeries[], chunkSize: number) {
   const listCopy = [...list];
   const results = [];
