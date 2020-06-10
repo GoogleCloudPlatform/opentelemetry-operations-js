@@ -156,7 +156,7 @@ describe('transform', () => {
       labels: {
         instance_id: 'host_id',
         project_id: 'project_id',
-        region: 'my-region',
+        region: 'aws:my-region',
         aws_account: '12345',
       },
     };
@@ -195,7 +195,7 @@ describe('transform', () => {
       assert.strictEqual(ts.metric.labels['keya'], 'value1');
       assert.strictEqual(ts.metric.labels['keyb'], 'value2');
       assert.deepStrictEqual(ts.resource, {
-        labels: {},
+        labels: { project_id: 'project_id' },
         type: 'global',
       });
       assert.strictEqual(ts.metricKind, MetricKind.CUMULATIVE);
@@ -242,6 +242,35 @@ describe('transform', () => {
         'project_id'
       );
       assert.deepStrictEqual(ts.resource, mockedGCMonitoredResource);
+    });
+
+    it('should return global for an incomplete resource', () => {
+      // Missing host.id
+      const incompleteResource = {
+        'cloud.provider': 'gcp',
+        'cloud.zone': 'my-zone',
+      };
+      const meter = new MeterProvider({
+        resource: new Resource(incompleteResource),
+      }).getMeter('test-meter');
+      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
+      const counter = meter.createCounter(METRIC_NAME, {
+        description: METRIC_DESCRIPTION,
+        labelKeys: ['keya', 'keyb'],
+      });
+      counter.bind(labels).add(10);
+      meter.collect();
+      const [record] = meter.getBatcher().checkPointSet();
+      const ts = createTimeSeries(
+        record,
+        'otel',
+        new Date().toISOString(),
+        'project_id'
+      );
+      assert.deepStrictEqual(ts.resource, {
+        labels: { project_id: 'project_id' },
+        type: 'global',
+      });
     });
   });
 });

@@ -39,6 +39,7 @@ import * as os from 'os';
 
 const OPENTELEMETRY_TASK = 'opentelemetry_task';
 const OPENTELEMETRY_TASK_DESCRIPTION = 'OpenTelemetry task identifier';
+const AWS_REGION_VALUE_PREFIX = 'aws:';
 const GCP_GCE_INSTANCE = 'gce_instance';
 const AWS_EC2_INSTANCE = 'aws_ec2_instance';
 export const OPENTELEMETRY_TASK_VALUE_DEFAULT = generateDefaultTaskValue();
@@ -131,25 +132,49 @@ function transformResource(
   resource: Resource,
   projectId: string
 ): { type: string; labels: { [key: string]: string } } {
+  const templateResource = getTypeAndMappings(resource);
+  const type = templateResource.type;
+  const labels: { [key: string]: string } = { project_id: projectId };
+
+  for (const key of Object.keys(templateResource.labels)) {
+    if (!resource.labels[templateResource.labels[key]]) {
+      return { type: 'global', labels: { project_id: projectId } };
+    } else {
+      if (
+        type === AWS_EC2_INSTANCE &&
+        templateResource.labels[key] === CLOUD_RESOURCE.REGION
+      ) {
+        labels[key] = `${AWS_REGION_VALUE_PREFIX}${
+          resource.labels[templateResource.labels[key]]
+        }`;
+      } else {
+        labels[key] = `${resource.labels[templateResource.labels[key]]}`;
+      }
+    }
+  }
+  return { type, labels };
+}
+
+function getTypeAndMappings(
+  resource: Resource
+): { type: string; labels: { [key: string]: string } } {
   const cloudProvider = `${resource.labels[CLOUD_RESOURCE.PROVIDER]}`;
   // These are the only supported resources
   if (cloudProvider === 'gcp') {
     return {
       type: GCP_GCE_INSTANCE,
       labels: {
-        instance_id: `${resource.labels[HOST_RESOURCE.ID]}`,
-        project_id: projectId,
-        zone: `${resource.labels[CLOUD_RESOURCE.ZONE]}`,
+        instance_id: HOST_RESOURCE.ID,
+        zone: CLOUD_RESOURCE.ZONE,
       },
     };
   } else if (cloudProvider === 'aws') {
     return {
       type: AWS_EC2_INSTANCE,
       labels: {
-        instance_id: `${resource.labels[HOST_RESOURCE.ID]}`,
-        project_id: projectId,
-        region: `${resource.labels[CLOUD_RESOURCE.REGION]}`,
-        aws_account: `${resource.labels[CLOUD_RESOURCE.ACCOUNT_ID]}`,
+        instance_id: HOST_RESOURCE.ID,
+        region: CLOUD_RESOURCE.REGION,
+        aws_account: CLOUD_RESOURCE.ACCOUNT_ID,
       },
     };
   }
