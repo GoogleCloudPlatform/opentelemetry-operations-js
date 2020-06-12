@@ -24,7 +24,6 @@ import { google } from 'googleapis';
 import { TraceExporterOptions } from './external-types';
 import { getReadableSpanTransformer } from './transform';
 import { Span, SpansWithCredentials, TraceService } from './types';
-import { trace } from 'console';
 
 const OT_REQUEST_HEADER = 'x-opentelemetry-outgoing-request';
 google.options({ headers: { [OT_REQUEST_HEADER]: 1 } });
@@ -36,7 +35,7 @@ export class TraceExporter implements SpanExporter {
   private _projectId: string | void | Promise<string | void>;
   private readonly _logger: Logger;
   private readonly _auth: GoogleAuth;
-  private _traceServiceClient: TraceService;
+  private _traceServiceClient?: TraceService = undefined;
 
   private static readonly _cloudTrace = google.cloudtrace('v2');
 
@@ -62,6 +61,13 @@ export class TraceExporter implements SpanExporter {
     });
     const { google }: any = grpc.loadPackageDefinition(pacakageDefinition);
     const traceService = google.devtools.cloudtrace.v2.TraceService;
+    this._auth.getApplicationDefault()
+      .then((creds) => {
+        const sslCreds = grpc.credentials.createSsl();
+        const callCreds = grpc.credentials.createFromGoogleCredential(creds.credential);
+        this._traceServiceClient = new traceService('cloudtrace.googleapis.com', grpc.credentials.combineChannelCredentials(sslCreds, callCreds));
+    })
+      .catch(this._logger.error);
     this._traceServiceClient = new traceService('cloudtrace.googleapis.com', grpc.credentials.createInsecure());
   }
 
@@ -110,11 +116,13 @@ export class TraceExporter implements SpanExporter {
   private _batchWriteSpans(spans: SpansWithCredentials) {
     this._logger.debug('Google Cloud Trace batch writing traces');
     return new Promise((resolve, reject) => {
-      const metadata = new grpc.Metadata();
+      if (!this._traceServiceClient) {
+        return reject(new Error('channel not yet opened'));
+      }
       // TODO: Add headers for authentication
       const call = {
         name: spans.name,
-        spans: spans.resource.spans,
+        spans: [],
       };
       this._traceServiceClient.BatchWriteSpans(call, (err: Error) => {
         if (err) {
