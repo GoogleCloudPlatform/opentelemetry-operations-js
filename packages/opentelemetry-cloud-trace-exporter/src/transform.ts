@@ -52,11 +52,11 @@ export function getReadableSpanTransformer(
       links: {
         link: span.links.map(transformLink),
       },
-      endTime: hrTimeToTimeStamp(span.endTime),
-      startTime: hrTimeToTimeStamp(span.startTime),
+      endTime: new Date(hrTimeToTimeStamp(span.endTime)),
+      startTime: new Date(hrTimeToTimeStamp(span.startTime)),
       name: `projects/${projectId}/traces/${span.spanContext.traceId}/spans/${span.spanContext.spanId}`,
       spanId: span.spanContext.spanId,
-      sameProcessAsParentSpan: !span.spanContext.isRemote,
+      sameProcessAsParentSpan: new Boolean(!span.spanContext.isRemote),
       status: span.status,
       timeEvents: {
         timeEvent: span.events.map(e => ({

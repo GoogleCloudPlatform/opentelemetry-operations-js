@@ -19,8 +19,8 @@ export interface Span {
   spanId?: string;
   parentSpanId?: string;
   displayName?: TruncatableString;
-  startTime?: string;
-  endTime?: string;
+  startTime?: Date;
+  endTime?: Date;
   attributes?: Attributes;
   // This property is currently unused. keeping it here as it is part
   // of the stack driver trace types and may be used in the future
@@ -28,7 +28,7 @@ export interface Span {
   timeEvents?: TimeEvents;
   links?: Links;
   status?: Status;
-  sameProcessAsParentSpan?: boolean;
+  sameProcessAsParentSpan?: Boolean;
   childSpanCount?: number;
 }
 

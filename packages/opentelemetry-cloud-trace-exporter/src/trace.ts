@@ -37,8 +37,6 @@ export class TraceExporter implements SpanExporter {
   private readonly _auth: GoogleAuth;
   private _traceServiceClient?: TraceService = undefined;
 
-  private static readonly _cloudTrace = google.cloudtrace('v2');
-
   constructor(options: TraceExporterOptions = {}) {
     this._logger = options.logger || new NoopLogger();
 
@@ -65,7 +63,8 @@ export class TraceExporter implements SpanExporter {
       .then((creds) => {
         const sslCreds = grpc.credentials.createSsl();
         const callCreds = grpc.credentials.createFromGoogleCredential(creds.credential);
-        this._traceServiceClient = new traceService('cloudtrace.googleapis.com', grpc.credentials.combineChannelCredentials(sslCreds, callCreds));
+        this._traceServiceClient = 
+          new traceService('cloudtrace.googleapis.com', grpc.credentials.combineChannelCredentials(sslCreds, callCreds));
     })
       .catch(this._logger.error);
     this._traceServiceClient = new traceService('cloudtrace.googleapis.com', grpc.credentials.createInsecure());
@@ -86,11 +85,9 @@ export class TraceExporter implements SpanExporter {
     if (!this._projectId) {
       return resultCallback(ExportResult.FAILED_NOT_RETRYABLE);
     }
-
+    
     this._logger.debug('Google Cloud Trace export');
-    const authorizedSpans = await this._authorize(
-      spans.map(getReadableSpanTransformer(this._projectId))
-    );
+    const authorizedSpans = await this._authorize(spans.map(getReadableSpanTransformer(this._projectId)));
 
     if (!authorizedSpans) {
       return resultCallback(ExportResult.FAILED_NOT_RETRYABLE);
@@ -122,7 +119,7 @@ export class TraceExporter implements SpanExporter {
       // TODO: Add headers for authentication
       const call = {
         name: spans.name,
-        spans: [],
+        spans: spans.resource.spans,
       };
       this._traceServiceClient.BatchWriteSpans(call, (err: Error) => {
         if (err) {
