@@ -138,3 +138,14 @@ export interface SpansWithCredentials {
   resource: { spans: {} };
   auth: JWT | OAuth2Client | Compute;
 }
+
+export interface TraceService {
+  BatchWriteSpans: (call: any, callback: Function) => void;
+}
+
+export interface TraceServiceRequest {
+  name: string;
+  span: any[];
+}
+
+
