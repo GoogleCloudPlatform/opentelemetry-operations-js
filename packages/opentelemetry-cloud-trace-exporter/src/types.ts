@@ -19,8 +19,8 @@ export interface Span {
   spanId?: string;
   parentSpanId?: string;
   displayName?: TruncatableString;
-  startTime?: Date;
-  endTime?: Date;
+  startTime?: Timestamp;
+  endTime?: Timestamp;
   attributes?: Attributes;
   // This property is currently unused. keeping it here as it is part
   // of the stack driver trace types and may be used in the future
@@ -30,6 +30,11 @@ export interface Span {
   status?: Status;
   sameProcessAsParentSpan?: Boolean;
   childSpanCount?: number;
+}
+
+export interface Timestamp {
+    seconds?: number;
+    nanos?: number;
 }
 
 export interface AttributeMap {
@@ -103,7 +108,7 @@ export interface TimeEvents {
 
 export interface TimeEvent {
   annotation?: Annotation;
-  time?: string;
+  time?: Timestamp;
   // This property is currently unused. keeping it here as it is part
   // of the stack driver trace types and may be used in the future
   messageEvent?: MessageEvent;
@@ -133,19 +138,17 @@ export enum LinkType {
   PARENT_LINKED_SPAN = 2,
 }
 
-export interface SpansWithCredentials {
+export interface NamedSpans {
   name: string;
-  resource: { spans: {} };
-  auth: JWT | OAuth2Client | Compute;
-}
-
-export interface TraceService {
-  BatchWriteSpans: (call: any, callback: Function) => void;
+  spans: Span[];
 }
 
 export interface TraceServiceRequest {
   name: string;
-  span: any[];
+  spans: any[];
 }
 
+export interface TraceService {
+  BatchWriteSpans: (call: TraceServiceRequest, callback: Function) => void;
+}
 
