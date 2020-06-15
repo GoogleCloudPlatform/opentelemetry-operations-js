@@ -14,21 +14,22 @@
 
 import * as ot from '@opentelemetry/api';
 import {
-  hrTimeToTimeStamp,
   VERSION as CORE_VERSION,
+  hrTimeToMilliseconds,
 } from '@opentelemetry/core';
 import { Resource } from '@opentelemetry/resources';
 import { ReadableSpan } from '@opentelemetry/tracing';
 import {
-  AttributeMap,
-  Attributes,
-  AttributeValue,
-  Link,
-  LinkType,
-  Span,
-  TruncatableString,
+    AttributeMap,
+    Attributes,
+    AttributeValue,
+    Link,
+    LinkType,
+    Span, Timestamp,
+    TruncatableString,
 } from './types';
 import { VERSION } from './version';
+import { HrTime } from '@opentelemetry/api';
 
 const AGENT_LABEL_KEY = 'g.co/agent';
 const AGENT_LABEL_VALUE = `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`;
@@ -52,15 +53,15 @@ export function getReadableSpanTransformer(
       links: {
         link: span.links.map(transformLink),
       },
-      endTime: new Date(hrTimeToTimeStamp(span.endTime)),
-      startTime: new Date(hrTimeToTimeStamp(span.startTime)),
+      endTime: transformTime(span.endTime),
+      startTime: transformTime(span.startTime),
       name: `projects/${projectId}/traces/${span.spanContext.traceId}/spans/${span.spanContext.spanId}`,
       spanId: span.spanContext.spanId,
       sameProcessAsParentSpan: new Boolean(!span.spanContext.isRemote),
       status: span.status,
       timeEvents: {
         timeEvent: span.events.map(e => ({
-          time: hrTimeToTimeStamp(e.time),
+          time: transformTime(e.time),
           annotation: {
             attributes: transformAttributes(e.attributes),
             description: stringToTruncatableString(e.name),
@@ -74,6 +75,13 @@ export function getReadableSpanTransformer(
     }
 
     return out;
+  };
+}
+
+function transformTime(time: HrTime): Timestamp {
+  const miliseconds = hrTimeToMilliseconds(time);
+  return {
+    seconds: Math.floor(miliseconds / 1000),
   };
 }
 
