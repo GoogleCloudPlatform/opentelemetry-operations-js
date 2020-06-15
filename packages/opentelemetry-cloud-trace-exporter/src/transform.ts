@@ -20,13 +20,13 @@ import {
 import { Resource } from '@opentelemetry/resources';
 import { ReadableSpan } from '@opentelemetry/tracing';
 import {
-    AttributeMap,
-    Attributes,
-    AttributeValue,
-    Link,
-    LinkType,
-    Span, Timestamp,
-    TruncatableString,
+  AttributeMap,
+  Attributes,
+  AttributeValue,
+  Link,
+  LinkType,
+  Span, Timestamp,
+  TruncatableString,
 } from './types';
 import { VERSION } from './version';
 import { HrTime } from '@opentelemetry/api';
