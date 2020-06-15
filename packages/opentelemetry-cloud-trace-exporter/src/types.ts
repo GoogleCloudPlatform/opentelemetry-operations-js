@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Compute, JWT, OAuth2Client } from 'google-auth-library';
-
 export interface Span {
   name?: string;
   spanId?: string;
