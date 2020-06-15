@@ -19,7 +19,7 @@ import { Logger } from '@opentelemetry/api';
 import * as protoloader from '@grpc/proto-loader';
 import * as protofiles from 'google-proto-files';
 import * as grpc from '@grpc/grpc-js';
-import { GoogleAuth } from 'google-auth-library';
+import { GoogleAuth, UserRefreshClient, JWT, Compute } from 'google-auth-library';
 import { TraceExporterOptions } from './external-types';
 import { getReadableSpanTransformer } from './transform';
 import { TraceService, NamedSpans } from './types';
@@ -70,7 +70,15 @@ export class TraceExporter implements SpanExporter {
     this._logger.debug('Google Cloud Trace export');
 
     if (!this._traceServiceClient) {
-      await this._init();
+      let creds;
+      try {
+        creds = await this._auth.getClient();
+      } catch (err) {
+        err.message = `authorize error: ${err.message}`;
+        this._logger.error(err.message);
+        return resultCallback(ExportResult.FAILED_NOT_RETRYABLE);
+      }
+      this._init(creds);
     }
 
     const namedSpans: NamedSpans = {
@@ -121,16 +129,15 @@ export class TraceExporter implements SpanExporter {
   /**
    * Initializes the cloudtrace rpc client
    */
-  private async _init(): Promise<void> {
+  private _init(creds: Compute | JWT | UserRefreshClient): void {
     this._logger.debug('Google Cloud Trace initializing rpc client');
     const pacakageDefinition = protoloader.loadSync(protofiles.getProtoPath('devtools', 'cloudtrace', 'v2', 'tracing.proto'), {
       includeDirs: [protofiles.getProtoPath('..')],
     });
     const { google }: any = grpc.loadPackageDefinition(pacakageDefinition);
     const traceService = google.devtools.cloudtrace.v2.TraceService;
-    const creds = await this._auth.getApplicationDefault();
     const sslCreds = grpc.credentials.createSsl();
-    const callCreds = grpc.credentials.createFromGoogleCredential(creds.credential);
+    const callCreds = grpc.credentials.createFromGoogleCredential(creds);
     this._traceServiceClient = 
       new traceService('cloudtrace.googleapis.com:443', grpc.credentials.combineChannelCredentials(sslCreds, callCreds));
   }

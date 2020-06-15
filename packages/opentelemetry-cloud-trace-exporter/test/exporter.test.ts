@@ -76,10 +76,14 @@ describe('Google Cloud Trace Exporter', () => {
       );
 
       sinon.replace(
-        TraceExporter['_cloudTrace'].projects.traces,
-        'batchWrite',
-        /* tslint:disable-next-line:no-any */
-        batchWrite as any
+        exporter,
+        <any>'_init',
+        (creds: any) => {
+          exporter['_traceServiceClient'] = {
+            BatchWriteSpans: batchWrite,
+          };
+          return Promise.resolve();
+        }
       );
 
       sinon.replace(exporter['_auth'], 'getClient', () => {
@@ -133,7 +137,7 @@ describe('Google Cloud Trace Exporter', () => {
       });
 
       assert.deepStrictEqual(
-        batchWrite.getCall(0).args[0].resource.spans[0].displayName.value,
+        batchWrite.getCall(0).args[0].spans[0].displayName.value,
         'my-span'
       );
 
@@ -168,7 +172,6 @@ describe('Google Cloud Trace Exporter', () => {
           resolve(result);
         });
       });
-
       assert(batchWrite.notCalled);
       assert(error.getCall(0).args[0].match(/authorize error: fail/));
       assert.deepStrictEqual(result, ExportResult.FAILED_NOT_RETRYABLE);
@@ -202,7 +205,6 @@ describe('Google Cloud Trace Exporter', () => {
           resolve(result);
         });
       });
-
       assert.deepStrictEqual(result, ExportResult.FAILED_RETRYABLE);
     });
 

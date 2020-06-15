@@ -26,7 +26,7 @@ export interface Span {
   timeEvents?: TimeEvents;
   links?: Links;
   status?: Status;
-  sameProcessAsParentSpan?: Boolean;
+  sameProcessAsParentSpan?: BoolValue;
   childSpanCount?: number;
 }
 
@@ -134,6 +134,13 @@ export enum LinkType {
   UNSPECIFIED = 0,
   CHILD_LINKED_SPAN = 1,
   PARENT_LINKED_SPAN = 2,
+}
+
+/**
+ * A protobuf boolean
+ */
+export interface BoolValue {
+  value: boolean;
 }
 
 export interface NamedSpans {
