@@ -148,11 +148,6 @@ export interface NamedSpans {
   spans: Span[];
 }
 
-export interface TraceServiceRequest {
-  name: string;
-  spans: any[];
-}
-
 export interface TraceService {
-  BatchWriteSpans: (call: TraceServiceRequest, callback: Function) => void;
+  BatchWriteSpans: (call: NamedSpans, callback: Function) => void;
 }

@@ -75,12 +75,11 @@ describe('Google Cloud Trace Exporter', () => {
         }
       );
 
-      sinon.replace(
-        exporter, <any>'_init', (creds: any) => {
-          exporter['_traceServiceClient'] = {
-            BatchWriteSpans: batchWrite,
-          };
-          return Promise.resolve();
+      sinon.replace(exporter, <any>'_init', (creds: any) => {
+        exporter['_traceServiceClient'] = {
+          BatchWriteSpans: batchWrite,
+        };
+        return Promise.resolve();
         }
       );
 

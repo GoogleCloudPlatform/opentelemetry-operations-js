@@ -252,7 +252,7 @@ describe('transform', () => {
               value: 'something happened',
             },
           },
-          time: {seconds: 1566156729, nanos: 809},
+          time: { seconds: 1566156729, nanos: 809 },
         },
       ],
     });

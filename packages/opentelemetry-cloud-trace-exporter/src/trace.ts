@@ -20,10 +20,10 @@ import * as protoloader from '@grpc/proto-loader';
 import * as protofiles from 'google-proto-files';
 import * as grpc from '@grpc/grpc-js';
 import { 
-  GoogleAuth, 
-  UserRefreshClient, 
-  JWT, 
-  Compute 
+  GoogleAuth,
+  UserRefreshClient,
+  JWT,
+  Compute
 } from 'google-auth-library';
 import { TraceExporterOptions } from './external-types';
 import { getReadableSpanTransformer } from './transform';
@@ -137,7 +137,7 @@ export class TraceExporter implements SpanExporter {
   private _init(creds: Compute | JWT | UserRefreshClient): void {
     this._logger.debug('Google Cloud Trace initializing rpc client');
     const pacakageDefinition = protoloader.loadSync(
-      protofiles.getProtoPath('devtools', 'cloudtrace', 'v2', 'tracing.proto'), 
+      protofiles.getProtoPath('devtools', 'cloudtrace', 'v2', 'tracing.proto'),
       {
         includeDirs: [protofiles.getProtoPath('..')],
       }
@@ -147,8 +147,8 @@ export class TraceExporter implements SpanExporter {
     const sslCreds = grpc.credentials.createSsl();
     const callCreds = grpc.credentials.createFromGoogleCredential(creds);
     this._traceServiceClient = new traceService(
-        'cloudtrace.googleapis.com:443', 
-        grpc.credentials.combineChannelCredentials(sslCreds, callCreds)
+      'cloudtrace.googleapis.com:443',
+      grpc.credentials.combineChannelCredentials(sslCreds, callCreds)
     );
   }
 }

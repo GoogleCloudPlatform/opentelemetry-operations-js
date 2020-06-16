@@ -22,7 +22,7 @@ import {
   AttributeValue,
   Link,
   LinkType,
-  Span, 
+  Span,
   Timestamp,
   TruncatableString,
 } from './types';
