@@ -14,12 +14,17 @@
 
 import { ExportResult } from '@opentelemetry/base';
 import { NoopLogger } from '@opentelemetry/core';
-import { ReadableSpan, SpanExporter  } from '@opentelemetry/tracing';
+import { ReadableSpan, SpanExporter } from '@opentelemetry/tracing';
 import { Logger } from '@opentelemetry/api';
 import * as protoloader from '@grpc/proto-loader';
 import * as protofiles from 'google-proto-files';
 import * as grpc from '@grpc/grpc-js';
-import { GoogleAuth, UserRefreshClient, JWT, Compute } from 'google-auth-library';
+import { 
+  GoogleAuth, 
+  UserRefreshClient, 
+  JWT, 
+  Compute 
+} from 'google-auth-library';
 import { TraceExporterOptions } from './external-types';
 import { getReadableSpanTransformer } from './transform';
 import { TraceService, NamedSpans } from './types';
@@ -66,7 +71,7 @@ export class TraceExporter implements SpanExporter {
     if (!this._projectId) {
       return resultCallback(ExportResult.FAILED_NOT_RETRYABLE);
     }
-    
+
     this._logger.debug('Google Cloud Trace export');
 
     if (!this._traceServiceClient) {
@@ -131,14 +136,19 @@ export class TraceExporter implements SpanExporter {
    */
   private _init(creds: Compute | JWT | UserRefreshClient): void {
     this._logger.debug('Google Cloud Trace initializing rpc client');
-    const pacakageDefinition = protoloader.loadSync(protofiles.getProtoPath('devtools', 'cloudtrace', 'v2', 'tracing.proto'), {
-      includeDirs: [protofiles.getProtoPath('..')],
-    });
+    const pacakageDefinition = protoloader.loadSync(
+      protofiles.getProtoPath('devtools', 'cloudtrace', 'v2', 'tracing.proto'), 
+      {
+        includeDirs: [protofiles.getProtoPath('..')],
+      }
+    );
     const { google }: any = grpc.loadPackageDefinition(pacakageDefinition);
     const traceService = google.devtools.cloudtrace.v2.TraceService;
     const sslCreds = grpc.credentials.createSsl();
     const callCreds = grpc.credentials.createFromGoogleCredential(creds);
-    this._traceServiceClient = 
-      new traceService('cloudtrace.googleapis.com:443', grpc.credentials.combineChannelCredentials(sslCreds, callCreds));
+    this._traceServiceClient = new traceService(
+        'cloudtrace.googleapis.com:443', 
+        grpc.credentials.combineChannelCredentials(sslCreds, callCreds)
+    );
   }
 }

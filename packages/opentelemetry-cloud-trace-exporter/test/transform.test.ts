@@ -76,14 +76,14 @@ describe('transform', () => {
       },
       displayName: { value: 'my-span' },
       links: { link: [] },
-      endTime: {seconds: 1566156731, nanos: 709},
-      startTime: {seconds: 1566156729, nanos: 709},
+      endTime: { seconds: 1566156731, nanos: 709 },
+      startTime: { seconds: 1566156729, nanos: 709 },
       name:
         'projects/project-id/traces/d4cda95b652f4a1592b449d5929fda1b/spans/6e0c63257de34c92',
       spanId: '6e0c63257de34c92',
       status: { code: 0 },
       timeEvents: { timeEvent: [] },
-      sameProcessAsParentSpan: {value: false},
+      sameProcessAsParentSpan: { value: false },
     });
   });
   it('should transform spans with parent', () => {
@@ -100,13 +100,13 @@ describe('transform', () => {
 
   it('should transform remote spans', () => {
     const remote = transformer(readableSpan);
-    assert.deepStrictEqual(remote.sameProcessAsParentSpan, {value: false});
+    assert.deepStrictEqual(remote.sameProcessAsParentSpan, { value: false });
   });
 
   it('should transform local spans', () => {
     readableSpan.spanContext.isRemote = false;
     const local = transformer(readableSpan);
-    assert.deepStrictEqual(local.sameProcessAsParentSpan, {value: true});
+    assert.deepStrictEqual(local.sameProcessAsParentSpan, { value: true });
   });
 
   it('should transform attributes', () => {
@@ -218,7 +218,7 @@ describe('transform', () => {
               value: 'something happened',
             },
           },
-          time: {seconds: 1566156729, nanos: 809},
+          time: { seconds: 1566156729, nanos: 809 },
         },
       ],
     });

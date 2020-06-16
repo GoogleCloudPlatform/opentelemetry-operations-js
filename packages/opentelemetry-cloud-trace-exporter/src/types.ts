@@ -31,8 +31,8 @@ export interface Span {
 }
 
 export interface Timestamp {
-    seconds?: number;
-    nanos?: number;
+  seconds?: number;
+  nanos?: number;
 }
 
 export interface AttributeMap {
@@ -156,4 +156,3 @@ export interface TraceServiceRequest {
 export interface TraceService {
   BatchWriteSpans: (call: TraceServiceRequest, callback: Function) => void;
 }
-
