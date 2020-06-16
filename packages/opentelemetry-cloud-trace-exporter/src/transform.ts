@@ -15,7 +15,6 @@
 import * as ot from '@opentelemetry/api';
 import {
   VERSION as CORE_VERSION,
-  hrTimeToMilliseconds,
 } from '@opentelemetry/core';
 import { Resource } from '@opentelemetry/resources';
 import { ReadableSpan } from '@opentelemetry/tracing';
@@ -79,9 +78,9 @@ export function getReadableSpanTransformer(
 }
 
 function transformTime(time: HrTime): Timestamp {
-  const miliseconds = hrTimeToMilliseconds(time);
   return {
-    seconds: Math.floor(miliseconds / 1000),
+    seconds: time[0],
+    nanos: time[1],
   };
 }
 
