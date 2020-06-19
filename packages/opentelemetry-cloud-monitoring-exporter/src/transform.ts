@@ -33,6 +33,7 @@ import {
   ValueType,
   TimeSeries,
   Point,
+  MonitoredResource,
 } from './types';
 import * as path from 'path';
 import * as os from 'os';
@@ -131,7 +132,7 @@ export function createTimeSeries(
 function transformResource(
   resource: Resource,
   projectId: string
-): { type: string; labels: { [key: string]: string } } {
+): MonitoredResource {
   const templateResource = getTypeAndMappings(resource);
   const type = templateResource.type;
   const labels: { [key: string]: string } = { project_id: projectId };
@@ -155,9 +156,7 @@ function transformResource(
   return { type, labels };
 }
 
-function getTypeAndMappings(
-  resource: Resource
-): { type: string; labels: { [key: string]: string } } {
+function getTypeAndMappings(resource: Resource): MonitoredResource {
   const cloudProvider = `${resource.labels[CLOUD_RESOURCE.PROVIDER]}`;
   // These are the only supported resources
   if (cloudProvider === 'gcp') {

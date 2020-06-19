@@ -145,13 +145,13 @@ describe('transform', () => {
   });
 
   describe('TimeSeries', () => {
-    const mockedAwsResource = {
+    const mockAwsResource = {
       'cloud.provider': 'aws',
       'host.id': 'host_id',
       'cloud.region': 'my-region',
       'cloud.account.id': '12345',
     };
-    const mockedAwsMonitoredResource = {
+    const mockAwsMonitoredResource = {
       type: 'aws_ec2_instance',
       labels: {
         instance_id: 'host_id',
@@ -160,12 +160,12 @@ describe('transform', () => {
         aws_account: '12345',
       },
     };
-    const mockedGCResource = {
+    const mockGCResource = {
       'cloud.provider': 'gcp',
       'host.id': 'host_id',
       'cloud.zone': 'my-zone',
     };
-    const mockedGCMonitoredResource = {
+    const mockGCMonitoredResource = {
       type: 'gce_instance',
       labels: {
         instance_id: 'host_id',
@@ -205,7 +205,7 @@ describe('transform', () => {
     });
     it('should detect an AWS instance', () => {
       const meter = new MeterProvider({
-        resource: new Resource(mockedAwsResource),
+        resource: new Resource(mockAwsResource),
       }).getMeter('test-meter');
       const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
       const counter = meter.createCounter(METRIC_NAME, {
@@ -221,11 +221,11 @@ describe('transform', () => {
         new Date().toISOString(),
         'project_id'
       );
-      assert.deepStrictEqual(ts.resource, mockedAwsMonitoredResource);
+      assert.deepStrictEqual(ts.resource, mockAwsMonitoredResource);
     });
     it('should detect a Google Cloud VM instance', () => {
       const meter = new MeterProvider({
-        resource: new Resource(mockedGCResource),
+        resource: new Resource(mockGCResource),
       }).getMeter('test-meter');
       const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
       const counter = meter.createCounter(METRIC_NAME, {
@@ -241,7 +241,7 @@ describe('transform', () => {
         new Date().toISOString(),
         'project_id'
       );
-      assert.deepStrictEqual(ts.resource, mockedGCMonitoredResource);
+      assert.deepStrictEqual(ts.resource, mockGCMonitoredResource);
     });
 
     it('should return global for an incomplete resource', () => {
