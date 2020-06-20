@@ -99,7 +99,7 @@ function transformValueType(valueType: OTValueType): ValueType {
 }
 
 /**
- * Converts metric's timeseries to a list of TimeSeries, so that metric can be
+ * Converts metric's timeseries to a TimeSeries, so that metric can be
  * uploaded to StackDriver.
  */
 export function createTimeSeries(
