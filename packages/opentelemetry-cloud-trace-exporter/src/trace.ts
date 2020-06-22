@@ -18,13 +18,8 @@ import { ReadableSpan, SpanExporter } from '@opentelemetry/tracing';
 import { Logger } from '@opentelemetry/api';
 import * as protoloader from '@grpc/proto-loader';
 import * as protofiles from 'google-proto-files';
-import * as grpc from '@grpc/grpc-js';
-import { 
-  GoogleAuth,
-  UserRefreshClient,
-  JWT,
-  Compute
-} from 'google-auth-library';
+import * as grpc from 'grpc';
+import { GoogleAuth, OAuth2Client } from 'google-auth-library';
 import { TraceExporterOptions } from './external-types';
 import { getReadableSpanTransformer } from './transform';
 import { TraceService, NamedSpans } from './types';
@@ -75,7 +70,7 @@ export class TraceExporter implements SpanExporter {
     this._logger.debug('Google Cloud Trace export');
 
     if (!this._traceServiceClient) {
-      let creds;
+      let creds: OAuth2Client;
       try {
         creds = await this._auth.getClient();
       } catch (err) {
@@ -134,7 +129,7 @@ export class TraceExporter implements SpanExporter {
   /**
    * Initializes the cloudtrace rpc client
    */
-  private _init(creds: Compute | JWT | UserRefreshClient): void {
+  private _init(creds: OAuth2Client): void {
     this._logger.debug('Google Cloud Trace initializing rpc client');
     const pacakageDefinition = protoloader.loadSync(
       protofiles.getProtoPath('devtools', 'cloudtrace', 'v2', 'tracing.proto'),
@@ -142,6 +137,7 @@ export class TraceExporter implements SpanExporter {
         includeDirs: [protofiles.getProtoPath('..')],
       }
     );
+    /* tslint:disable-next-line:no-any */
     const { google }: any = grpc.loadPackageDefinition(pacakageDefinition);
     const traceService = google.devtools.cloudtrace.v2.TraceService;
     const sslCreds = grpc.credentials.createSsl();
