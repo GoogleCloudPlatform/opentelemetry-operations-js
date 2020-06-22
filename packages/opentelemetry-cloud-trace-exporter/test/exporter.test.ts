@@ -44,6 +44,22 @@ describe('Google Cloud Trace Exporter', () => {
     });
   });
 
+  describe('_init', () => {
+    it('should create the rpc client', async () => {
+      const exporter = new TraceExporter({
+        credentials: {
+          client_email: 'noreply@fake.example.com',
+          private_key: 'this is a key',
+        },
+      });
+
+      const creds = await exporter['_auth'].getClient();
+      exporter['_init'](creds);
+
+      assert(exporter['_traceServiceClient']);
+    });
+  });
+
   describe('export', () => {
     let exporter: TraceExporter;
     let logger: ConsoleLogger;
