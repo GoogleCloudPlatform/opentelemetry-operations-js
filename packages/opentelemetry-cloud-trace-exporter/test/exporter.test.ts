@@ -91,13 +91,13 @@ describe('Google Cloud Trace Exporter', () => {
         }
       );
 
-      sinon.replace(exporter, <any>'_init', (creds: any) => {
+      /* tslint:disable-next-line:no-any */
+      sinon.replace(exporter, '_init' as any, (creds: any) => {
         exporter['_traceServiceClient'] = {
           BatchWriteSpans: batchWrite,
         };
         return Promise.resolve();
-        }
-      );
+      });
 
       sinon.replace(exporter['_auth'], 'getClient', () => {
         if (getClientShouldFail) {
