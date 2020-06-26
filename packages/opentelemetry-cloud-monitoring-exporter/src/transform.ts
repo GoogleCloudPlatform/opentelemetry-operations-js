@@ -17,6 +17,7 @@ import {
   MetricKind as OTMetricKind,
   MetricRecord,
   Distribution as OTDistribution,
+  Histogram as OTHistogram,
   Point as OTPoint,
 } from '@opentelemetry/metrics';
 import { ValueType as OTValueType } from '@opentelemetry/api';
@@ -47,7 +48,10 @@ export function transformMetricDescriptor(
     metricKind: transformMetricKind(metricDescriptor.metricKind),
     valueType: transformValueType(metricDescriptor.valueType),
     unit: metricDescriptor.unit,
-    labels: transformLabelDescriptor(metricDescriptor.labelKeys),
+    labels: [{
+      key: OPENTELEMETRY_TASK,
+      description: OPENTELEMETRY_TASK_DESCRIPTION,
+    }],
   };
 }
 
@@ -61,30 +65,23 @@ function transformDisplayName(displayNamePrefix: string, name: string): string {
   return path.join(displayNamePrefix, name);
 }
 
-/** Transforms a LabelDescriptor from a LabelKey. */
-function transformLabelDescriptor(labelKeys: string[]): LabelDescriptor[] {
-  const labelDescriptorList: LabelDescriptor[] = labelKeys.map(labelKey => ({
-    key: labelKey,
-    description: labelKey, // TODO: add more descriptive description
-  }));
-
-  // add default "opentelemetry_task" label.
-  labelDescriptorList.push({
-    key: OPENTELEMETRY_TASK,
-    description: OPENTELEMETRY_TASK_DESCRIPTION,
-  });
-  return labelDescriptorList;
-}
-
 /** Transforms a OpenTelemetry Type to a StackDriver MetricKind. */
 function transformMetricKind(kind: OTMetricKind): MetricKind {
-  if (kind === OTMetricKind.COUNTER) {
-    return MetricKind.CUMULATIVE;
-  } else if (kind === OTMetricKind.OBSERVER) {
-    return MetricKind.GAUGE;
+  switch (kind) {
+    case OTMetricKind.COUNTER:
+    case OTMetricKind.SUM_OBSERVER:
+      return MetricKind.CUMULATIVE;
+    case OTMetricKind.UP_DOWN_COUNTER:
+    // OTMetricKind.OBSERVER will be removed in opentelemetry-js #1146
+    case OTMetricKind.OBSERVER:
+    case OTMetricKind.VALUE_OBSERVER:
+    case OTMetricKind.UP_DOWN_SUM_OBSERVER:
+      return MetricKind.GAUGE;
+    default:
+      // TODO: Add support for OTMetricKind.ValueRecorder
+      // OTMetricKind.Measure was renamed to ValueRecorder in #1117
+      return MetricKind.UNSPECIFIED;
   }
-  // TODO: add support from OTMetricKind.MEASURE
-  return MetricKind.UNSPECIFIED;
 }
 
 /** Transforms a OpenTelemetry ValueType to a StackDriver ValueType. */
@@ -126,12 +123,8 @@ function transformMetric(
   const type = transformMetricType(metricPrefix, metric.descriptor.name);
   const labels: { [key: string]: string } = {};
 
-  const keys = metric.descriptor.labelKeys;
-  for (let i = 0; i < keys.length; i++) {
-    if (metric.labels[keys[i]] !== null) {
-      labels[keys[i]] = `${metric.labels[keys[i]]}`;
-    }
-  }
+  Object.keys(metric.labels)
+    .forEach(key => labels[key] = `${metric.labels[key]}`);
   labels[OPENTELEMETRY_TASK] = OPENTELEMETRY_TASK_VALUE_DEFAULT;
   return { type, labels };
 }
@@ -167,7 +160,7 @@ function transformPoint(
 /** Transforms a OpenTelemetry Point's value to a StackDriver Point value. */
 function transformValue(
   valueType: OTValueType,
-  value: number | OTDistribution
+  value: number | OTDistribution | OTHistogram
 ) {
   if (valueType === OTValueType.INT) {
     return { int64Value: value as number };
@@ -175,6 +168,7 @@ function transformValue(
     return { doubleValue: value as number };
   }
   // TODO: Add support for Distribution
+  // TODO: Add support for Histogram
   throw Error(`unsupported value type: ${valueType}`);
 }
 
@@ -188,9 +182,9 @@ function generateDefaultTaskValue(): string {
 export const TEST_ONLY = {
   transformMetricKind,
   transformValueType,
-  transformLabelDescriptor,
   transformDisplayName,
   transformMetricType,
   transformMetric,
   transformPoint,
+  OPENTELEMETRY_TASK,
 };
