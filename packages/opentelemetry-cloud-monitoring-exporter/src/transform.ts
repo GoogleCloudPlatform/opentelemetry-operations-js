@@ -24,7 +24,6 @@ import { ValueType as OTValueType } from '@opentelemetry/api';
 import {
   MetricDescriptor,
   MetricKind,
-  LabelDescriptor,
   ValueType,
   TimeSeries,
   Point,
