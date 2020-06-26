@@ -144,10 +144,8 @@ describe('MetricExporter', () => {
     it('should export metrics', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
       const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
-      const counter = meter.createCounter('name', {
-        labelKeys: ['keya', 'keyb'],
-      });
-      counter.bind(labels).add(10);
+      const counter = meter.createCounter('name');
+      counter.add(10, labels);
       meter.collect();
       const records = meter.getBatcher().checkPointSet();
 
@@ -160,10 +158,8 @@ describe('MetricExporter', () => {
         metricDescriptors.getCall(0).args[0].resource.type,
         'custom.googleapis.com/opentelemetry/name'
       );
-
       assert.equal(metricDescriptors.callCount, 1);
       assert.equal(timeSeries.callCount, 1);
-
       assert.deepStrictEqual(result, ExportResult.SUCCESS);
     });
 
@@ -174,9 +170,7 @@ describe('MetricExporter', () => {
       let nMetrics = 401;
       while (nMetrics > 0) {
         nMetrics -= 1;
-        const counter = meter.createCounter(`name${nMetrics.toString()}`, {
-          labelKeys: ['keya', 'keyb'],
-        });
+        const counter = meter.createCounter(`name${nMetrics.toString()}`);
         counter.bind(labels).add(10);
       }
       meter.collect();

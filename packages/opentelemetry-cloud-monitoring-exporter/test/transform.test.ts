@@ -17,6 +17,7 @@ import {
   TEST_ONLY,
   transformMetricDescriptor,
   createTimeSeries,
+  OPENTELEMETRY_TASK_VALUE_DEFAULT,
 } from '../src/transform';
 import {
   MetricKind as OTMetricKind,
@@ -30,7 +31,6 @@ describe('transform', () => {
   const METRIC_NAME = 'metric-name';
   const METRIC_DESCRIPTION = 'metric-description';
   const DEFAULT_UNIT = '1';
-  const labelKeys: string[] = ['key1', 'key2'];
 
   describe('MetricDescriptor', () => {
     const metricDescriptor: OTMetricDescriptor = {
@@ -39,8 +39,6 @@ describe('transform', () => {
       unit: DEFAULT_UNIT,
       metricKind: OTMetricKind.COUNTER,
       valueType: OTValueType.INT,
-      monotonic: true,
-      labelKeys,
     };
     const metricDescriptor1: OTMetricDescriptor = {
       name: METRIC_NAME,
@@ -48,8 +46,6 @@ describe('transform', () => {
       unit: DEFAULT_UNIT,
       metricKind: OTMetricKind.OBSERVER,
       valueType: OTValueType.DOUBLE,
-      monotonic: false,
-      labelKeys,
     };
 
     it('should return a Google Cloud Monitoring MetricKind', () => {
@@ -58,11 +54,27 @@ describe('transform', () => {
         MetricKind.CUMULATIVE
       );
       assert.strictEqual(
+        TEST_ONLY.transformMetricKind(OTMetricKind.SUM_OBSERVER),
+        MetricKind.CUMULATIVE
+      );
+      assert.strictEqual(
+        TEST_ONLY.transformMetricKind(OTMetricKind.UP_DOWN_COUNTER),
+        MetricKind.GAUGE
+      );
+      assert.strictEqual(
         TEST_ONLY.transformMetricKind(OTMetricKind.OBSERVER),
         MetricKind.GAUGE
       );
       assert.strictEqual(
-        TEST_ONLY.transformMetricKind(OTMetricKind.MEASURE),
+        TEST_ONLY.transformMetricKind(OTMetricKind.VALUE_OBSERVER),
+        MetricKind.GAUGE
+      );
+      assert.strictEqual(
+        TEST_ONLY.transformMetricKind(OTMetricKind.UP_DOWN_SUM_OBSERVER),
+        MetricKind.GAUGE
+      );
+      assert.strictEqual(
+        TEST_ONLY.transformMetricKind(OTMetricKind.VALUE_RECORDER),
         MetricKind.UNSPECIFIED
       );
     });
@@ -76,17 +88,6 @@ describe('transform', () => {
         TEST_ONLY.transformValueType(OTValueType.DOUBLE),
         ValueType.DOUBLE
       );
-    });
-
-    it('should return a Google Cloud Monitoring LabelDescriptor', () => {
-      assert.deepStrictEqual(TEST_ONLY.transformLabelDescriptor(labelKeys), [
-        { description: 'key1', key: 'key1' },
-        { description: 'key2', key: 'key2' },
-        {
-          description: 'OpenTelemetry task identifier',
-          key: 'opentelemetry_task',
-        },
-      ]);
     });
 
     it('should return a Google Cloud Monitoring DisplayName', () => {
@@ -150,7 +151,6 @@ describe('transform', () => {
 
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
-        labelKeys: ['keya', 'keyb'],
       });
       counter.bind(labels).add(10);
       meter.collect();
@@ -159,6 +159,10 @@ describe('transform', () => {
       assert.strictEqual(ts.metric.type, 'otel/metric-name');
       assert.strictEqual(ts.metric.labels['keya'], 'value1');
       assert.strictEqual(ts.metric.labels['keyb'], 'value2');
+      assert.strictEqual(
+        ts.metric.labels[TEST_ONLY.OPENTELEMETRY_TASK],
+        OPENTELEMETRY_TASK_VALUE_DEFAULT
+      );
       assert.deepStrictEqual(ts.resource, {
         labels: {},
         type: 'global',
