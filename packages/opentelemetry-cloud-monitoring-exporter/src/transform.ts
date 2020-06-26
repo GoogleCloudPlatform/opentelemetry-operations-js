@@ -68,11 +68,11 @@ function transformDisplayName(displayNamePrefix: string, name: string): string {
 function transformMetricKind(kind: OTMetricKind): MetricKind {
   switch (kind) {
     case OTMetricKind.COUNTER:
-    case OTMetricKind.SUM_OBSERVER:
-      return MetricKind.CUMULATIVE;
     case OTMetricKind.UP_DOWN_COUNTER:
+      return MetricKind.CUMULATIVE;
     // OTMetricKind.OBSERVER will be removed in opentelemetry-js #1146
     case OTMetricKind.OBSERVER:
+    case OTMetricKind.SUM_OBSERVER:
     case OTMetricKind.VALUE_OBSERVER:
     case OTMetricKind.UP_DOWN_SUM_OBSERVER:
       return MetricKind.GAUGE;
@@ -139,21 +139,24 @@ function transformPoint(
   // TODO: Add endTime and startTime support, once available in OpenTelemetry
   // Related issues: https://github.com/open-telemetry/opentelemetry-js/pull/893
   // and https://github.com/open-telemetry/opentelemetry-js/issues/488
-  if (metricDescriptor.metricKind === OTMetricKind.COUNTER) {
-    return {
-      value: transformValue(metricDescriptor.valueType, point.value),
-      interval: {
-        startTime,
-        endTime: new Date().toISOString(),
-      },
-    };
+  switch (metricDescriptor.metricKind) {
+    case OTMetricKind.COUNTER:
+    case OTMetricKind.UP_DOWN_COUNTER:
+      return {
+        value: transformValue(metricDescriptor.valueType, point.value),
+        interval: {
+          startTime,
+          endTime: new Date().toISOString(),
+        },
+      };
+    default:
+      return {
+        value: transformValue(metricDescriptor.valueType, point.value),
+        interval: {
+          endTime: new Date().toISOString(),
+        },
+      };
   }
-  return {
-    value: transformValue(metricDescriptor.valueType, point.value),
-    interval: {
-      endTime: new Date().toISOString(),
-    },
-  };
 }
 
 /** Transforms a OpenTelemetry Point's value to a StackDriver Point value. */

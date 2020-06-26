@@ -54,11 +54,11 @@ describe('transform', () => {
         MetricKind.CUMULATIVE
       );
       assert.strictEqual(
-        TEST_ONLY.transformMetricKind(OTMetricKind.SUM_OBSERVER),
+        TEST_ONLY.transformMetricKind(OTMetricKind.UP_DOWN_COUNTER),
         MetricKind.CUMULATIVE
       );
       assert.strictEqual(
-        TEST_ONLY.transformMetricKind(OTMetricKind.UP_DOWN_COUNTER),
+        TEST_ONLY.transformMetricKind(OTMetricKind.SUM_OBSERVER),
         MetricKind.GAUGE
       );
       assert.strictEqual(
@@ -178,10 +178,11 @@ describe('transform', () => {
       const labels: Labels = {keyb: 'value2', keya: 'value1'};
       const observer = meter.createObserver(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
+        valueType: OTValueType.INT,
       });
-      const doubleValue = Math.random();
+      const int64Value = 0;
       observer.setCallback((result) => {
-        result.observe(() => doubleValue, labels);
+        result.observe(() => int64Value, labels);
       });
       meter.collect();
       const [record] = meter.getBatcher().checkPointSet();
@@ -200,9 +201,9 @@ describe('transform', () => {
         type: 'global',
       });
       assert.strictEqual(ts.metricKind, MetricKind.GAUGE);
-      assert.strictEqual(ts.valueType, ValueType.DOUBLE);
+      assert.strictEqual(ts.valueType, ValueType.INT64);
       assert.strictEqual(ts.points.length, 1);
-      assert.deepStrictEqual(ts.points[0].value, { doubleValue });
+      assert.deepStrictEqual(ts.points[0].value, { int64Value });
     });
   });
 });
