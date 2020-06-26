@@ -22,6 +22,18 @@ import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import { TraceExporter } from '../src';
+import {
+  BASE_PATH,
+  HEADER_NAME,
+  HEADER_VALUE,
+  HOST_ADDRESS,
+} from 'gcp-metadata';
+
+const HEADERS = {
+  [HEADER_NAME.toLowerCase()]: HEADER_VALUE,
+};
+
+const PROJECT_ID_PATH = BASE_PATH + '/project/project-id';
 
 describe('Google Cloud Trace Exporter', () => {
   beforeEach(() => {
@@ -36,6 +48,20 @@ describe('Google Cloud Trace Exporter', () => {
           private_key: 'this is a key',
         },
       });
+
+      assert(exporter);
+      return (exporter['_projectId'] as Promise<string>).then(id => {
+        assert.deepStrictEqual(id, 'not-real');
+      });
+    });
+
+    it('should construct exporter in GCE environment without args', async () => {
+      delete process.env.GCLOUD_PROJECT;
+      nock(HOST_ADDRESS)
+        .get(PROJECT_ID_PATH)
+        .reply(200, () => 'not-real', HEADERS);
+      
+      const exporter = new TraceExporter({});
 
       assert(exporter);
       return (exporter['_projectId'] as Promise<string>).then(id => {
