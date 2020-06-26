@@ -172,5 +172,37 @@ describe('transform', () => {
       assert.strictEqual(ts.points.length, 1);
       assert.deepStrictEqual(ts.points[0].value, { doubleValue: 10 });
     });
+
+    it('should return a Google Cloud Monitoring Metric for an observer', () => {
+      const meter = new MeterProvider().getMeter('test-meter');
+      const labels: Labels = {keyb: 'value2', keya: 'value1'};
+      const observer = meter.createObserver(METRIC_NAME, {
+        description: METRIC_DESCRIPTION,
+      });
+      const doubleValue = Math.random();
+      observer.setCallback((result) => {
+        result.observe(() => doubleValue, labels);
+      });
+      meter.collect();
+      const [record] = meter.getBatcher().checkPointSet();
+      const ts = createTimeSeries(record, 'otel', new Date().toISOString());
+      assert(!ts.points[0].interval.startTime);
+      assert(ts.points[0].interval.endTime);
+      assert.strictEqual(ts.metric.type, `otel/${METRIC_NAME}`);
+      assert.strictEqual(ts.metric.labels['keya'], 'value1');
+      assert.strictEqual(ts.metric.labels['keyb'], 'value2');
+      assert.strictEqual(
+        ts.metric.labels[TEST_ONLY.OPENTELEMETRY_TASK],
+        OPENTELEMETRY_TASK_VALUE_DEFAULT
+      );
+      assert.deepStrictEqual(ts.resource, {
+        labels: {},
+        type: 'global',
+      });
+      assert.strictEqual(ts.metricKind, MetricKind.GAUGE);
+      assert.strictEqual(ts.valueType, ValueType.DOUBLE);
+      assert.strictEqual(ts.points.length, 1);
+      assert.deepStrictEqual(ts.points[0].value, { doubleValue });
+    });
   });
 });
