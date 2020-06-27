@@ -57,15 +57,15 @@ describe('Google Cloud Trace Exporter', () => {
 
     it('should construct exporter in GCE environment without args', async () => {
       delete process.env.GCLOUD_PROJECT;
-      nock(HOST_ADDRESS)
+      const gcpMock = nock(HOST_ADDRESS)
         .get(PROJECT_ID_PATH)
         .reply(200, () => 'not-real', HEADERS);
-      
       const exporter = new TraceExporter({});
 
       assert(exporter);
       return (exporter['_projectId'] as Promise<string>).then(id => {
         assert.deepStrictEqual(id, 'not-real');
+        gcpMock.done();
       });
     });
   });
