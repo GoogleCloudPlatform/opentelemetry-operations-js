@@ -27,7 +27,6 @@ import {
   TruncatableString,
 } from './types';
 import { VERSION } from './version';
-import { HrTime } from '@opentelemetry/api';
 
 const AGENT_LABEL_KEY = 'g.co/agent';
 const AGENT_LABEL_VALUE = `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`;
@@ -76,7 +75,7 @@ export function getReadableSpanTransformer(
   };
 }
 
-function transformTime(time: HrTime): Timestamp {
+function transformTime(time: ot.HrTime): Timestamp {
   return {
     seconds: time[0],
     nanos: time[1],
