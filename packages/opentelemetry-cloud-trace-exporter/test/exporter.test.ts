@@ -44,7 +44,7 @@ describe('Google Cloud Trace Exporter', () => {
     });
   });
 
-  describe('_init', () => {
+  describe('_getClient', () => {
     it('should create the rpc client', async () => {
       const exporter = new TraceExporter({
         credentials: {
@@ -53,10 +53,9 @@ describe('Google Cloud Trace Exporter', () => {
         },
       });
 
-      const creds = await exporter['_auth'].getClient();
-      exporter['_init'](creds);
+      const client = exporter['_getClient']();
 
-      assert(exporter['_traceServiceClient']);
+      assert(client);
     });
   });
 
@@ -92,19 +91,13 @@ describe('Google Cloud Trace Exporter', () => {
       );
 
       /* tslint:disable-next-line:no-any */
-      sinon.replace(exporter, '_init' as any, (creds: any) => {
-        exporter['_traceServiceClient'] = {
-          BatchWriteSpans: batchWrite,
-        };
-        return Promise.resolve();
-      });
-
-      sinon.replace(exporter['_auth'], 'getClient', () => {
+      sinon.replace(exporter, '_getClient' as any, async () => {
         if (getClientShouldFail) {
           throw new Error('fail');
         }
-        /* tslint:disable-next-line:no-any */
-        return {} as any;
+        return Promise.resolve({
+          BatchWriteSpans: batchWrite,
+        });
       });
 
       debug = sinon.spy();
@@ -185,7 +178,6 @@ describe('Google Cloud Trace Exporter', () => {
           resolve(result);
         });
       });
-      assert(batchWrite.notCalled);
       assert(error.getCall(0).args[0].match(/authorize error: fail/));
       assert.deepStrictEqual(result, ExportResult.FAILED_NOT_RETRYABLE);
     });

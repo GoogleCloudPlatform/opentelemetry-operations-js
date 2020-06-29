@@ -19,7 +19,7 @@ import { Logger } from '@opentelemetry/api';
 import * as protoloader from '@grpc/proto-loader';
 import * as protofiles from 'google-proto-files';
 import * as grpc from 'grpc';
-import { GoogleAuth, OAuth2Client } from 'google-auth-library';
+import { GoogleAuth } from 'google-auth-library';
 import { TraceExporterOptions } from './external-types';
 import { getReadableSpanTransformer } from './transform';
 import { TraceService, NamedSpans } from './types';
@@ -69,33 +69,18 @@ export class TraceExporter implements SpanExporter {
 
     this._logger.debug('Google Cloud Trace export');
 
-    if (!this._traceServiceClient) {
-      let creds: OAuth2Client;
-      try {
-        creds = await this._auth.getClient();
-      } catch (err) {
-        err.message = `authorize error: ${err.message}`;
-        this._logger.error(err.message);
-        return resultCallback(ExportResult.FAILED_NOT_RETRYABLE);
-      }
-      this._init(creds);
-    }
-
     const namedSpans: NamedSpans = {
       name: `projects/${this._projectId}`,
       spans: spans.map(getReadableSpanTransformer(this._projectId)),
     };
-
-    if (!namedSpans) {
-      return resultCallback(ExportResult.FAILED_NOT_RETRYABLE);
-    }
-
+    
     try {
-      await this._batchWriteSpans(namedSpans);
-      resultCallback(ExportResult.SUCCESS);
+      const result = await this._batchWriteSpans(namedSpans);
+      resultCallback(result);
     } catch (err) {
-      this._logger.error(`Google Cloud Trace failed to export ${err}`);
-      resultCallback(ExportResult.FAILED_RETRYABLE);
+      err.message = `Google Cloud Trace failed to export ${err.message}`;
+      this._logger.error(err.message);
+      resultCallback(ExportResult.FAILED_NOT_RETRYABLE);
     }
   }
 
@@ -106,31 +91,44 @@ export class TraceExporter implements SpanExporter {
    * service.
    * @param spans
    */
-  private _batchWriteSpans(spans: NamedSpans) {
+  private _batchWriteSpans(spans: NamedSpans): Promise<ExportResult> {
     this._logger.debug('Google Cloud Trace batch writing traces');
-    return new Promise((resolve, reject) => {
+    // Always resolve with the ExportResult code
+    return new Promise(async (resolve) => {
       if (!this._traceServiceClient) {
-        return reject(new Error('channel not yet opened'));
+        try {
+          this._traceServiceClient = await this._getClient();
+        } catch (err) {
+          err.message = `authorize error: ${err.message}`;
+          this._logger.error(err.message);
+          return resolve(ExportResult.FAILED_NOT_RETRYABLE);
+        }
       }
+
       this._traceServiceClient.BatchWriteSpans(spans, (err: Error) => {
         if (err) {
           err.message = `batchWriteSpans error: ${err.message}`;
           this._logger.error(err.message);
-          reject(err);
+          resolve(ExportResult.FAILED_RETRYABLE);
         } else {
           const successMsg = 'batchWriteSpans successfully';
           this._logger.debug(successMsg);
-          resolve(successMsg);
+          resolve(ExportResult.SUCCESS);
         }
       });
     });
   }
 
   /**
-   * Initializes the cloudtrace rpc client
+   * If the rpc client is not already initialized,
+   * authenticates with google credentials and initializes the rpc client
    */
-  private _init(creds: OAuth2Client): void {
-    this._logger.debug('Google Cloud Trace initializing rpc client');
+  private async _getClient(): Promise<TraceService> {
+    this._logger.debug('Google Cloud Trace authenticating');
+    const creds = await this._auth.getClient();
+    this._logger.debug(
+      'Google Cloud Trace got authentication. Initializaing rpc client'
+    );
     const pacakageDefinition = protoloader.loadSync(
       protofiles.getProtoPath('devtools', 'cloudtrace', 'v2', 'tracing.proto'),
       {
@@ -142,7 +140,7 @@ export class TraceExporter implements SpanExporter {
     const traceService = google.devtools.cloudtrace.v2.TraceService;
     const sslCreds = grpc.credentials.createSsl();
     const callCreds = grpc.credentials.createFromGoogleCredential(creds);
-    this._traceServiceClient = new traceService(
+    return new traceService(
       'cloudtrace.googleapis.com:443',
       grpc.credentials.combineChannelCredentials(sslCreds, callCreds)
     );
