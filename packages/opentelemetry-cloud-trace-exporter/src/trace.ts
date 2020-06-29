@@ -74,14 +74,8 @@ export class TraceExporter implements SpanExporter {
       spans: spans.map(getReadableSpanTransformer(this._projectId)),
     };
 
-    try {
-      const result = await this._batchWriteSpans(namedSpans);
-      resultCallback(result);
-    } catch (err) {
-      err.message = `Google Cloud Trace failed to export ${err.message}`;
-      this._logger.error(err.message);
-      resultCallback(ExportResult.FAILED_NOT_RETRYABLE);
-    }
+    const result = await this._batchWriteSpans(namedSpans);
+    resultCallback(result);
   }
 
   shutdown(): void {}
