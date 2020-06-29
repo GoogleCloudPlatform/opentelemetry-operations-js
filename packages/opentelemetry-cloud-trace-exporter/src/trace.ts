@@ -73,7 +73,7 @@ export class TraceExporter implements SpanExporter {
       name: `projects/${this._projectId}`,
       spans: spans.map(getReadableSpanTransformer(this._projectId)),
     };
-    
+
     try {
       const result = await this._batchWriteSpans(namedSpans);
       resultCallback(result);
@@ -94,7 +94,7 @@ export class TraceExporter implements SpanExporter {
   private _batchWriteSpans(spans: NamedSpans): Promise<ExportResult> {
     this._logger.debug('Google Cloud Trace batch writing traces');
     // Always resolve with the ExportResult code
-    return new Promise(async (resolve) => {
+    return new Promise(async resolve => {
       if (!this._traceServiceClient) {
         try {
           this._traceServiceClient = await this._getClient();
