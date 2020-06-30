@@ -9,7 +9,7 @@
     "codecov": "lerna run codecov",
     "test": "lerna run test",
     "bootstrap": "lerna bootstrap",
-    "lint": "lerna run lint",
+    "lint": "gts check",
     "lint:fix": "lerna run lint:fix",
     "check": "gts check",
     "fix": "gts fix",
