@@ -5,12 +5,17 @@
     "clean": "lerna run clean",
     "postinstall": "npm run bootstrap",
     "precompile": "tsc --version",
-    "compile": "lerna run compile",
+    "compile": "tsc -p .",
     "codecov": "lerna run codecov",
     "test": "lerna run test",
     "bootstrap": "lerna bootstrap",
     "lint": "lerna run lint",
-    "lint:fix": "lerna run lint:fix"
+    "lint:fix": "lerna run lint:fix",
+    "check": "gts check",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run check"
   },
   "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
   "keywords": [
@@ -29,6 +34,9 @@
     "node": ">=8.0.0"
   },
   "devDependencies": {
-    "lerna": "3.22.1"
+    "lerna": "3.22.1",
+    "gts": "^1.1.0",
+    "typescript": "~3.5.0",
+    "@types/node": "^10.0.3"
   }
 }
