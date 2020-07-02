@@ -29,11 +29,11 @@ import {
   HOST_ADDRESS,
 } from 'gcp-metadata';
 
-const HEADERS = {
+const HEADERS: {} = {
   [HEADER_NAME.toLowerCase()]: HEADER_VALUE,
 };
 
-const PROJECT_ID_PATH = BASE_PATH + '/project/project-id';
+const PROJECT_ID_PATH: string = BASE_PATH + '/project/project-id';
 
 describe('Google Cloud Trace Exporter', () => {
   beforeEach(() => {
