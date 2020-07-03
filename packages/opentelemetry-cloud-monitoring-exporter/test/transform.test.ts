@@ -54,11 +54,11 @@ describe('transform', () => {
         MetricKind.CUMULATIVE
       );
       assert.strictEqual(
-        TEST_ONLY.transformMetricKind(OTMetricKind.UP_DOWN_COUNTER),
+        TEST_ONLY.transformMetricKind(OTMetricKind.SUM_OBSERVER),
         MetricKind.CUMULATIVE
       );
       assert.strictEqual(
-        TEST_ONLY.transformMetricKind(OTMetricKind.SUM_OBSERVER),
+        TEST_ONLY.transformMetricKind(OTMetricKind.UP_DOWN_COUNTER),
         MetricKind.GAUGE
       );
       assert.strictEqual(

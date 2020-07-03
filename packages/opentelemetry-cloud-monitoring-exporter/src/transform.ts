@@ -68,11 +68,11 @@ function transformDisplayName(displayNamePrefix: string, name: string): string {
 function transformMetricKind(kind: OTMetricKind): MetricKind {
   switch (kind) {
     case OTMetricKind.COUNTER:
-    case OTMetricKind.UP_DOWN_COUNTER:
+    case OTMetricKind.SUM_OBSERVER:
       return MetricKind.CUMULATIVE;
     // OTMetricKind.OBSERVER will be removed in opentelemetry-js #1146
     case OTMetricKind.OBSERVER:
-    case OTMetricKind.SUM_OBSERVER:
+    case OTMetricKind.UP_DOWN_COUNTER:
     case OTMetricKind.VALUE_OBSERVER:
     case OTMetricKind.UP_DOWN_SUM_OBSERVER:
       return MetricKind.GAUGE;
@@ -141,7 +141,7 @@ function transformPoint(
   // and https://github.com/open-telemetry/opentelemetry-js/issues/488
   switch (metricDescriptor.metricKind) {
     case OTMetricKind.COUNTER:
-    case OTMetricKind.UP_DOWN_COUNTER:
+    case OTMetricKind.SUM_OBSERVER:
       return {
         value: transformValue(metricDescriptor.valueType, point.value),
         interval: {
