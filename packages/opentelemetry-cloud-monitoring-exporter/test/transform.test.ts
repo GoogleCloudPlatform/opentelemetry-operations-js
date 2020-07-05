@@ -223,7 +223,7 @@ describe('transform', () => {
       const result = TEST_ONLY.transformPoint(
         point,
         metricDescriptor,
-        Date.now().toString()
+        new Date().toISOString()
       );
 
       assert.deepStrictEqual(result.value, { int64Value: 50 });
@@ -253,7 +253,7 @@ describe('transform', () => {
         TEST_ONLY.transformPoint(
           point,
           metricDescriptor,
-          Date.now().toString(),
+          new Date().toISOString(),
         );
         assert.fail('should have thrown an error');
       } catch (err) {
@@ -285,7 +285,7 @@ describe('transform', () => {
         TEST_ONLY.transformPoint(
           point,
           metricDescriptor,
-          Date.now().toString()
+          new Date().toISOString()
         );
         assert.fail('should have thrown an error');
       } catch (err) {
