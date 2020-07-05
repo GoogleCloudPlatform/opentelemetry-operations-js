@@ -164,14 +164,31 @@ function transformValue(
   valueType: OTValueType,
   value: number | OTDistribution | OTHistogram
 ) {
+  if (isDistributionValue(value)) {
+    // TODO: Add support for Distribution
+    throw new Error('Distributions are not yet supported');
+  }
+  if (isHistogramValue(value)) {
+    // TODO: Add support for Histogram
+    throw new Error('Histograms are not yet supported');
+  }
+
   if (valueType === OTValueType.INT) {
     return { int64Value: value as number };
   } else if (valueType === OTValueType.DOUBLE) {
     return { doubleValue: value as number };
   }
-  // TODO: Add support for Distribution
-  // TODO: Add support for Histogram
   throw Error(`unsupported value type: ${valueType}`);
+}
+
+/** Returns true if value is of type OTDistribution */
+function isDistributionValue(value: number | OTDistribution | OTHistogram) {
+  return value.hasOwnProperty('min');
+}
+
+/** Returns true if value is of type OTHistogram */
+function isHistogramValue(value: number | OTDistribution | OTHistogram) {
+  return value.hasOwnProperty('buckets');
 }
 
 /** Returns a task label value in the format of 'nodejs-<pid>@<hostname>'. */

@@ -22,6 +22,7 @@ import {
 import {
   MetricKind as OTMetricKind,
   MetricDescriptor as OTMetricDescriptor,
+  Point as OTPoint,
   MeterProvider,
 } from '@opentelemetry/metrics';
 import { ValueType as OTValueType, Labels } from '@opentelemetry/api';
@@ -204,6 +205,92 @@ describe('transform', () => {
       assert.strictEqual(ts.valueType, ValueType.INT64);
       assert.strictEqual(ts.points.length, 1);
       assert.deepStrictEqual(ts.points[0].value, { int64Value });
+    });
+
+    it('should return a point', () => {
+      const metricDescriptor: OTMetricDescriptor = {
+        name: METRIC_NAME,
+        description: METRIC_DESCRIPTION,
+        unit: DEFAULT_UNIT,
+        metricKind: OTMetricKind.OBSERVER,
+        valueType: OTValueType.INT,
+      };
+      const point: OTPoint = {
+        value: 50,
+        timestamp: process.hrtime(),
+      };
+
+      const result = TEST_ONLY.transformPoint(
+        point,
+        metricDescriptor,
+        Date.now().toString()
+      );
+
+      assert.deepStrictEqual(result.value, { int64Value: 50 });
+      assert(result.interval.endTime);
+      assert(!result.interval.startTime);
+    });
+
+    it('should throw an error when given a distriution value', () => {
+      const metricDescriptor: OTMetricDescriptor = {
+        name: METRIC_NAME,
+        description: METRIC_DESCRIPTION,
+        unit: DEFAULT_UNIT,
+        metricKind: OTMetricKind.COUNTER,
+        valueType: OTValueType.DOUBLE,
+      };
+      const point: OTPoint = {
+        value: {
+          min: 20.0,
+          max: 75.4,
+          count: 22,
+          sum: 150,
+        },
+        timestamp: process.hrtime(),
+      };
+
+      try {
+        TEST_ONLY.transformPoint(
+          point,
+          metricDescriptor,
+          Date.now().toString(),
+        );
+        assert.fail('should have thrown an error');
+      } catch (err) {
+        assert(err.message.toLowerCase().includes('distributions'));
+      }
+    });
+
+    it('should thrown an error when given a histrogram value', () => {
+      const metricDescriptor: OTMetricDescriptor = {
+        name: METRIC_NAME,
+        description: METRIC_DESCRIPTION,
+        unit: DEFAULT_UNIT,
+        metricKind: OTMetricKind.COUNTER,
+        valueType: OTValueType.DOUBLE,
+      };
+      const point: OTPoint = {
+        value: {
+          buckets: {
+            boundaries: [10, 30],
+            counts: [1, 2],
+          },
+          sum: 70,
+          count: 3,
+        },
+        timestamp: process.hrtime(),
+      };
+
+      try {
+        TEST_ONLY.transformPoint(
+          point,
+          metricDescriptor,
+          Date.now().toString()
+        );
+        assert.fail('should have thrown an error');
+      } catch (err) {
+        assert(err.message.toLowerCase().includes('histograms'));
+      }
     });
   });
 });
