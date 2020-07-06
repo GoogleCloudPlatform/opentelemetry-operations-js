@@ -231,7 +231,7 @@ describe('transform', () => {
       assert(!result.interval.startTime);
     });
 
-    it('should throw an error when given a distriution value', () => {
+    it('should throw an error when given a distribution value', () => {
       const metricDescriptor: OTMetricDescriptor = {
         name: METRIC_NAME,
         description: METRIC_DESCRIPTION,

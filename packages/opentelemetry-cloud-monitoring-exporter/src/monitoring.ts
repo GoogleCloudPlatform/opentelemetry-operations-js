@@ -117,7 +117,7 @@ export class MetricExporter implements IMetricExporter {
       }
     }
 
-    let sendFailed: Error | undefined;
+    let sendFailed = false;
     for (const batchedTimeSeries of partitionList(
       timeSeries,
       MAX_BATCH_EXPORT_SIZE
@@ -125,9 +125,9 @@ export class MetricExporter implements IMetricExporter {
       try {
         await this._sendTimeSeries(batchedTimeSeries);
       } catch (err) {
-        err.message = `Send TimeSeries failed: ${err.message}`;
-        sendFailed = err;
-        this._logger.error(err.message);
+        const message = `Send TimeSeries failed: ${err.message}`;
+        sendFailed = true;
+        this._logger.error(message);
       }
     }
     if (sendFailed) {
