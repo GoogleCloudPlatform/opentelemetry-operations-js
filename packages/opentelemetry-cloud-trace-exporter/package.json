@@ -39,7 +39,7 @@
   "devDependencies": {
     "@types/mocha": "7.0.2",
     "@types/nock": "11.1.0",
-    "@types/node": "12.12.47",
+    "@types/node": "12.12.48",
     "@types/sinon": "9.0.4",
     "codecov": "3.7.0",
     "gts": "2.0.2",
