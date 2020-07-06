@@ -117,11 +117,21 @@ export class MetricExporter implements IMetricExporter {
       }
     }
 
+    let sendFailed: Error | undefined;
     for (const batchedTimeSeries of partitionList(
       timeSeries,
       MAX_BATCH_EXPORT_SIZE
     )) {
-      await this._sendTimeSeries(batchedTimeSeries);
+      try {
+        await this._sendTimeSeries(batchedTimeSeries);
+      } catch (err) {
+        err.message = `Send TimeSeries failed: ${err.message}`;
+        sendFailed = err;
+        this._logger.error(err.message);
+      }
+    }
+    if (sendFailed) {
+      return cb(ExportResult.FAILED_RETRYABLE);
     }
     cb(ExportResult.SUCCESS);
   }
