@@ -168,7 +168,6 @@ describe('MetricExporter', () => {
       assert.deepStrictEqual(result, ExportResult.SUCCESS);
     });
 
-
     it('should return retryable if there is an error sending TimeSeries', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
       const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };

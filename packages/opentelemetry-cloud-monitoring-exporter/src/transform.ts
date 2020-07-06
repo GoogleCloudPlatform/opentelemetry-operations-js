@@ -47,10 +47,12 @@ export function transformMetricDescriptor(
     metricKind: transformMetricKind(metricDescriptor.metricKind),
     valueType: transformValueType(metricDescriptor.valueType),
     unit: metricDescriptor.unit,
-    labels: [{
-      key: OPENTELEMETRY_TASK,
-      description: OPENTELEMETRY_TASK_DESCRIPTION,
-    }],
+    labels: [
+      {
+        key: OPENTELEMETRY_TASK,
+        description: OPENTELEMETRY_TASK_DESCRIPTION,
+      },
+    ],
   };
 }
 
@@ -122,8 +124,9 @@ function transformMetric(
   const type = transformMetricType(metricPrefix, metric.descriptor.name);
   const labels: { [key: string]: string } = {};
 
-  Object.keys(metric.labels)
-    .forEach(key => labels[key] = `${metric.labels[key]}`);
+  Object.keys(metric.labels).forEach(
+    key => labels[key] = `${metric.labels[key]}`
+  );
   labels[OPENTELEMETRY_TASK] = OPENTELEMETRY_TASK_VALUE_DEFAULT;
   return { type, labels };
 }

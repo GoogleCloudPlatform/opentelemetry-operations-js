@@ -176,13 +176,13 @@ describe('transform', () => {
 
     it('should return a Google Cloud Monitoring Metric for an observer', () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = {keyb: 'value2', keya: 'value1'};
+      const labels: Labels = { keyb: 'value2', keya: 'value1' };
       const observer = meter.createObserver(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
         valueType: OTValueType.INT,
       });
       const int64Value = 0;
-      observer.setCallback((result) => {
+      observer.setCallback(result => {
         result.observe(() => int64Value, labels);
       });
       meter.collect();
@@ -253,7 +253,7 @@ describe('transform', () => {
         TEST_ONLY.transformPoint(
           point,
           metricDescriptor,
-          new Date().toISOString(),
+          new Date().toISOString()
         );
         assert.fail('should have thrown an error');
       } catch (err) {
