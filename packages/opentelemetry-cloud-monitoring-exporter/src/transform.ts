@@ -125,8 +125,7 @@ function transformMetric(
   const labels: { [key: string]: string } = {};
 
   Object.keys(metric.labels).forEach(
-    key => labels[key] = `${metric.labels[key]}`
-  );
+    key => labels[key] = `${metric.labels[key]}`);
   labels[OPENTELEMETRY_TASK] = OPENTELEMETRY_TASK_VALUE_DEFAULT;
   return { type, labels };
 }
