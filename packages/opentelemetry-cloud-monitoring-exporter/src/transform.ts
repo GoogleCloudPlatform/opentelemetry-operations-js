@@ -185,12 +185,16 @@ function transformValue(
 }
 
 /** Returns true if value is of type OTDistribution */
-function isDistributionValue(value: number | OTDistribution | OTHistogram): value is OTDistribution {
+function isDistributionValue(
+  value: number | OTDistribution | OTHistogram
+): value is OTDistribution {
   return value.hasOwnProperty('min');
 }
 
 /** Returns true if value is of type OTHistogram */
-function isHistogramValue(value: number | OTDistribution | OTHistogram): value is OTHistogram {
+function isHistogramValue(
+  value: number | OTDistribution | OTHistogram
+): value is OTHistogram {
   return value.hasOwnProperty('buckets');
 }
 
