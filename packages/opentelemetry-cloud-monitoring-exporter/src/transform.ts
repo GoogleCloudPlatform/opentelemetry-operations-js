@@ -129,6 +129,12 @@ export function createTimeSeries(
   };
 }
 
+/**
+ * Given a resource, return a MonitoredResource
+ * If any field is missing, return the default resource
+ * @param resource 
+ * @param projectId 
+ */
 function transformResource(
   resource: Resource,
   projectId: string
@@ -138,27 +144,30 @@ function transformResource(
   const labels: { [key: string]: string } = { project_id: projectId };
 
   for (const key of Object.keys(templateResource.labels)) {
-    if (!resource.labels[templateResource.labels[key]]) {
+    // Checks the resource's value for a required key
+    const resourceValue = resource.labels[templateResource.labels[key]];
+    if (!resourceValue) {
       return { type: 'global', labels: { project_id: projectId } };
+    }
+    if (
+      type === AWS_EC2_INSTANCE &&
+      templateResource.labels[key] === CLOUD_RESOURCE.REGION
+    ) {
+      labels[key] = `${AWS_REGION_VALUE_PREFIX}${resourceValue}`;
     } else {
-      if (
-        type === AWS_EC2_INSTANCE &&
-        templateResource.labels[key] === CLOUD_RESOURCE.REGION
-      ) {
-        labels[key] = `${AWS_REGION_VALUE_PREFIX}${
-          resource.labels[templateResource.labels[key]]
-        }`;
-      } else {
-        labels[key] = `${resource.labels[templateResource.labels[key]]}`;
-      }
+      labels[key] = `${resourceValue}`;
     }
   }
   return { type, labels };
 }
 
+/**
+ * Returns the type and mappings of a resource for a given cloud provider
+ * The only currently supported cloud providers are GCP and AWS 
+ * @param resource 
+ */
 function getTypeAndMappings(resource: Resource): MonitoredResource {
   const cloudProvider = `${resource.labels[CLOUD_RESOURCE.PROVIDER]}`;
-  // These are the only supported resources
   if (cloudProvider === 'gcp') {
     return {
       type: GCP_GCE_INSTANCE,

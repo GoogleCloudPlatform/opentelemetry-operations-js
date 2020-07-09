@@ -176,7 +176,7 @@ describe('transform', () => {
 
     it('should return a Google Cloud Monitoring Metric with a default resource', () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
 
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
@@ -207,7 +207,7 @@ describe('transform', () => {
       const meter = new MeterProvider({
         resource: new Resource(mockAwsResource),
       }).getMeter('test-meter');
-      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
         labelKeys: ['keya', 'keyb'],
