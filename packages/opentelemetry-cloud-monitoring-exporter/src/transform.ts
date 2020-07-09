@@ -129,8 +129,8 @@ export function createTimeSeries(
 /**
  * Given a resource, return a MonitoredResource
  * If any field is missing, return the default resource
- * @param resource 
- * @param projectId 
+ * @param resource
+ * @param projectId
  */
 function transformResource(
   resource: Resource,
@@ -160,8 +160,8 @@ function transformResource(
 
 /**
  * Returns the type and mappings of a resource for a given cloud provider
- * The only currently supported cloud providers are GCP and AWS 
- * @param resource 
+ * The only currently supported cloud providers are GCP and AWS
+ * @param resource
  */
 function getTypeAndMappings(resource: Resource): MonitoredResource {
   const cloudProvider = `${resource.labels[CLOUD_RESOURCE.PROVIDER]}`;
