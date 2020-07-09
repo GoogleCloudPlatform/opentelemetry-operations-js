@@ -29,7 +29,6 @@ import {
 import {
   MetricDescriptor,
   MetricKind,
-  LabelDescriptor,
   ValueType,
   TimeSeries,
   Point,
@@ -57,7 +56,12 @@ export function transformMetricDescriptor(
     metricKind: transformMetricKind(metricDescriptor.metricKind),
     valueType: transformValueType(metricDescriptor.valueType),
     unit: metricDescriptor.unit,
-    labels: transformLabelDescriptor(metricDescriptor.labelKeys),
+    labels: [
+      {
+        key: OPENTELEMETRY_TASK,
+        description: OPENTELEMETRY_TASK_DESCRIPTION,
+      },
+    ],
   };
 }
 
@@ -71,30 +75,23 @@ function transformDisplayName(displayNamePrefix: string, name: string): string {
   return path.join(displayNamePrefix, name);
 }
 
-/** Transforms a LabelDescriptor from a LabelKey. */
-function transformLabelDescriptor(labelKeys: string[]): LabelDescriptor[] {
-  const labelDescriptorList: LabelDescriptor[] = labelKeys.map(labelKey => ({
-    key: labelKey,
-    description: labelKey, // TODO: add more descriptive description
-  }));
-
-  // add default "opentelemetry_task" label.
-  labelDescriptorList.push({
-    key: OPENTELEMETRY_TASK,
-    description: OPENTELEMETRY_TASK_DESCRIPTION,
-  });
-  return labelDescriptorList;
-}
-
 /** Transforms a OpenTelemetry Type to a StackDriver MetricKind. */
 function transformMetricKind(kind: OTMetricKind): MetricKind {
-  if (kind === OTMetricKind.COUNTER) {
-    return MetricKind.CUMULATIVE;
-  } else if (kind === OTMetricKind.OBSERVER) {
-    return MetricKind.GAUGE;
+  switch (kind) {
+    case OTMetricKind.COUNTER:
+    case OTMetricKind.SUM_OBSERVER:
+      return MetricKind.CUMULATIVE;
+    // OTMetricKind.OBSERVER will be removed in opentelemetry-js #1146
+    case OTMetricKind.OBSERVER:
+    case OTMetricKind.UP_DOWN_COUNTER:
+    case OTMetricKind.VALUE_OBSERVER:
+    case OTMetricKind.UP_DOWN_SUM_OBSERVER:
+      return MetricKind.GAUGE;
+    default:
+      // TODO: Add support for OTMetricKind.ValueRecorder
+      // OTMetricKind.Measure was renamed to ValueRecorder in #1117
+      return MetricKind.UNSPECIFIED;
   }
-  // TODO: add support from OTMetricKind.MEASURE
-  return MetricKind.UNSPECIFIED;
 }
 
 /** Transforms a OpenTelemetry ValueType to a StackDriver ValueType. */
@@ -109,7 +106,7 @@ function transformValueType(valueType: OTValueType): ValueType {
 }
 
 /**
- * Converts metric's timeseries to a list of TimeSeries, so that metric can be
+ * Converts metric's timeseries to a TimeSeries, so that metric can be
  * uploaded to StackDriver.
  */
 export function createTimeSeries(
@@ -196,12 +193,9 @@ function transformMetric(
   const type = transformMetricType(metricPrefix, metric.descriptor.name);
   const labels: { [key: string]: string } = {};
 
-  const keys = metric.descriptor.labelKeys;
-  for (let i = 0; i < keys.length; i++) {
-    if (metric.labels[keys[i]] !== null) {
-      labels[keys[i]] = `${metric.labels[keys[i]]}`;
-    }
-  }
+  Object.keys(metric.labels).forEach(
+    key => (labels[key] = `${metric.labels[key]}`)
+  );
   labels[OPENTELEMETRY_TASK] = OPENTELEMETRY_TASK_VALUE_DEFAULT;
   return { type, labels };
 }
@@ -217,21 +211,24 @@ function transformPoint(
   // TODO: Add endTime and startTime support, once available in OpenTelemetry
   // Related issues: https://github.com/open-telemetry/opentelemetry-js/pull/893
   // and https://github.com/open-telemetry/opentelemetry-js/issues/488
-  if (metricDescriptor.metricKind === OTMetricKind.COUNTER) {
-    return {
-      value: transformValue(metricDescriptor.valueType, point.value),
-      interval: {
-        startTime,
-        endTime: new Date().toISOString(),
-      },
-    };
+  switch (metricDescriptor.metricKind) {
+    case OTMetricKind.COUNTER:
+    case OTMetricKind.SUM_OBSERVER:
+      return {
+        value: transformValue(metricDescriptor.valueType, point.value),
+        interval: {
+          startTime,
+          endTime: new Date().toISOString(),
+        },
+      };
+    default:
+      return {
+        value: transformValue(metricDescriptor.valueType, point.value),
+        interval: {
+          endTime: new Date().toISOString(),
+        },
+      };
   }
-  return {
-    value: transformValue(metricDescriptor.valueType, point.value),
-    interval: {
-      endTime: new Date().toISOString(),
-    },
-  };
 }
 
 /** Transforms a OpenTelemetry Point's value to a StackDriver Point value. */
@@ -239,13 +236,36 @@ function transformValue(
   valueType: OTValueType,
   value: number | OTDistribution | OTHistogram
 ) {
+  if (isDistributionValue(value)) {
+    // TODO: Add support for Distribution
+    throw new Error('Distributions are not yet supported');
+  }
+  if (isHistogramValue(value)) {
+    // TODO: Add support for Histogram
+    throw new Error('Histograms are not yet supported');
+  }
+
   if (valueType === OTValueType.INT) {
-    return { int64Value: value as number };
+    return { int64Value: value };
   } else if (valueType === OTValueType.DOUBLE) {
-    return { doubleValue: value as number };
+    return { doubleValue: value };
   }
   // TODO: Add support for Distribution and Histogram
   throw Error(`unsupported value type: ${valueType}`);
+}
+
+/** Returns true if value is of type OTDistribution */
+function isDistributionValue(
+  value: number | OTDistribution | OTHistogram
+): value is OTDistribution {
+  return value.hasOwnProperty('min');
+}
+
+/** Returns true if value is of type OTHistogram */
+function isHistogramValue(
+  value: number | OTDistribution | OTHistogram
+): value is OTHistogram {
+  return value.hasOwnProperty('buckets');
 }
 
 /** Returns a task label value in the format of 'nodejs-<pid>@<hostname>'. */
@@ -258,9 +278,9 @@ function generateDefaultTaskValue(): string {
 export const TEST_ONLY = {
   transformMetricKind,
   transformValueType,
-  transformLabelDescriptor,
   transformDisplayName,
   transformMetricType,
   transformMetric,
   transformPoint,
+  OPENTELEMETRY_TASK,
 };

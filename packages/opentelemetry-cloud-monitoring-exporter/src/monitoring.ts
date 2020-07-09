@@ -25,6 +25,11 @@ import { GoogleAuth, JWT } from 'google-auth-library';
 import { google } from 'googleapis';
 import { transformMetricDescriptor, createTimeSeries } from './transform';
 import { TimeSeries } from './types';
+import { partitionList } from './utils';
+
+// Stackdriver Monitoring v3 only accepts up to 200 TimeSeries per
+// CreateTimeSeries call.
+const MAX_BATCH_EXPORT_SIZE = 200;
 
 const OT_USER_AGENT = {
   product: 'opentelemetry-js',
@@ -116,7 +121,23 @@ export class MetricExporter implements IMetricExporter {
         );
       }
     }
-    this._sendTimeSeries(timeSeries);
+
+    let sendFailed = false;
+    for (const batchedTimeSeries of partitionList(
+      timeSeries,
+      MAX_BATCH_EXPORT_SIZE
+    )) {
+      try {
+        await this._sendTimeSeries(batchedTimeSeries);
+      } catch (err) {
+        const message = `Send TimeSeries failed: ${err.message}`;
+        sendFailed = true;
+        this._logger.error(message);
+      }
+    }
+    if (sendFailed) {
+      return cb(ExportResult.FAILED_RETRYABLE);
+    }
     cb(ExportResult.SUCCESS);
   }
 
