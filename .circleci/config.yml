@@ -37,7 +37,7 @@ jobs:
       - checkout
       - run:
           name: Install minimal modules globally
-          command: npm i -g lerna gts@1.1.0 typescript
+          command: npm i
       - run:
           name: Check code style and linting
           command: npm run lint
