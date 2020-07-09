@@ -250,7 +250,6 @@ function transformValue(
   } else if (valueType === OTValueType.DOUBLE) {
     return { doubleValue: value };
   }
-  // TODO: Add support for Distribution and Histogram
   throw Error(`unsupported value type: ${valueType}`);
 }
 
