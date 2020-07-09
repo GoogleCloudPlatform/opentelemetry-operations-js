@@ -277,130 +277,130 @@ describe('transform', () => {
         labels: { project_id: 'project_id' },
         type: 'global',
       });
+    });
 
-      it('should return a Google Cloud Monitoring Metric for an observer', () => {
-        const meter = new MeterProvider().getMeter('test-meter');
-        const labels: Labels = { keyb: 'value2', keya: 'value1' };
-        const observer = meter.createObserver(METRIC_NAME, {
-          description: METRIC_DESCRIPTION,
-          valueType: OTValueType.INT,
-        });
-        const int64Value = 0;
-        observer.setCallback(result => {
-          result.observe(() => int64Value, labels);
-        });
-        meter.collect();
-        const [record] = meter.getBatcher().checkPointSet();
-        const ts = createTimeSeries(
-          record,
-          'otel',
-          new Date().toISOString(),
-          'project_id'
-        );
-        assert(!ts.points[0].interval.startTime);
-        assert(ts.points[0].interval.endTime);
-        assert.strictEqual(ts.metric.type, `otel/${METRIC_NAME}`);
-        assert.strictEqual(ts.metric.labels['keya'], 'value1');
-        assert.strictEqual(ts.metric.labels['keyb'], 'value2');
-        assert.strictEqual(
-          ts.metric.labels[TEST_ONLY.OPENTELEMETRY_TASK],
-          OPENTELEMETRY_TASK_VALUE_DEFAULT
-        );
-        assert.deepStrictEqual(ts.resource, {
-          labels: {},
-          type: 'global',
-        });
-        assert.strictEqual(ts.metricKind, MetricKind.GAUGE);
-        assert.strictEqual(ts.valueType, ValueType.INT64);
-        assert.strictEqual(ts.points.length, 1);
-        assert.deepStrictEqual(ts.points[0].value, { int64Value });
+    it('should return a Google Cloud Monitoring Metric for an observer', () => {
+      const meter = new MeterProvider().getMeter('test-meter');
+      const labels: Labels = { keya: 'value1', keyb: 'value2' };
+      const observer = meter.createObserver(METRIC_NAME, {
+        description: METRIC_DESCRIPTION,
+        valueType: OTValueType.INT,
       });
+      const int64Value = 0;
+      observer.setCallback(result => {
+        result.observe(() => int64Value, labels);
+      });
+      meter.collect();
+      const [record] = meter.getBatcher().checkPointSet();
+      const ts = createTimeSeries(
+        record,
+        'otel',
+        new Date().toISOString(),
+        'project_id'
+      );
+      assert(!ts.points[0].interval.startTime);
+      assert(ts.points[0].interval.endTime);
+      assert.strictEqual(ts.metric.type, `otel/${METRIC_NAME}`);
+      assert.strictEqual(ts.metric.labels['keya'], 'value1');
+      assert.strictEqual(ts.metric.labels['keyb'], 'value2');
+      assert.strictEqual(
+        ts.metric.labels[TEST_ONLY.OPENTELEMETRY_TASK],
+        OPENTELEMETRY_TASK_VALUE_DEFAULT
+      );
+      assert.deepStrictEqual(ts.resource, {
+        labels: { project_id: 'project_id' },
+        type: 'global',
+      });
+      assert.strictEqual(ts.metricKind, MetricKind.GAUGE);
+      assert.strictEqual(ts.valueType, ValueType.INT64);
+      assert.strictEqual(ts.points.length, 1);
+      assert.deepStrictEqual(ts.points[0].value, { int64Value });
+    });
 
-      it('should return a point', () => {
-        const metricDescriptor: OTMetricDescriptor = {
-          name: METRIC_NAME,
-          description: METRIC_DESCRIPTION,
-          unit: DEFAULT_UNIT,
-          metricKind: OTMetricKind.OBSERVER,
-          valueType: OTValueType.INT,
-        };
-        const point: OTPoint = {
-          value: 50,
-          timestamp: process.hrtime(),
-        };
+    it('should return a point', () => {
+      const metricDescriptor: OTMetricDescriptor = {
+        name: METRIC_NAME,
+        description: METRIC_DESCRIPTION,
+        unit: DEFAULT_UNIT,
+        metricKind: OTMetricKind.OBSERVER,
+        valueType: OTValueType.INT,
+      };
+      const point: OTPoint = {
+        value: 50,
+        timestamp: process.hrtime(),
+      };
 
-        const result = TEST_ONLY.transformPoint(
+      const result = TEST_ONLY.transformPoint(
+        point,
+        metricDescriptor,
+        new Date().toISOString()
+      );
+
+      assert.deepStrictEqual(result.value, { int64Value: 50 });
+      assert(result.interval.endTime);
+      assert(!result.interval.startTime);
+    });
+
+    it('should throw an error when given a distribution value', () => {
+      const metricDescriptor: OTMetricDescriptor = {
+        name: METRIC_NAME,
+        description: METRIC_DESCRIPTION,
+        unit: DEFAULT_UNIT,
+        metricKind: OTMetricKind.COUNTER,
+        valueType: OTValueType.DOUBLE,
+      };
+      const point: OTPoint = {
+        value: {
+          min: 20.0,
+          max: 75.4,
+          count: 22,
+          sum: 150,
+        },
+        timestamp: process.hrtime(),
+      };
+
+      try {
+        TEST_ONLY.transformPoint(
           point,
           metricDescriptor,
           new Date().toISOString()
         );
+        assert.fail('should have thrown an error');
+      } catch (err) {
+        assert(err.message.toLowerCase().includes('distributions'));
+      }
+    });
 
-        assert.deepStrictEqual(result.value, { int64Value: 50 });
-        assert(result.interval.endTime);
-        assert(!result.interval.startTime);
-      });
-
-      it('should throw an error when given a distribution value', () => {
-        const metricDescriptor: OTMetricDescriptor = {
-          name: METRIC_NAME,
-          description: METRIC_DESCRIPTION,
-          unit: DEFAULT_UNIT,
-          metricKind: OTMetricKind.COUNTER,
-          valueType: OTValueType.DOUBLE,
-        };
-        const point: OTPoint = {
-          value: {
-            min: 20.0,
-            max: 75.4,
-            count: 22,
-            sum: 150,
+    it('should thrown an error when given a histogram value', () => {
+      const metricDescriptor: OTMetricDescriptor = {
+        name: METRIC_NAME,
+        description: METRIC_DESCRIPTION,
+        unit: DEFAULT_UNIT,
+        metricKind: OTMetricKind.COUNTER,
+        valueType: OTValueType.DOUBLE,
+      };
+      const point: OTPoint = {
+        value: {
+          buckets: {
+            boundaries: [10, 30],
+            counts: [1, 2],
           },
-          timestamp: process.hrtime(),
-        };
+          sum: 70,
+          count: 3,
+        },
+        timestamp: process.hrtime(),
+      };
 
-        try {
-          TEST_ONLY.transformPoint(
-            point,
-            metricDescriptor,
-            new Date().toISOString()
-          );
-          assert.fail('should have thrown an error');
-        } catch (err) {
-          assert(err.message.toLowerCase().includes('distributions'));
-        }
-      });
-
-      it('should thrown an error when given a histrogram value', () => {
-        const metricDescriptor: OTMetricDescriptor = {
-          name: METRIC_NAME,
-          description: METRIC_DESCRIPTION,
-          unit: DEFAULT_UNIT,
-          metricKind: OTMetricKind.COUNTER,
-          valueType: OTValueType.DOUBLE,
-        };
-        const point: OTPoint = {
-          value: {
-            buckets: {
-              boundaries: [10, 30],
-              counts: [1, 2],
-            },
-            sum: 70,
-            count: 3,
-          },
-          timestamp: process.hrtime(),
-        };
-
-        try {
-          TEST_ONLY.transformPoint(
-            point,
-            metricDescriptor,
-            new Date().toISOString()
-          );
-          assert.fail('should have thrown an error');
-        } catch (err) {
-          assert(err.message.toLowerCase().includes('histograms'));
-        }
-      });
+      try {
+        TEST_ONLY.transformPoint(
+          point,
+          metricDescriptor,
+          new Date().toISOString()
+        );
+        assert.fail('should have thrown an error');
+      } catch (err) {
+        assert(err.message.toLowerCase().includes('histograms'));
+      }
     });
   });
 });
