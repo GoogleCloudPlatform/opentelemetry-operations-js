@@ -112,7 +112,12 @@ export class MetricExporter implements IMetricExporter {
       );
       if (isRegistered) {
         timeSeries.push(
-          createTimeSeries(metric, this._metricPrefix, this._startTime)
+          createTimeSeries(
+            metric,
+            this._metricPrefix,
+            this._startTime,
+            this._projectId
+          )
         );
       }
     }
