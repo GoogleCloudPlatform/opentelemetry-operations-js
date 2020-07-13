@@ -148,7 +148,7 @@ describe('MetricExporter', () => {
 
     it('should export metrics', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
       const counter = meter.createCounter('name');
       counter.add(10, labels);
       meter.collect();
@@ -170,7 +170,7 @@ describe('MetricExporter', () => {
 
     it('should return retryable if there is an error sending TimeSeries', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
       const counter = meter.createCounter('name');
       counter.add(10, labels);
       meter.collect();
@@ -193,7 +193,7 @@ describe('MetricExporter', () => {
     it('should enforce batch size limit on metrics', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
 
-      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
       let nMetrics = 401;
       while (nMetrics > 0) {
         nMetrics -= 1;

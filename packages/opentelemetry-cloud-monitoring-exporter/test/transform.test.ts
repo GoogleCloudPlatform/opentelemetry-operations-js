@@ -235,7 +235,7 @@ describe('transform', () => {
       const meter = new MeterProvider({
         resource: new Resource(mockGCResource),
       }).getMeter('test-meter');
-      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
       });
@@ -260,7 +260,7 @@ describe('transform', () => {
       const meter = new MeterProvider({
         resource: new Resource(incompleteResource),
       }).getMeter('test-meter');
-      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
       });
