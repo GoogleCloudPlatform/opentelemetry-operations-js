@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {  HttpTextPropagator, Context, SetterFunction, GetterFunction} from '@opentelemetry/api';
-import { decToHex } from 'hex2dec';
-import {  setExtractedSpanContext } from '@opentelemetry/core';
+import {  HttpTextPropagator, Context, SetterFunction, GetterFunction,TraceFlags} from '@opentelemetry/api';
+import { decToHex,hexToDec } from 'hex2dec';
+import {  setExtractedSpanContext, getParentSpanContext } from '@opentelemetry/core';
 
 /**
  * This file implements propagation for the Stackdriver Trace v1 Trace Context
@@ -33,10 +33,17 @@ import {  setExtractedSpanContext } from '@opentelemetry/core';
 export const TRACE_CONTEXT_HEADER_NAME = 'x-cloud-trace-context';
 
 export class CloudPropagator implements HttpTextPropagator {
-    inject(context: Context, carrier: unknown, setter: SetterFunction<any>): void {
-        throw new Error("Method not implemented.");
+    inject(context: Context, carrier: unknown, setter: SetterFunction): void {
+      const spanContext = getParentSpanContext(context);
+      if (!spanContext) return;
+  
+      const header = `${spanContext.traceId}/${hexToDec(
+        spanContext.spanId
+      )};o=${spanContext.traceFlags || TraceFlags.NONE}`;
+  
+      setter(carrier, TRACE_CONTEXT_HEADER_NAME, header);
     }
-    extract(context: Context, carrier: unknown, getter: GetterFunction<any>): Context {
+    extract(context: Context, carrier: unknown, getter: GetterFunction): Context {
         const traceContextHeader = getter(carrier, TRACE_CONTEXT_HEADER_NAME);
         const traceContextHeaderValue = Array.isArray(traceContextHeader)
       ? traceContextHeader[0]
