@@ -56,6 +56,6 @@
     "@opentelemetry/core": "^0.7.0",
     "@opentelemetry/metrics": "^0.9.0",
     "google-auth-library": "^5.7.0",
-    "googleapis": "^46.0.0"
+    "googleapis": "^54.0.0"
   }
 }
