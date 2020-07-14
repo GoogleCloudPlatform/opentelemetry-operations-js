@@ -13,6 +13,6 @@
 // limitations under the License.
 
 declare module 'hex2dec' {
-    export function hexToDec(hex: string): string;
-    export function decToHex(dec: string): string;
-  }
+  export function hexToDec(hex: string): string;
+  export function decToHex(dec: string): string;
+}
