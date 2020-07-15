@@ -51,7 +51,7 @@ export class CloudPropagator implements HttpTextPropagator {
 
     const header = `${spanContext.traceId}/${hexToDec(
       spanContext.spanId
-    )};o=${spanContext.traceFlags || TraceFlags.NONE}`;
+    )};o=${spanContext.traceFlags & TraceFlags.SAMPLED}`;
 
     setter(carrier, TRACE_CONTEXT_HEADER_NAME, header);
   }
@@ -64,7 +64,7 @@ export class CloudPropagator implements HttpTextPropagator {
       return context;
     }
     const matches = traceContextHeaderValue.match(
-      /^([0-9a-fA-F]+)(?:\/([0-9]+))(?:;o=(.*))?/
+      /^([0-9a-fA-F]{32})\/([0-9]+)(?:;o=([01]))$?/
     );
     if (
       !matches ||
@@ -76,10 +76,12 @@ export class CloudPropagator implements HttpTextPropagator {
     }
     const spanContext = {
       traceId: matches[1],
-      // strip 0x prefix from hex output from decToHex, and and pad so it's
+      // strip 0x prefix from hex output from decToHex, and pad so it's
       // always a length-16 hex string
-      spanId: `0000000000000000${decToHex(matches[2]).slice(2)}`.slice(-16),
-      traceFlags: TraceFlags.SAMPLED,
+      spanId: decToHex(matches[2])
+        .slice(2)
+        .padStart(16, '0'),
+      traceFlags: matches[3] === '1' ? TraceFlags.SAMPLED : TraceFlags.NONE,
     };
     return setExtractedSpanContext(context, spanContext);
   }
