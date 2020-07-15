@@ -32,7 +32,7 @@ unit_tests: &unit_tests
 jobs:
   lint:
     docker:
-      - image: node:12
+      - image: circleci/node:12
     steps:
       - checkout
       - run:
