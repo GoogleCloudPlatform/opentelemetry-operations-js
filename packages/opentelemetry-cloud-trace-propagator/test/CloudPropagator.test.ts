@@ -28,7 +28,7 @@ describe('CloudPropagator', () => {
   beforeEach(() => {
     carrier = {};
   });
-  
+
   describe('.inject()', () => {
     it('should inject a context of a sampled span', () => {
       const spanContext: SpanContext = {
