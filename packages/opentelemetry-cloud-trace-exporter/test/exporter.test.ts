@@ -51,7 +51,7 @@ describe('Google Cloud Trace Exporter', () => {
     let exporter: TraceExporter;
     let logger: ConsoleLogger;
     /* tslint:disable-next-line:no-any */
-    let batchWrite: sinon.SinonSpy<[any, any], any>;
+    let batchWrite: sinon.SinonSpy<[any, any, any], any>;
     let traceServiceConstructor: sinon.SinonSpy;
     let debug: sinon.SinonSpy;
     let info: sinon.SinonSpy;
@@ -70,7 +70,7 @@ describe('Google Cloud Trace Exporter', () => {
 
       batchWrite = sinon.spy(
         /* tslint:disable-next-line:no-any */
-        (spans: any, callback: (err: Error | null) => void): any => {
+        (spans: any, metadata: any, callback: (err: Error | null) => void): any => {
           if (batchWriteShouldFail) {
             callback(new Error('fail'));
           } else {

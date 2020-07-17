@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { Metadata } from 'grpc';
+
 export interface Span {
   name?: string;
   spanId?: string;
@@ -149,5 +151,5 @@ export interface NamedSpans {
 }
 
 export interface TraceService {
-  BatchWriteSpans: (call: NamedSpans, callback: Function) => void;
+  BatchWriteSpans: (call: NamedSpans, metadata: Metadata, callback: Function) => void;
 }
