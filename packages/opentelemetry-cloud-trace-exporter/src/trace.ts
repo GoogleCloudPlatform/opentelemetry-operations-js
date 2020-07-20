@@ -101,7 +101,10 @@ export class TraceExporter implements SpanExporter {
 
       const metadata = new grpc.Metadata();
       metadata.add('x-opentelemetry-outgoing-request', '1');
-      this._traceServiceClient.BatchWriteSpans(spans, metadata, (err: Error) => {
+      this._traceServiceClient.BatchWriteSpans(
+        spans,
+        metadata,
+        (err: Error) => {
         if (err) {
           err.message = `batchWriteSpans error: ${err.message}`;
           this._logger.error(err.message);
@@ -111,7 +114,8 @@ export class TraceExporter implements SpanExporter {
           this._logger.debug(successMsg);
           resolve(ExportResult.SUCCESS);
         }
-      });
+      }
+      );
     });
   }
 

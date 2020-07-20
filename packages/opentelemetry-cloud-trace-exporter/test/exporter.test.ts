@@ -24,7 +24,7 @@ import * as sinon from 'sinon';
 import * as protoloader from '@grpc/proto-loader';
 import * as grpc from 'grpc';
 import { TraceExporter } from '../src';
-import { TraceService } from '../src/types'
+import { TraceService } from '../src/types';
 
 describe('Google Cloud Trace Exporter', () => {
   beforeEach(() => {
@@ -69,8 +69,13 @@ describe('Google Cloud Trace Exporter', () => {
       });
 
       batchWrite = sinon.spy(
-        /* tslint:disable-next-line:no-any */
-        (spans: any, metadata: any, callback: (err: Error | null) => void): any => {
+        /* tslint:disable:no-any */
+        (
+          spans: any,
+          metadata: any,
+          callback: (err: Error | null) => void
+        ): any => {
+        /* tslint:enable:no-any */
           if (batchWriteShouldFail) {
             callback(new Error('fail'));
           } else {
@@ -87,31 +92,37 @@ describe('Google Cloud Trace Exporter', () => {
         return {} as any;
       });
 
-      sinon.stub(protoloader, "loadSync");
+      sinon.stub(protoloader, 'loadSync');
 
-      sinon.replace(grpc, 'loadPackageDefinition', (): grpc.GrpcObject => {
-        traceServiceConstructor =
-          sinon.spy((host: string, creds: grpc.ChannelCredentials) => {});
-        /* tslint:disable-next-line:no-any */
-        const def: any = {
-          google: {
-            devtools: {
-              cloudtrace: {
-                v2: {},
+      sinon.replace(
+        grpc,
+        'loadPackageDefinition',
+        (): grpc.GrpcObject => {
+          traceServiceConstructor = sinon.spy(
+            (host: string, creds: grpc.ChannelCredentials) => {}
+          );
+          /* tslint:disable-next-line:no-any */
+          const def: any = {
+            google: {
+              devtools: {
+                cloudtrace: {
+                  v2: {},
+                }
               }
             }
-          }
-        };
-        // Replace the TraceService with a mock TraceService
-        def.google.devtools.cloudtrace.v2.TraceService =
-          class MockTraceService implements TraceService {
+          };
+          // Replace the TraceService with a mock TraceService
+          def.google.devtools.cloudtrace.v2.TraceService = class MockTraceService
+            implements TraceService {
+            /* tslint:disable-next-line */
             BatchWriteSpans = batchWrite;
             constructor(host: string, creds: grpc.ChannelCredentials) {
               traceServiceConstructor(host, creds);
             }
           };
-        return def;
-      });
+          return def;
+        }
+      );
 
       debug = sinon.spy();
       info = sinon.spy();
@@ -160,7 +171,10 @@ describe('Google Cloud Trace Exporter', () => {
         'my-span'
       );
       assert.strictEqual(traceServiceConstructor.getCalls().length, 1);
-      assert.strictEqual(traceServiceConstructor.getCall(0).args[0], 'cloudtrace.googleapis.com:443');
+      assert.strictEqual(
+        traceServiceConstructor.getCall(0).args[0],
+        'cloudtrace.googleapis.com:443'
+      );
       assert.deepStrictEqual(result, ExportResult.SUCCESS);
     });
 
@@ -197,9 +211,8 @@ describe('Google Cloud Trace Exporter', () => {
         });
       });
 
-
       assert.strictEqual(traceServiceConstructor.getCalls().length, 1);
-    })
+    });
 
     it('should return not retryable if authorization fails', async () => {
       const readableSpan: ReadableSpan = {
@@ -230,7 +243,7 @@ describe('Google Cloud Trace Exporter', () => {
         });
       });
       assert(error.getCall(0).args[0].match(/authorize error: fail/));
-      assert.strictEqual(traceServiceConstructor.getCalls().length, 1)
+      assert.strictEqual(traceServiceConstructor.getCalls().length, 1);
       assert.deepStrictEqual(result, ExportResult.FAILED_NOT_RETRYABLE);
     });
 
