@@ -75,7 +75,7 @@ describe('Google Cloud Trace Exporter', () => {
           metadata: any,
           callback: (err: Error | null) => void
         ): any => {
-        /* tslint:enable:no-any */
+          /* tslint:enable:no-any */
           if (batchWriteShouldFail) {
             callback(new Error('fail'));
           } else {
@@ -107,9 +107,9 @@ describe('Google Cloud Trace Exporter', () => {
               devtools: {
                 cloudtrace: {
                   v2: {},
-                }
-              }
-            }
+                },
+              },
+            },
           };
           // Replace the TraceService with a mock TraceService
           def.google.devtools.cloudtrace.v2.TraceService = class MockTraceService

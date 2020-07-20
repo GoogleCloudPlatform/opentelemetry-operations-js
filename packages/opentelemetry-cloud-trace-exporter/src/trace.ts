@@ -105,16 +105,16 @@ export class TraceExporter implements SpanExporter {
         spans,
         metadata,
         (err: Error) => {
-        if (err) {
-          err.message = `batchWriteSpans error: ${err.message}`;
-          this._logger.error(err.message);
-          resolve(ExportResult.FAILED_RETRYABLE);
-        } else {
-          const successMsg = 'batchWriteSpans successfully';
-          this._logger.debug(successMsg);
-          resolve(ExportResult.SUCCESS);
+          if (err) {
+            err.message = `batchWriteSpans error: ${err.message}`;
+            this._logger.error(err.message);
+            resolve(ExportResult.FAILED_RETRYABLE);
+          } else {
+            const successMsg = 'batchWriteSpans successfully';
+            this._logger.debug(successMsg);
+            resolve(ExportResult.SUCCESS);
+          }
         }
-      }
       );
     });
   }
