@@ -23,6 +23,7 @@ import * as nock from 'nock';
 import * as sinon from 'sinon';
 import * as protoloader from '@grpc/proto-loader';
 import * as grpc from 'grpc';
+import { OAuth2Client } from 'google-auth-library';
 import { TraceExporter } from '../src';
 import { TraceService } from '../src/types';
 
@@ -48,11 +49,26 @@ describe('Google Cloud Trace Exporter', () => {
   });
 
   describe('export', () => {
+    const mockChannelCreds: grpc.ChannelCredentials = {
+      compose: sinon.stub(),
+    };
+    const mockCallCreds: grpc.CallCredentials = {
+      compose: sinon.stub(),
+      generateMetadata: sinon.stub(),
+    };
+    const mockCombinedCreds: grpc.ChannelCredentials = {
+      compose: sinon.stub(),
+    };
+    const mockClient = sinon.mock(OAuth2Client);
+
     let exporter: TraceExporter;
     let logger: ConsoleLogger;
     /* tslint:disable-next-line:no-any */
     let batchWrite: sinon.SinonSpy<[any, any, any], any>;
     let traceServiceConstructor: sinon.SinonSpy;
+    let createSsl: sinon.SinonStub;
+    let createFromGoogleCreds: sinon.SinonStub;
+    let combineChannelCreds: sinon.SinonStub;
     let debug: sinon.SinonSpy;
     let info: sinon.SinonSpy;
     let warn: sinon.SinonSpy;
@@ -89,10 +105,19 @@ describe('Google Cloud Trace Exporter', () => {
           throw new Error('fail');
         }
         /* tslint:disable-next-line:no-any */
-        return {} as any;
+        return mockClient as any;
       });
 
       sinon.stub(protoloader, 'loadSync');
+
+      createSsl = sinon.stub(grpc.credentials, 'createSsl')
+        .returns(mockChannelCreds);
+
+      createFromGoogleCreds = sinon.stub(grpc.credentials, 'createFromGoogleCredential')
+        .returns(mockCallCreds);
+
+      combineChannelCreds = sinon.stub(grpc.credentials, 'combineChannelCredentials')
+        .returns(mockCombinedCreds);
 
       sinon.replace(
         grpc,
@@ -114,7 +139,7 @@ describe('Google Cloud Trace Exporter', () => {
           // Replace the TraceService with a mock TraceService
           def.google.devtools.cloudtrace.v2.TraceService = class MockTraceService
             implements TraceService {
-            /* tslint:disable-next-line */
+            /* tslint:disable-next-line:variable-name */
             BatchWriteSpans = batchWrite;
             constructor(host: string, creds: grpc.ChannelCredentials) {
               traceServiceConstructor(host, creds);
@@ -170,10 +195,15 @@ describe('Google Cloud Trace Exporter', () => {
         batchWrite.getCall(0).args[0].spans[0].displayName.value,
         'my-span'
       );
-      assert.strictEqual(traceServiceConstructor.getCalls().length, 1);
-      assert.strictEqual(
-        traceServiceConstructor.getCall(0).args[0],
-        'cloudtrace.googleapis.com:443'
+
+      assert(createSsl.calledOnceWithExactly());
+      assert(createFromGoogleCreds.calledOnceWithExactly(mockClient));
+      assert(combineChannelCreds.calledOnceWithExactly(mockChannelCreds, mockCallCreds));
+      assert(
+        traceServiceConstructor.calledOnceWithExactly(
+          'cloudtrace.googleapis.com:443',
+          mockCombinedCreds
+        )
       );
       assert.deepStrictEqual(result, ExportResult.SUCCESS);
     });
@@ -211,7 +241,10 @@ describe('Google Cloud Trace Exporter', () => {
         });
       });
 
-      assert.strictEqual(traceServiceConstructor.getCalls().length, 1);
+      assert(createSsl.calledOnce);
+      assert(createFromGoogleCreds.calledOnce);
+      assert(combineChannelCreds.calledOnce);
+      assert(traceServiceConstructor.calledOnce);
     });
 
     it('should return not retryable if authorization fails', async () => {
@@ -243,7 +276,7 @@ describe('Google Cloud Trace Exporter', () => {
         });
       });
       assert(error.getCall(0).args[0].match(/authorize error: fail/));
-      assert.strictEqual(traceServiceConstructor.getCalls().length, 1);
+      assert(traceServiceConstructor.calledOnce);
       assert.deepStrictEqual(result, ExportResult.FAILED_NOT_RETRYABLE);
     });
 
