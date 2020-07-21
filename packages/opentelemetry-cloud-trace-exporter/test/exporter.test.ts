@@ -110,13 +110,16 @@ describe('Google Cloud Trace Exporter', () => {
 
       sinon.stub(protoloader, 'loadSync');
 
-      createSsl = sinon.stub(grpc.credentials, 'createSsl')
+      createSsl = sinon
+        .stub(grpc.credentials, 'createSsl')
         .returns(mockChannelCreds);
 
-      createFromGoogleCreds = sinon.stub(grpc.credentials, 'createFromGoogleCredential')
+      createFromGoogleCreds = sinon
+        .stub(grpc.credentials, 'createFromGoogleCredential')
         .returns(mockCallCreds);
 
-      combineChannelCreds = sinon.stub(grpc.credentials, 'combineChannelCredentials')
+      combineChannelCreds = sinon
+        .stub(grpc.credentials, 'combineChannelCredentials')
         .returns(mockCombinedCreds);
 
       sinon.replace(
@@ -198,7 +201,12 @@ describe('Google Cloud Trace Exporter', () => {
 
       assert(createSsl.calledOnceWithExactly());
       assert(createFromGoogleCreds.calledOnceWithExactly(mockClient));
-      assert(combineChannelCreds.calledOnceWithExactly(mockChannelCreds, mockCallCreds));
+      assert(
+        combineChannelCreds.calledOnceWithExactly(
+          mockChannelCreds,
+          mockCallCreds
+        )
+      );
       assert(
         traceServiceConstructor.calledOnceWithExactly(
           'cloudtrace.googleapis.com:443',
