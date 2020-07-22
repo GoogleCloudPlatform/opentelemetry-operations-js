@@ -78,9 +78,7 @@ export class CloudPropagator implements HttpTextPropagator {
       traceId: matches[1],
       // strip 0x prefix from hex output from decToHex, and pad so it's
       // always a length-16 hex string
-      spanId: decToHex(matches[2])
-        .slice(2)
-        .padStart(16, '0'),
+      spanId: decToHex(matches[2], { prefix: false }).padStart(16, '0'),
       traceFlags: matches[3] === '1' ? TraceFlags.SAMPLED : TraceFlags.NONE,
     };
     return setExtractedSpanContext(context, spanContext);
