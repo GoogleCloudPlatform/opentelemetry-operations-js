@@ -64,19 +64,13 @@ export class CloudPropagator implements HttpTextPropagator {
       return context;
     }
     const matches = traceContextHeaderValue.match(
-      /^([0-9a-fA-F]+)(?:\/([0-9]+))(?:;o=(.*))?/
+      /^([0-9a-fA-F]+)\/([0-9]+)(?:;o=(.*))?/
     );
-    if (
-      !matches ||
-      matches.length !== 4 ||
-      (matches[2] && isNaN(Number(matches[2])))
-    ) {
+    if (!matches || (matches[2] && isNaN(Number(matches[2])))) {
       return context;
     }
     const spanContext = {
       traceId: matches[1],
-      // strip 0x prefix from hex output from decToHex, and pad so it's
-      // always a length-16 hex string
       spanId: decToHex(matches[2], { prefix: false }).padStart(16, '0'),
       traceFlags: matches[3] === '1' ? TraceFlags.SAMPLED : TraceFlags.NONE,
     };

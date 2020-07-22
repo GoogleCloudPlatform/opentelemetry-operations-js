@@ -158,14 +158,14 @@ describe('CloudPropagator', () => {
           'cc-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01.what-the-future-will-not-be-like',
       };
 
-      Object.getOwnPropertyNames(testCases).forEach(testCase => {
-        carrier[X_CLOUD_TRACE_HEADER] = testCases[testCase];
+      for (const [testName, testData] of Object.entries(testCases)) {
+        carrier[X_CLOUD_TRACE_HEADER] = testData;
 
         const extractedSpanContext = getExtractedSpanContext(
           cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
         );
-        assert.deepStrictEqual(extractedSpanContext, undefined, testCase);
-      });
+        assert.deepStrictEqual(extractedSpanContext, undefined, testName);
+      }
     });
   });
 });
