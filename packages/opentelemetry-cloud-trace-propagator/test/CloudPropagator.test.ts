@@ -16,10 +16,7 @@ import { defaultSetter, SpanContext, TraceFlags } from '@opentelemetry/api';
 import { Context } from '@opentelemetry/context-base';
 import * as assert from 'assert';
 import { setExtractedSpanContext } from '@opentelemetry/core';
-import {
-  CloudPropagator,
-  TRACE_CONTEXT_HEADER_NAME,
-} from '../src/CloudPropagator';
+import { CloudPropagator, X_CLOUD_TRACE_HEADER } from '../src/CloudPropagator';
 
 describe('CloudPropagator', () => {
   const cloudPropagator = new CloudPropagator();
@@ -44,7 +41,7 @@ describe('CloudPropagator', () => {
       );
 
       assert.deepStrictEqual(
-        carrier[TRACE_CONTEXT_HEADER_NAME],
+        carrier[X_CLOUD_TRACE_HEADER],
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=1'
       );
     });
@@ -60,7 +57,7 @@ describe('CloudPropagator', () => {
         defaultSetter
       );
       assert.deepStrictEqual(
-        carrier[TRACE_CONTEXT_HEADER_NAME],
+        carrier[X_CLOUD_TRACE_HEADER],
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=0'
       );
     });

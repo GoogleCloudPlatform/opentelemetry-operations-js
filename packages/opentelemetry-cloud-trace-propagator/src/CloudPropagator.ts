@@ -42,7 +42,7 @@ import {
  */
 
 /** Header that carries span context across Google infrastructure. */
-export const TRACE_CONTEXT_HEADER_NAME = 'x-cloud-trace-context';
+export const X_CLOUD_TRACE_HEADER = 'x-cloud-trace-context';
 
 export class CloudPropagator implements HttpTextPropagator {
   inject(context: Context, carrier: unknown, setter: SetterFunction): void {
@@ -53,10 +53,10 @@ export class CloudPropagator implements HttpTextPropagator {
       spanContext.spanId
     )};o=${spanContext.traceFlags & TraceFlags.SAMPLED}`;
 
-    setter(carrier, TRACE_CONTEXT_HEADER_NAME, header);
+    setter(carrier, X_CLOUD_TRACE_HEADER, header);
   }
   extract(context: Context, carrier: unknown, getter: GetterFunction): Context {
-    const traceContextHeader = getter(carrier, TRACE_CONTEXT_HEADER_NAME);
+    const traceContextHeader = getter(carrier, X_CLOUD_TRACE_HEADER);
     const traceContextHeaderValue = Array.isArray(traceContextHeader)
       ? traceContextHeader[0]
       : traceContextHeader;
