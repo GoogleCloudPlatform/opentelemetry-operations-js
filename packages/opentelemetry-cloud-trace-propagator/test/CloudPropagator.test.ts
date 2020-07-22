@@ -125,37 +125,8 @@ describe('CloudPropagator', () => {
       // SpanContext value being extracted.
 
       const testCases: Record<string, string> = {
-        invalidParts_tooShort: '00-ffffffffffffffffffffffffffffffff',
-
-        invalidVersion_notHex:
-          '0x-ffffffffffffffffffffffffffffffff-ffffffffffffffff-00',
-        invalidVersion_tooShort:
-          '0-ffffffffffffffffffffffffffffffff-ffffffffffffffff-00',
-        invalidVersion_tooLong:
-          '000-ffffffffffffffffffffffffffffffff-ffffffffffffffff-00',
-
-        invalidTraceId_empty: '00--ffffffffffffffff-01',
-        invalidTraceId_notHex:
-          '00-fffffffffffffffffffffffffffffffx-ffffffffffffffff-01',
-        invalidTraceId_allZeros:
-          '00-00000000000000000000000000000000-ffffffffffffffff-01',
-        invalidTraceId_tooShort: '00-ffffffff-ffffffffffffffff-01',
-        invalidTraceId_tooLong:
-          '00-ffffffffffffffffffffffffffffffff00-ffffffffffffffff-01',
-
-        invalidSpanId_empty: '00-ffffffffffffffffffffffffffffffff--01',
-        invalidSpanId_notHex:
-          '00-ffffffffffffffffffffffffffffffff-fffffffffffffffx-01',
-        invalidSpanId_allZeros:
-          '00-ffffffffffffffffffffffffffffffff-0000000000000000-01',
-        invalidSpanId_tooShort:
-          '00-ffffffffffffffffffffffffffffffff-ffffffff-01',
-        invalidSpanId_tooLong:
-          '00-ffffffffffffffffffffffffffffffff-ffffffffffffffff0000-01',
-        invalidFutureVersion:
-          'ff-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01',
-        invalidFutureFieldAfterFlag:
-          'cc-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01.what-the-future-will-not-be-like',
+        invalid1: 'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882foo',
+        invalid2: 'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=1foo',
       };
 
       for (const [testName, testData] of Object.entries(testCases)) {
