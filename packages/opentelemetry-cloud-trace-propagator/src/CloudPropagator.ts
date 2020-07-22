@@ -64,12 +64,11 @@ export class CloudPropagator implements HttpTextPropagator {
       return context;
     }
     const matches = traceContextHeaderValue.match(
-      /^([0-9a-fA-F]{32})\/([0-9]+)(?:;o=([01]))$?/
+      /^([0-9a-fA-F]+)(?:\/([0-9]+))(?:;o=(.*))?/
     );
     if (
       !matches ||
       matches.length !== 4 ||
-      matches[0] !== traceContextHeader ||
       (matches[2] && isNaN(Number(matches[2])))
     ) {
       return context;
