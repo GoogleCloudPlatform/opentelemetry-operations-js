@@ -61,6 +61,11 @@ jobs:
       - image: node:13
         environment: *test_env
     <<: *unit_tests
+  node14:
+    docker:
+      - image: node:13
+        environment: *test_env
+    <<: *unit_tests
 
 workflows:
   version: 2
@@ -71,3 +76,4 @@ workflows:
       - node10
       - node12
       - node13
+      - node14
