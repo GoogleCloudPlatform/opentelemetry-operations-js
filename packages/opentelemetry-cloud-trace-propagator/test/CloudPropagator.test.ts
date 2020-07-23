@@ -86,6 +86,21 @@ describe('CloudPropagator', () => {
       });
     });
 
+    it('should extract context of a unsampled span from carrier', () => {
+      carrier[X_CLOUD_TRACE_HEADER] =
+        'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=0';
+      const extractedSpanContext = getExtractedSpanContext(
+        cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
+      );
+
+      assert.deepStrictEqual(extractedSpanContext, {
+        traceId: 'd4cda95b652f4a1592b449d5929fda1b',
+        spanId: '6e0c63257de34c92',
+        traceFlags: TraceFlags.NONE,
+      });
+    });
+
+
     it('returns undefined if x-cloud-trace-context header is missing', () => {
       assert.deepStrictEqual(
         getExtractedSpanContext(
