@@ -55,6 +55,7 @@ export class CloudPropagator implements HttpTextPropagator {
 
     setter(carrier, X_CLOUD_TRACE_HEADER, header);
   }
+
   extract(context: Context, carrier: unknown, getter: GetterFunction): Context {
     const traceContextHeader = getter(carrier, X_CLOUD_TRACE_HEADER);
     const traceContextHeaderValue = Array.isArray(traceContextHeader)

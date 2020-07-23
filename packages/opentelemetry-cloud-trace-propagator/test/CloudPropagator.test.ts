@@ -100,7 +100,6 @@ describe('CloudPropagator', () => {
       });
     });
 
-
     it('returns undefined if x-cloud-trace-context header is missing', () => {
       assert.deepStrictEqual(
         getExtractedSpanContext(
