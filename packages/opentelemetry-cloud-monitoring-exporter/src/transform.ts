@@ -237,12 +237,24 @@ function transformValue(
   value: number | OTDistribution | OTHistogram
 ) {
   if (isDistributionValue(value)) {
-    // TODO: Add support for Distribution
-    throw new Error('Distributions are not yet supported');
+    return { distributionValue: {
+        count: value.count,
+        mean: value.sum / value.count, // TODO: double or int?
+        sumOfSquaredDeviation: -1, // FIXME: not available
+        bucketOptions: { explicitBuckets: { bounds: [] } },
+        bucketCounts: [],
+        exemplars: null,
+    } };
   }
   if (isHistogramValue(value)) {
-    // TODO: Add support for Histogram
-    throw new Error('Histograms are not yet supported');
+    return { distributionValue: {
+      count: value.count,
+      mean: value.sum / value.count, // TODO: double or int?
+      sumOfSquaredDeviation: -1, // TODO: calculate
+      bucketOptions: { explicitBuckets: { bounds: value.buckets.boundaries } },
+      bucketCounts: value.buckets.counts,
+      exemplars: null,
+  } };
   }
 
   if (valueType === OTValueType.INT) {

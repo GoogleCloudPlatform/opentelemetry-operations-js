@@ -341,7 +341,7 @@ describe('transform', () => {
       assert(!result.interval.startTime);
     });
 
-    it('should throw an error when given a distribution value', () => {
+    it('should export a distribution value', () => {
       const metricDescriptor: OTMetricDescriptor = {
         name: METRIC_NAME,
         description: METRIC_DESCRIPTION,
@@ -359,19 +359,30 @@ describe('transform', () => {
         timestamp: process.hrtime(),
       };
 
-      try {
-        TEST_ONLY.transformPoint(
-          point,
-          metricDescriptor,
-          new Date().toISOString()
-        );
-        assert.fail('should have thrown an error');
-      } catch (err) {
-        assert(err.message.toLowerCase().includes('distributions'));
-      }
+      const result = TEST_ONLY.transformPoint(
+        point,
+        metricDescriptor,
+        new Date().toISOString()
+      );
+
+      assert.deepStrictEqual(result.value, { distributionValue: {
+        bucketCounts: [],
+        bucketOptions: {
+          explicitBuckets: {
+            bounds: []
+          }
+        },
+        count: 22,
+        exemplars: null,
+        mean: 6.818181818181818,
+        sumOfSquaredDeviation: -1
+        }
+       });
+      assert(result.interval.endTime);
+      assert(result.interval.startTime);
     });
 
-    it('should thrown an error when given a histogram value', () => {
+    it('should export a histogram value', () => {
       const metricDescriptor: OTMetricDescriptor = {
         name: METRIC_NAME,
         description: METRIC_DESCRIPTION,
@@ -391,16 +402,33 @@ describe('transform', () => {
         timestamp: process.hrtime(),
       };
 
-      try {
-        TEST_ONLY.transformPoint(
-          point,
-          metricDescriptor,
-          new Date().toISOString()
-        );
-        assert.fail('should have thrown an error');
-      } catch (err) {
-        assert(err.message.toLowerCase().includes('histograms'));
-      }
+      const result = TEST_ONLY.transformPoint(
+        point,
+        metricDescriptor,
+        new Date().toISOString()
+      );
+
+      assert.deepStrictEqual(result.value, { distributionValue: {
+        bucketCounts: [
+            1,
+            2
+          ],
+          bucketOptions: {
+            explicitBuckets: {
+              bounds: [
+                10,
+                30
+              ]
+            }
+          },
+          count: 3,
+          exemplars: null,
+          mean: 23.333333333333332,
+        sumOfSquaredDeviation: -1
+        }
+       });
+      assert(result.interval.endTime);
+      assert(result.interval.startTime);
     });
   });
 });
