@@ -237,20 +237,21 @@ function transformValue(
   value: number | OTDistribution | OTHistogram
 ) {
   if (isDistributionValue(value)) {
+    // minimum two buckets due to mandatory buckets params in Cloud Monitoring API v3
     return { distributionValue: {
         count: value.count,
-        mean: value.sum / value.count, // TODO: double or int?
-        sumOfSquaredDeviation: -1, // FIXME: not available
-        bucketOptions: { explicitBuckets: { bounds: [] } },
-        bucketCounts: [],
+        mean: value.sum / value.count, 
+        // sumOfSquaredDeviation param not aggregated
+        bucketOptions: { explicitBuckets: { bounds: [value.min] } },
+        bucketCounts: [0, value.count],
         exemplars: null,
     } };
   }
   if (isHistogramValue(value)) {
     return { distributionValue: {
       count: value.count,
-      mean: value.sum / value.count, // TODO: double or int?
-      sumOfSquaredDeviation: -1, // TODO: calculate
+      mean: value.sum / value.count,
+      // sumOfSquaredDeviation param not aggregated
       bucketOptions: { explicitBuckets: { bounds: value.buckets.boundaries } },
       bucketCounts: value.buckets.counts,
       exemplars: null,

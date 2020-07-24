@@ -366,18 +366,21 @@ describe('transform', () => {
       );
 
       assert.deepStrictEqual(result.value, { distributionValue: {
-        bucketCounts: [],
-        bucketOptions: {
-          explicitBuckets: {
-            bounds: []
-          }
-        },
-        count: 22,
-        exemplars: null,
-        mean: 6.818181818181818,
-        sumOfSquaredDeviation: -1
-        }
-       });
+        bucketCounts: [
+            0,
+            22
+          ],
+          bucketOptions: {
+            explicitBuckets: {
+              bounds: [
+                20
+              ]
+            }
+          },
+          count: 22,
+          exemplars: null,
+          mean: 6.818181818181818
+       }});
       assert(result.interval.endTime);
       assert(result.interval.startTime);
     });
@@ -424,7 +427,6 @@ describe('transform', () => {
           count: 3,
           exemplars: null,
           mean: 23.333333333333332,
-        sumOfSquaredDeviation: -1
         }
        });
       assert(result.interval.endTime);
