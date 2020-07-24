@@ -30,6 +30,7 @@ provider.register({
   // Use CloudPropagator
   propagator: new CloudPropagator()
 });
+```
 
 ## Useful links
 - For more information on OpenTelemetry, visit: <https://opentelemetry.io/>
