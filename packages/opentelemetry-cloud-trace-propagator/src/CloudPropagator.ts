@@ -24,6 +24,7 @@ import {
   setExtractedSpanContext,
   getParentSpanContext,
 } from '@opentelemetry/core';
+import * as crypto from 'crypto';
 
 /**
  * This file implements propagation for the Stackdriver Trace v1 Trace Context
@@ -43,6 +44,10 @@ import {
 
 /** Header that carries span context across Google infrastructure. */
 export const X_CLOUD_TRACE_HEADER = 'x-cloud-trace-context';
+const TRACE_ID_REGEX = /^([0-9a-f]{32})/;
+const SPAN_ID_REGEX = /\/(\d+)/;
+const TRACE_TRUE_SUFFIX_REGEX = /o=([01])$/;
+const SPAN_ID_BYTES = 8;
 
 export class CloudPropagator implements HttpTextPropagator {
   inject(context: Context, carrier: unknown, setter: SetterFunction): void {
@@ -64,17 +69,34 @@ export class CloudPropagator implements HttpTextPropagator {
     if (typeof traceContextHeaderValue !== 'string') {
       return context;
     }
-    const matches = traceContextHeaderValue.match(
-      /^([0-9a-fA-F]{32})(?:\/([0-9]+))(?:;o=([01]))$/
-    );
-    if (!matches) {
+
+    const spanContext = {
+      traceId: '',
+      spanId: crypto.randomBytes(SPAN_ID_BYTES).toString('hex'),
+      traceFlags: TraceFlags.NONE,
+    };
+
+    let match;
+    match = traceContextHeaderValue.match(TRACE_ID_REGEX);
+    if (match && match.length === 2) {
+      spanContext.traceId = match[1];
+    } else {
       return context;
     }
-    const spanContext = {
-      traceId: matches[1],
-      spanId: decToHex(matches[2], { prefix: false }).padStart(16, '0'),
-      traceFlags: matches[3] === '1' ? TraceFlags.SAMPLED : TraceFlags.NONE,
-    };
+    match = traceContextHeaderValue.match(SPAN_ID_REGEX);
+    if (match && match.length === 2) {
+      spanContext.spanId = decToHex(match[1], { prefix: false }).padStart(
+        16,
+        '0'
+      );
+    }
+
+    match = traceContextHeaderValue.match(TRACE_TRUE_SUFFIX_REGEX);
+    if (match && match.length === 2) {
+      spanContext.traceFlags =
+        match[1] === '1' ? TraceFlags.SAMPLED : TraceFlags.NONE;
+    }
+
     return setExtractedSpanContext(context, spanContext);
   }
 }
