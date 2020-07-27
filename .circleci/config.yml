@@ -63,7 +63,7 @@ jobs:
     <<: *unit_tests
   node14:
     docker:
-      - image: node:13
+      - image: node:14
         environment: *test_env
     <<: *unit_tests
 
