@@ -5,7 +5,7 @@
 OpenTelemetry Google Cloud Trace Propagator allow other services to create spans with the right context.
 
 Format:
-TRACE_ID/SPAN_ID;o=TRACE_TRUE
+`TRACE_ID/SPAN_ID;o=TRACE_TRUE`
 
 * {TRACE_ID}
     * is a 32-character hexadecimal value representing a 128-bit number.
@@ -36,7 +36,6 @@ provider.register({
 - For more information on OpenTelemetry, visit: <https://opentelemetry.io/>
 - For more about OpenTelemetry JavaScript: <https://github.com/open-telemetry/opentelemetry-js>
 - Learn more about Google Cloud Trace at https://cloud.google.com/trace
-
 
 [npm-url]: https://www.npmjs.com/package/@google-cloud/opentelemetry-cloud-trace-propagator
 [npm-img]: https://badge.fury.io/js/%40google-cloud%2Fopentelemetry-cloud-trace-propagator.svg
