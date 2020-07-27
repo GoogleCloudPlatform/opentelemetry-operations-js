@@ -74,6 +74,7 @@ export class CloudPropagator implements HttpTextPropagator {
       traceId: '',
       spanId: crypto.randomBytes(SPAN_ID_BYTES).toString('hex'),
       traceFlags: TraceFlags.NONE,
+      isRemote: true,
     };
 
     let match;
