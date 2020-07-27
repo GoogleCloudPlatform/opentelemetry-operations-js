@@ -79,13 +79,13 @@ export class CloudPropagator implements HttpTextPropagator {
 
     let match;
     match = traceContextHeaderValue.match(TRACE_ID_REGEX);
-    if (match && match.length === 2) {
+    if (match && match[1] !== '00000000000000000000000000000000') {
       spanContext.traceId = match[1];
     } else {
       return context;
     }
     match = traceContextHeaderValue.match(SPAN_ID_REGEX);
-    if (match && match.length === 2) {
+    if (match && match[1] !== '0000000000000000') {
       spanContext.spanId = decToHex(match[1], { prefix: false }).padStart(
         16,
         '0'
@@ -93,7 +93,7 @@ export class CloudPropagator implements HttpTextPropagator {
     }
 
     match = traceContextHeaderValue.match(TRACE_TRUE_SUFFIX_REGEX);
-    if (match && match.length === 2) {
+    if (match) {
       spanContext.traceFlags =
         match[1] === '1' ? TraceFlags.SAMPLED : TraceFlags.NONE;
     }

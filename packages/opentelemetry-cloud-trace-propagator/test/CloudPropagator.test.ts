@@ -163,31 +163,5 @@ describe('CloudPropagator', () => {
         undefined
       );
     });
-
-    it('should gracefully handle an invalid x-cloud-trace-context header', () => {
-      // A set of test cases with different invalid combinations of a
-      // x-cloud-trace-context header. These should all result in a `undefined`
-      // SpanContext value being extracted.
-
-      const testCases: Record<string, string> = {
-        invalid1: 'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882foo',
-        invalid2: 'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=0foo',
-      };
-
-      for (const [testName, testData] of Object.entries(testCases)) {
-        carrier[X_CLOUD_TRACE_HEADER] = testData;
-
-        const extractedSpanContext = getExtractedSpanContext(
-          cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
-        );
-
-        assert.deepStrictEqual(extractedSpanContext, {
-          traceId: 'd4cda95b652f4a1592b449d5929fda1b',
-          spanId: '6e0c63257de34c92',
-          traceFlags: TraceFlags.NONE,
-          isRemote: true,
-        });
-      }
-    });
   });
 });
