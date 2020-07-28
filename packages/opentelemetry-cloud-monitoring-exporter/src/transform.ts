@@ -123,9 +123,7 @@ export function createTimeSeries(
     resource: transformResource(metric.resource, projectId),
     metricKind: transformMetricKind(metric.descriptor.metricKind),
     valueType: transformValueType(metric.descriptor.valueType, point),
-    points: [
-      transformPoint(point, metric.descriptor, startTime),
-    ],
+    points: [transformPoint(point, metric.descriptor, startTime)],
   };
 }
 

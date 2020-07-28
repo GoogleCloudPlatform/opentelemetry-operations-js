@@ -107,9 +107,7 @@ export class MetricExporter implements IMetricExporter {
     this._logger.debug('Google Cloud Monitoring export');
     const timeSeries: TimeSeries[] = [];
     for (const metric of metrics) {
-      const isRegistered = await this._registerMetricDescriptor(
-        metric
-      );
+      const isRegistered = await this._registerMetricDescriptor(metric);
       if (isRegistered) {
         timeSeries.push(
           createTimeSeries(
@@ -149,9 +147,7 @@ export class MetricExporter implements IMetricExporter {
    * registered. Returns false otherwise.
    * @param metricDescriptor The OpenTelemetry MetricDescriptor.
    */
-  private async _registerMetricDescriptor(
-    metric: MetricRecord,
-  ) {
+  private async _registerMetricDescriptor(metric: MetricRecord) {
     const metricDescriptor = metric.descriptor
     const existingMetricDescriptor = this.registeredMetricDescriptors.get(
       metricDescriptor.name
