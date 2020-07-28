@@ -371,11 +371,11 @@ describe('transform', () => {
           bucketOptions: {
             explicitBuckets: {
               bounds: [20],
-            }
+            },
           },
           count: 22,
           exemplars: null,
-          mean: 6.818181818181818
+          mean: 6.818181818181818,
         },
       });
       assert(result.interval.endTime);
@@ -414,13 +414,13 @@ describe('transform', () => {
           bucketOptions: {
             explicitBuckets: {
               bounds: [10, 30],
-            }
+            },
           },
           count: 3,
           exemplars: null,
           mean: 23.333333333333332,
         },
-       });
+      });
       assert(result.interval.endTime);
       assert(result.interval.startTime);
     });

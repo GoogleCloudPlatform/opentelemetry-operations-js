@@ -255,7 +255,7 @@ function transformValue(
         mean: value.sum / value.count,
         // sumOfSquaredDeviation param not aggregated
         bucketOptions: {
-          explicitBuckets: { bounds: value.buckets.boundaries }
+          explicitBuckets: { bounds: value.buckets.boundaries },
         },
         bucketCounts: value.buckets.counts,
       },
