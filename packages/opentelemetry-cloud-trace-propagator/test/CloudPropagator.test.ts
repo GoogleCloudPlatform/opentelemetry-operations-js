@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import {
+  Context,
   defaultSetter,
   defaultGetter,
   SpanContext,
   TraceFlags,
 } from '@opentelemetry/api';
-import { Context } from '@opentelemetry/context-base';
 import * as assert from 'assert';
 import {
   setExtractedSpanContext,
@@ -109,10 +109,10 @@ describe('CloudPropagator', () => {
       );
 
       assert.deepStrictEqual(
-        extractedSpanContext.traceId,
+        extractedSpanContext!.traceId,
         'b75dc0042a82efcb6b0a194911272926'
       );
-      assert.deepStrictEqual(extractedSpanContext.traceFlags, TraceFlags.NONE);
+      assert.deepStrictEqual(extractedSpanContext!.traceFlags, TraceFlags.NONE);
     });
 
     it('should handle missing trace_flags', () => {
@@ -123,11 +123,11 @@ describe('CloudPropagator', () => {
       );
 
       assert.deepStrictEqual(
-        extractedSpanContext.traceId,
+        extractedSpanContext!.traceId,
         'b75dc0042a82efcb6b0a194911272926'
       );
-      assert.deepStrictEqual(extractedSpanContext.spanId, '00000000001332e7');
-      assert.deepStrictEqual(extractedSpanContext.traceFlags, TraceFlags.NONE);
+      assert.deepStrictEqual(extractedSpanContext!.spanId, '00000000001332e7');
+      assert.deepStrictEqual(extractedSpanContext!.traceFlags, TraceFlags.NONE);
     });
 
     it('should extract x-cloud-trace-context from list of header', () => {
@@ -146,13 +146,13 @@ describe('CloudPropagator', () => {
     });
 
     it('should auto-generated IDs when X-Cloud-Trace-Context: o=1', () => {
-      carrier[X_CLOUD_TRACE_HEADER] = ';o=1';
+      carrier[X_CLOUD_TRACE_HEADER] = 'o=1';
       const extractedSpanContext = getExtractedSpanContext(
         cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
       );
 
       assert.deepStrictEqual(
-        extractedSpanContext.traceFlags,
+        extractedSpanContext!.traceFlags,
         TraceFlags.SAMPLED
       );
     });
@@ -188,7 +188,7 @@ describe('CloudPropagator', () => {
           cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
         );
 
-        assert.deepStrictEqual(extractedSpanContext, undefined);
+        assert.deepStrictEqual(extractedSpanContext, undefined, testName);
       }
     });
   });

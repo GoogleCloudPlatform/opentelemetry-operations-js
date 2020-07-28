@@ -67,7 +67,7 @@ export class CloudPropagator implements HttpTextPropagator {
       return context;
     }
     const matches = traceContextHeaderValue.match(
-      /^([0-9a-fA-F]{32})?(\/([0-9]+))?(;o=([01]))?$/
+      /^([0-9a-fA-F]{32})?(\/([0-9]+))?((^|;)o=([01]))?$/
     );
 
     if (!matches) {
@@ -80,10 +80,17 @@ export class CloudPropagator implements HttpTextPropagator {
         matches[3] === undefined
           ? randomSpanId()
           : decToHex(matches[3], { prefix: false }).padStart(16, '0'),
-      traceFlags: matches[5] === '1' ? TraceFlags.SAMPLED : TraceFlags.NONE,
+      traceFlags: matches[6] === '1' ? TraceFlags.SAMPLED : TraceFlags.NONE,
       isRemote: true,
     };
 
-    return setExtractedSpanContext(context, spanContext);
+    if (
+      spanContext.traceId !== '00000000000000000000000000000000' &&
+      spanContext.spanId.length === 16 &&
+      spanContext.spanId !== '0000000000000000'
+    ) {
+      return setExtractedSpanContext(context, spanContext);
+    }
+    return context;
   }
 }
