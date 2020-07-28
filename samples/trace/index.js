@@ -30,8 +30,8 @@ const { TraceExporter } = require('@google-cloud/opentelemetry-cloud-trace-expor
 // for more details.
 const provider = new NodeTracerProvider();
 
-// Initialize the exporter. When run in the Google Cloud Environment no
-// project id or credentials are needed.
+// Initialize the exporter. When your application is running on Google Cloud,
+// you don't need to provide auth credentials or a project id.
 const exporter = new TraceExporter();
 
 // Configure the span processor to send spans to the exporter

@@ -32,8 +32,8 @@ const { BatchSpanProcessor } = require('@opentelemetry/tracing');
 const provider = new NodeTracerProvider();
 provider.register();
 
-// Initialize the exporter. When run in the Google Cloud Environment no
-// project id or credentials are needed.
+// Initialize the exporter. When your application is running on Google Cloud,
+// you don't need to provide auth credentials or a project id.
 const exporter = new TraceExporter();
 
 // Add the exporter to the provider
