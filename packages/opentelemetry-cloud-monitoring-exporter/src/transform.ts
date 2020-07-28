@@ -47,14 +47,15 @@ export const OPENTELEMETRY_TASK_VALUE_DEFAULT = generateDefaultTaskValue();
 export function transformMetricDescriptor(
   metricDescriptor: OTMetricDescriptor,
   metricPrefix: string,
-  displayNamePrefix: string
+  displayNamePrefix: string,
+  point: OTPoint
 ): MetricDescriptor {
   return {
     type: transformMetricType(metricPrefix, metricDescriptor.name),
     description: metricDescriptor.description,
     displayName: transformDisplayName(displayNamePrefix, metricDescriptor.name),
     metricKind: transformMetricKind(metricDescriptor.metricKind),
-    valueType: transformValueType(metricDescriptor.valueType),
+    valueType: transformValueType(metricDescriptor.valueType, point),
     unit: metricDescriptor.unit,
     labels: [
       {
@@ -86,17 +87,18 @@ function transformMetricKind(kind: OTMetricKind): MetricKind {
     case OTMetricKind.UP_DOWN_COUNTER:
     case OTMetricKind.VALUE_OBSERVER:
     case OTMetricKind.UP_DOWN_SUM_OBSERVER:
+    case OTMetricKind.VALUE_RECORDER:
       return MetricKind.GAUGE;
     default:
-      // TODO: Add support for OTMetricKind.ValueRecorder
-      // OTMetricKind.Measure was renamed to ValueRecorder in #1117
       return MetricKind.UNSPECIFIED;
   }
 }
 
 /** Transforms a OpenTelemetry ValueType to a StackDriver ValueType. */
-function transformValueType(valueType: OTValueType): ValueType {
-  if (valueType === OTValueType.DOUBLE) {
+function transformValueType(valueType: OTValueType, point: OTPoint): ValueType {
+  if (isDistributionValue(point.value) || isHistogramValue(point.value)) {
+    return ValueType.DISTRIBUTION;
+  } else if (valueType === OTValueType.DOUBLE) {
     return ValueType.DOUBLE;
   } else if (valueType === OTValueType.INT) {
     return ValueType.INT64;
@@ -115,13 +117,14 @@ export function createTimeSeries(
   startTime: string,
   projectId: string
 ): TimeSeries {
+  const point = metric.aggregator.toPoint();
   return {
     metric: transformMetric(metric, metricPrefix),
     resource: transformResource(metric.resource, projectId),
     metricKind: transformMetricKind(metric.descriptor.metricKind),
-    valueType: transformValueType(metric.descriptor.valueType),
+    valueType: transformValueType(metric.descriptor.valueType, point),
     points: [
-      transformPoint(metric.aggregator.toPoint(), metric.descriptor, startTime),
+      transformPoint(point, metric.descriptor, startTime),
     ],
   };
 }

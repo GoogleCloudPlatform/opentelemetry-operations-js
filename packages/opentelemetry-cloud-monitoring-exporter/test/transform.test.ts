@@ -49,6 +49,19 @@ describe('transform', () => {
       metricKind: OTMetricKind.OBSERVER,
       valueType: OTValueType.DOUBLE,
     };
+    const point: OTPoint = {
+      value: 50,
+      timestamp: process.hrtime(),
+    };
+    const distributionPoint: OTPoint = {
+      value: {
+        min: 0,
+        max: 100,
+        count: 5,
+        sum: 200,
+      },
+      timestamp: process.hrtime(),
+    };
 
     it('should return a Google Cloud Monitoring MetricKind', () => {
       assert.strictEqual(
@@ -77,21 +90,25 @@ describe('transform', () => {
       );
       assert.strictEqual(
         TEST_ONLY.transformMetricKind(OTMetricKind.VALUE_RECORDER),
-        MetricKind.UNSPECIFIED
+        MetricKind.GAUGE
       );
     });
 
     it('should return a Google Cloud Monitoring ValueType', () => {
       assert.strictEqual(
-        TEST_ONLY.transformValueType(OTValueType.INT),
+        TEST_ONLY.transformValueType(OTValueType.INT, point),
         ValueType.INT64
       );
       assert.strictEqual(
-        TEST_ONLY.transformValueType(OTValueType.DOUBLE),
+        TEST_ONLY.transformValueType(OTValueType.DOUBLE, point),
         ValueType.DOUBLE
       );
       assert.strictEqual(
-        TEST_ONLY.transformValueType(2),
+        TEST_ONLY.transformValueType(OTValueType.DOUBLE, distributionPoint),
+        ValueType.DISTRIBUTION
+      );
+      assert.strictEqual(
+        TEST_ONLY.transformValueType(2, point),
         ValueType.VALUE_TYPE_UNSPECIFIED
       );
     });
@@ -117,7 +134,8 @@ describe('transform', () => {
       const descriptor: MetricDescriptor = transformMetricDescriptor(
         metricDescriptor,
         'custom.googleapis.com/myorg/',
-        'myorg/'
+        'myorg/',
+        point
       );
 
       assert.strictEqual(descriptor.description, METRIC_DESCRIPTION);
@@ -135,7 +153,8 @@ describe('transform', () => {
       const descriptor: MetricDescriptor = transformMetricDescriptor(
         metricDescriptor1,
         'custom.googleapis.com/myorg/',
-        'myorg/'
+        'myorg/',
+        point
       );
 
       assert.strictEqual(descriptor.description, METRIC_DESCRIPTION);

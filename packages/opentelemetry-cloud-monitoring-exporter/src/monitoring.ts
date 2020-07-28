@@ -108,7 +108,7 @@ export class MetricExporter implements IMetricExporter {
     const timeSeries: TimeSeries[] = [];
     for (const metric of metrics) {
       const isRegistered = await this._registerMetricDescriptor(
-        metric.descriptor
+        metric
       );
       if (isRegistered) {
         timeSeries.push(
@@ -150,8 +150,9 @@ export class MetricExporter implements IMetricExporter {
    * @param metricDescriptor The OpenTelemetry MetricDescriptor.
    */
   private async _registerMetricDescriptor(
-    metricDescriptor: OTMetricDescriptor
+    metric: MetricRecord,
   ) {
+    const metricDescriptor = metric.descriptor
     const existingMetricDescriptor = this.registeredMetricDescriptors.get(
       metricDescriptor.name
     );
@@ -167,7 +168,7 @@ export class MetricExporter implements IMetricExporter {
         return false;
       }
     }
-    const isRegistered = await this._createMetricDescriptor(metricDescriptor)
+    const isRegistered = await this._createMetricDescriptor(metric)
       .then(() => {
         this.registeredMetricDescriptors.set(
           metricDescriptor.name,
@@ -186,14 +187,15 @@ export class MetricExporter implements IMetricExporter {
    * Creates a new metric descriptor.
    * @param metricDescriptor The OpenTelemetry MetricDescriptor.
    */
-  private async _createMetricDescriptor(metricDescriptor: OTMetricDescriptor) {
+  private async _createMetricDescriptor(metric: MetricRecord) {
     const authClient = await this._authorize();
     const request = {
       name: `projects/${this._projectId}`,
       resource: transformMetricDescriptor(
-        metricDescriptor,
+        metric.descriptor,
         this._metricPrefix,
-        this._displayNamePrefix
+        this._displayNamePrefix,
+        metric.aggregator.toPoint()
       ),
       auth: authClient,
     };
