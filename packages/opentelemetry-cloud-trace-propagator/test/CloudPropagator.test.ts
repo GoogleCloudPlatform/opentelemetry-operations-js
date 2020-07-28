@@ -145,6 +145,18 @@ describe('CloudPropagator', () => {
       });
     });
 
+    it('should auto-generated IDs when X-Cloud-Trace-Context: o=1', () => {
+      carrier[X_CLOUD_TRACE_HEADER] = ';o=1';
+      const extractedSpanContext = getExtractedSpanContext(
+        cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
+      );
+
+      assert.deepStrictEqual(
+        extractedSpanContext.traceFlags,
+        TraceFlags.SAMPLED
+      );
+    });
+
     it('returns undefined if x-cloud-trace-context header is missing', () => {
       assert.deepStrictEqual(
         getExtractedSpanContext(
@@ -154,14 +166,30 @@ describe('CloudPropagator', () => {
       );
     });
 
-    it('returns undefined if x-cloud-trace-context header is invalid', () => {
-      carrier[X_CLOUD_TRACE_HEADER] = 'invalid!';
-      assert.deepStrictEqual(
-        getExtractedSpanContext(
+    it('should gracefully handle an invalid x-cloud-trace-context header', () => {
+      // A set of test cases with different invalid combinations of a
+      // x-cloud-trace-context header. These should all result in a `undefined`
+      // SpanContext value being extracted.
+
+      const testCases: Record<string, string> = {
+        invalid_header_value: 'invalid!',
+        invalid_span_id1:
+          'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882o=1',
+        invalid_span_id2:
+          'd4cda95b652f4a1592b449d5929fda1b/foo7929822056569588882bar;o=1',
+        too_long_id:
+          '111111111111111111111111111111111111111111111/7929822056569588882;o=1',
+      };
+
+      for (const [testName, testData] of Object.entries(testCases)) {
+        carrier[X_CLOUD_TRACE_HEADER] = testData;
+
+        const extractedSpanContext = getExtractedSpanContext(
           cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
-        ),
-        undefined
-      );
+        );
+
+        assert.deepStrictEqual(extractedSpanContext, undefined);
+      }
     });
   });
 });

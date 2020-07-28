@@ -24,6 +24,7 @@ import {
   setExtractedSpanContext,
   getParentSpanContext,
   randomSpanId,
+  randomTraceId,
 } from '@opentelemetry/core';
 
 /**
@@ -44,10 +45,6 @@ import {
 
 /** Header that carries span context across Google infrastructure. */
 export const X_CLOUD_TRACE_HEADER = 'x-cloud-trace-context';
-const TRACE_ID_REGEX = /^([0-9a-f]{32})/;
-const SPAN_ID_REGEX = /\/(\d+)/;
-const TRACE_TRUE_SUFFIX_REGEX = /o=([01])$/;
-const SPAN_ID_BYTES = 8;
 
 export class CloudPropagator implements HttpTextPropagator {
   inject(context: Context, carrier: unknown, setter: SetterFunction): void {
@@ -69,34 +66,23 @@ export class CloudPropagator implements HttpTextPropagator {
     if (typeof traceContextHeaderValue !== 'string') {
       return context;
     }
+    const matches = traceContextHeaderValue.match(
+      /^([0-9a-fA-F]{32})?(\/([0-9]+))?(;o=([01]))?$/
+    );
 
-    const spanContext = {
-      traceId: '',
-      spanId: randomSpanId(),
-      traceFlags: TraceFlags.NONE,
-      isRemote: true,
-    };
-
-    let match;
-    match = traceContextHeaderValue.match(TRACE_ID_REGEX);
-    if (match && match[1] !== '00000000000000000000000000000000') {
-      spanContext.traceId = match[1];
-    } else {
+    if (!matches) {
       return context;
     }
-    match = traceContextHeaderValue.match(SPAN_ID_REGEX);
-    if (match && match[1] !== '0000000000000000') {
-      spanContext.spanId = decToHex(match[1], { prefix: false }).padStart(
-        16,
-        '0'
-      );
-    }
 
-    match = traceContextHeaderValue.match(TRACE_TRUE_SUFFIX_REGEX);
-    if (match) {
-      spanContext.traceFlags =
-        match[1] === '1' ? TraceFlags.SAMPLED : TraceFlags.NONE;
-    }
+    const spanContext = {
+      traceId: matches[1] === undefined ? randomTraceId() : matches[1],
+      spanId:
+        matches[3] === undefined
+          ? randomSpanId()
+          : decToHex(matches[3], { prefix: false }).padStart(16, '0'),
+      traceFlags: matches[5] === '1' ? TraceFlags.SAMPLED : TraceFlags.NONE,
+      isRemote: true,
+    };
 
     return setExtractedSpanContext(context, spanContext);
   }
