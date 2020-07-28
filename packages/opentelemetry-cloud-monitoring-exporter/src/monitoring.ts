@@ -148,7 +148,7 @@ export class MetricExporter implements IMetricExporter {
    * @param metricDescriptor The OpenTelemetry MetricDescriptor.
    */
   private async _registerMetricDescriptor(metric: MetricRecord) {
-    const metricDescriptor = metric.descriptor
+    const metricDescriptor = metric.descriptor;
     const existingMetricDescriptor = this.registeredMetricDescriptors.get(
       metricDescriptor.name
     );
