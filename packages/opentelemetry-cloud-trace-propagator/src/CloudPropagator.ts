@@ -23,8 +23,8 @@ import { decToHex, hexToDec } from 'hex2dec';
 import {
   setExtractedSpanContext,
   getParentSpanContext,
+  randomSpanId,
 } from '@opentelemetry/core';
-import * as crypto from 'crypto';
 
 /**
  * This file implements propagation for the Stackdriver Trace v1 Trace Context
@@ -72,7 +72,7 @@ export class CloudPropagator implements HttpTextPropagator {
 
     const spanContext = {
       traceId: '',
-      spanId: crypto.randomBytes(SPAN_ID_BYTES).toString('hex'),
+      spanId: randomSpanId(),
       traceFlags: TraceFlags.NONE,
       isRemote: true,
     };
