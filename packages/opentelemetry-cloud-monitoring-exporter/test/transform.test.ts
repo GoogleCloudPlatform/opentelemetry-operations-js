@@ -367,20 +367,15 @@ describe('transform', () => {
 
       assert.deepStrictEqual(result.value, {
         distributionValue: {
-          bucketCounts: [
-              0,
-              22
-            ],
-            bucketOptions: {
-              explicitBuckets: {
-                bounds: [
-                  20
-                ]
-              }
-            },
-            count: 22,
-            exemplars: null,
-            mean: 6.818181818181818
+          bucketCounts: [0, 22],
+          bucketOptions: {
+            explicitBuckets: {
+              bounds: [20],
+            }
+          },
+          count: 22,
+          exemplars: null,
+          mean: 6.818181818181818
         },
       });
       assert(result.interval.endTime);
@@ -415,21 +410,15 @@ describe('transform', () => {
 
       assert.deepStrictEqual(result.value, {
         distributionValue: {
-          bucketCounts: [
-              1,
-              2
-            ],
-            bucketOptions: {
-              explicitBuckets: {
-                bounds: [
-                  10,
-                  30
-                ]
-              }
-            },
-            count: 3,
-            exemplars: null,
-            mean: 23.333333333333332,
+          bucketCounts: [1, 2],
+          bucketOptions: {
+            explicitBuckets: {
+              bounds: [10, 30],
+            }
+          },
+          count: 3,
+          exemplars: null,
+          mean: 23.333333333333332,
         },
        });
       assert(result.interval.endTime);

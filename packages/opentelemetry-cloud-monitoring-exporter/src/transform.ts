@@ -238,14 +238,13 @@ function transformValue(
 ) {
   if (isDistributionValue(value)) {
     // minimum two buckets due to mandatory buckets params in Cloud Monitoring API v3
-    return { 
+    return {
       distributionValue: {
         count: value.count,
-        mean: value.sum / value.count, 
+        mean: value.sum / value.count,
         // sumOfSquaredDeviation param not aggregated
         bucketOptions: { explicitBuckets: { bounds: [value.min] } },
         bucketCounts: [0, value.count],
-        exemplars: null,
       },
     };
   }
@@ -255,9 +254,10 @@ function transformValue(
         count: value.count,
         mean: value.sum / value.count,
         // sumOfSquaredDeviation param not aggregated
-        bucketOptions: { explicitBuckets: { bounds: value.buckets.boundaries } },
+        bucketOptions: {
+          explicitBuckets: { bounds: value.buckets.boundaries }
+        },
         bucketCounts: value.buckets.counts,
-        exemplars: null,
       },
     };
   }
