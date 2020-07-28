@@ -374,7 +374,6 @@ describe('transform', () => {
             },
           },
           count: 22,
-          exemplars: null,
           mean: 6.818181818181818,
         },
       });
@@ -417,7 +416,6 @@ describe('transform', () => {
             },
           },
           count: 3,
-          exemplars: null,
           mean: 23.333333333333332,
         },
       });
