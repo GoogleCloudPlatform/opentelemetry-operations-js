@@ -238,24 +238,28 @@ function transformValue(
 ) {
   if (isDistributionValue(value)) {
     // minimum two buckets due to mandatory buckets params in Cloud Monitoring API v3
-    return { distributionValue: {
+    return { 
+      distributionValue: {
         count: value.count,
         mean: value.sum / value.count, 
         // sumOfSquaredDeviation param not aggregated
         bucketOptions: { explicitBuckets: { bounds: [value.min] } },
         bucketCounts: [0, value.count],
         exemplars: null,
-    } };
+      },
+    };
   }
   if (isHistogramValue(value)) {
-    return { distributionValue: {
-      count: value.count,
-      mean: value.sum / value.count,
-      // sumOfSquaredDeviation param not aggregated
-      bucketOptions: { explicitBuckets: { bounds: value.buckets.boundaries } },
-      bucketCounts: value.buckets.counts,
-      exemplars: null,
-  } };
+    return {
+      distributionValue: {
+        count: value.count,
+        mean: value.sum / value.count,
+        // sumOfSquaredDeviation param not aggregated
+        bucketOptions: { explicitBuckets: { bounds: value.buckets.boundaries } },
+        bucketCounts: value.buckets.counts,
+        exemplars: null,
+      },
+    };
   }
 
   if (valueType === OTValueType.INT) {
