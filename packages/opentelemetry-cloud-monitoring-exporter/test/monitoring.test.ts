@@ -61,9 +61,11 @@ describe('MetricExporter', () => {
     let warn: sinon.SinonSpy;
     let error: sinon.SinonSpy;
     let getClientShouldFail: boolean;
+    let createTimeSeriesShouldFail: boolean;
 
     beforeEach(() => {
       getClientShouldFail = false;
+      createTimeSeriesShouldFail = false;
       logger = new ConsoleLogger(LogLevel.ERROR);
       exporter = new MetricExporter({
         logger,
@@ -94,6 +96,9 @@ describe('MetricExporter', () => {
           params: any,
           callback: (err: Error | null) => void
         ): any => {
+          if (createTimeSeriesShouldFail) {
+            return callback(new Error('fail'));
+          }
           callback(null);
         }
       );
@@ -143,11 +148,9 @@ describe('MetricExporter', () => {
 
     it('should export metrics', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
-      const counter = meter.createCounter('name', {
-        labelKeys: ['keya', 'keyb'],
-      });
-      counter.bind(labels).add(10);
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const counter = meter.createCounter('name');
+      counter.add(10, labels);
       meter.collect();
       const records = meter.getBatcher().checkPointSet();
 
@@ -160,23 +163,41 @@ describe('MetricExporter', () => {
         metricDescriptors.getCall(0).args[0].resource.type,
         'custom.googleapis.com/opentelemetry/name'
       );
-
       assert.equal(metricDescriptors.callCount, 1);
       assert.equal(timeSeries.callCount, 1);
-
       assert.deepStrictEqual(result, ExportResult.SUCCESS);
+    });
+
+    it('should return retryable if there is an error sending TimeSeries', async () => {
+      const meter = new MeterProvider().getMeter('test-meter');
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const counter = meter.createCounter('name');
+      counter.add(10, labels);
+      meter.collect();
+      const records = meter.getBatcher().checkPointSet();
+      createTimeSeriesShouldFail = true;
+      const result = await new Promise((resolve, reject) => {
+        exporter.export(records, result => {
+          resolve(result);
+        });
+      });
+      assert.deepStrictEqual(
+        metricDescriptors.getCall(0).args[0].resource.type,
+        'custom.googleapis.com/opentelemetry/name'
+      );
+      assert.equal(metricDescriptors.callCount, 1);
+      assert.equal(timeSeries.callCount, 1);
+      assert.deepStrictEqual(result, ExportResult.FAILED_RETRYABLE);
     });
 
     it('should enforce batch size limit on metrics', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
 
-      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
       let nMetrics = 401;
       while (nMetrics > 0) {
         nMetrics -= 1;
-        const counter = meter.createCounter(`name${nMetrics.toString()}`, {
-          labelKeys: ['keya', 'keyb'],
-        });
+        const counter = meter.createCounter(`name${nMetrics.toString()}`);
         counter.bind(labels).add(10);
       }
       meter.collect();
