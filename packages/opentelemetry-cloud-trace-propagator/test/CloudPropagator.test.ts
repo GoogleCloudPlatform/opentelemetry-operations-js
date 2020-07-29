@@ -102,7 +102,7 @@ describe('CloudPropagator', () => {
       });
     });
 
-    it('should handle invalid trace_flags', () => {
+    it('should handle trace_flags other than 0 and 1', () => {
       carrier[X_CLOUD_TRACE_HEADER] =
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=123';
       const extractedSpanContext = getExtractedSpanContext(
@@ -112,7 +112,7 @@ describe('CloudPropagator', () => {
       assert.deepStrictEqual(extractedSpanContext, {
         traceId: 'd4cda95b652f4a1592b449d5929fda1b',
         spanId: '6e0c63257de34c92',
-        traceFlags: TraceFlags.NONE,
+        traceFlags: TraceFlags.SAMPLED,
         isRemote: true,
       });
     });

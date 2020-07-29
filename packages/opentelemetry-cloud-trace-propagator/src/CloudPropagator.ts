@@ -79,7 +79,10 @@ export class CloudPropagator implements HttpTextPropagator {
     const spanContext = {
       traceId: matches[1],
       spanId: decToHex(matches[2], { prefix: false }).padStart(16, '0'),
-      traceFlags: matches[3] === '1' ? TraceFlags.SAMPLED : TraceFlags.NONE,
+      traceFlags:
+        isNaN(Number(matches[3])) || matches[3] === '0'
+          ? TraceFlags.NONE
+          : TraceFlags.SAMPLED,
       isRemote: true,
     };
 
