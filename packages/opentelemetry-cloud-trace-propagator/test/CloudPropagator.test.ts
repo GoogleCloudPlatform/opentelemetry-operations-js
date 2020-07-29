@@ -157,6 +157,18 @@ describe('CloudPropagator', () => {
       );
     });
 
+    it('should auto-generated IDs when X-Cloud-Trace-Context: ;o=1', () => {
+      carrier[X_CLOUD_TRACE_HEADER] = ';o=1';
+      const extractedSpanContext = getExtractedSpanContext(
+        cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
+      );
+
+      assert.deepStrictEqual(
+        extractedSpanContext!.traceFlags,
+        TraceFlags.SAMPLED
+      );
+    });
+
     it('returns undefined if x-cloud-trace-context header is missing', () => {
       assert.deepStrictEqual(
         getExtractedSpanContext(
@@ -179,6 +191,9 @@ describe('CloudPropagator', () => {
           'd4cda95b652f4a1592b449d5929fda1b/foo7929822056569588882bar;o=1',
         too_long_id:
           '111111111111111111111111111111111111111111111/7929822056569588882;o=1',
+        too_short_id: '1111111111111/7929822056569588882;o=1',
+        invalid_flag:
+          'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=123',
       };
 
       for (const [testName, testData] of Object.entries(testCases)) {

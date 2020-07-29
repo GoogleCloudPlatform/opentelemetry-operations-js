@@ -37,8 +37,8 @@ import {
  *  {TRACE_ID} is a 32-character hexadecimal value representing a 128-bit
  *    number. It should be unique between your requests, unless you
  *    intentionally want to bundle the requests together.
- *  {SPAN_ID} is the decimal representation of the (unsigned) span ID. It
- *    should be 0 for the first span in your trace. For subsequent requests,
+ *  {SPAN_ID} is the decimal representation of the (unsigned) span ID.
+ *    It should be randomly generated and unique in your trace. For subsequent requests,
  *    set SPAN_ID to the span ID of the parent request.
  *  {TRACE_TRUE} must be 1 to trace request. Specify 0 to not trace the request.
  */
