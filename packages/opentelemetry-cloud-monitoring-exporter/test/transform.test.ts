@@ -17,20 +17,22 @@ import {
   TEST_ONLY,
   transformMetricDescriptor,
   createTimeSeries,
+  OPENTELEMETRY_TASK_VALUE_DEFAULT,
 } from '../src/transform';
 import {
   MetricKind as OTMetricKind,
   MetricDescriptor as OTMetricDescriptor,
+  Point as OTPoint,
   MeterProvider,
 } from '@opentelemetry/metrics';
 import { ValueType as OTValueType, Labels } from '@opentelemetry/api';
 import { MetricKind, ValueType, MetricDescriptor } from '../src/types';
+import { Resource } from '@opentelemetry/resources';
 
 describe('transform', () => {
   const METRIC_NAME = 'metric-name';
   const METRIC_DESCRIPTION = 'metric-description';
   const DEFAULT_UNIT = '1';
-  const labelKeys: string[] = ['key1', 'key2'];
 
   describe('MetricDescriptor', () => {
     const metricDescriptor: OTMetricDescriptor = {
@@ -39,8 +41,6 @@ describe('transform', () => {
       unit: DEFAULT_UNIT,
       metricKind: OTMetricKind.COUNTER,
       valueType: OTValueType.INT,
-      monotonic: true,
-      labelKeys,
     };
     const metricDescriptor1: OTMetricDescriptor = {
       name: METRIC_NAME,
@@ -48,8 +48,6 @@ describe('transform', () => {
       unit: DEFAULT_UNIT,
       metricKind: OTMetricKind.OBSERVER,
       valueType: OTValueType.DOUBLE,
-      monotonic: false,
-      labelKeys,
     };
 
     it('should return a Google Cloud Monitoring MetricKind', () => {
@@ -58,11 +56,27 @@ describe('transform', () => {
         MetricKind.CUMULATIVE
       );
       assert.strictEqual(
+        TEST_ONLY.transformMetricKind(OTMetricKind.SUM_OBSERVER),
+        MetricKind.CUMULATIVE
+      );
+      assert.strictEqual(
+        TEST_ONLY.transformMetricKind(OTMetricKind.UP_DOWN_COUNTER),
+        MetricKind.GAUGE
+      );
+      assert.strictEqual(
         TEST_ONLY.transformMetricKind(OTMetricKind.OBSERVER),
         MetricKind.GAUGE
       );
       assert.strictEqual(
-        TEST_ONLY.transformMetricKind(OTMetricKind.MEASURE),
+        TEST_ONLY.transformMetricKind(OTMetricKind.VALUE_OBSERVER),
+        MetricKind.GAUGE
+      );
+      assert.strictEqual(
+        TEST_ONLY.transformMetricKind(OTMetricKind.UP_DOWN_SUM_OBSERVER),
+        MetricKind.GAUGE
+      );
+      assert.strictEqual(
+        TEST_ONLY.transformMetricKind(OTMetricKind.VALUE_RECORDER),
         MetricKind.UNSPECIFIED
       );
     });
@@ -76,17 +90,10 @@ describe('transform', () => {
         TEST_ONLY.transformValueType(OTValueType.DOUBLE),
         ValueType.DOUBLE
       );
-    });
-
-    it('should return a Google Cloud Monitoring LabelDescriptor', () => {
-      assert.deepStrictEqual(TEST_ONLY.transformLabelDescriptor(labelKeys), [
-        { description: 'key1', key: 'key1' },
-        { description: 'key2', key: 'key2' },
-        {
-          description: 'OpenTelemetry task identifier',
-          key: 'opentelemetry_task',
-        },
-      ]);
+      assert.strictEqual(
+        TEST_ONLY.transformValueType(2),
+        ValueType.VALUE_TYPE_UNSPECIFIED
+      );
     });
 
     it('should return a Google Cloud Monitoring DisplayName', () => {
@@ -144,29 +151,256 @@ describe('transform', () => {
   });
 
   describe('TimeSeries', () => {
-    it('should return a Google Cloud Monitoring Metric', () => {
+    const mockAwsResource = {
+      'cloud.provider': 'aws',
+      'host.id': 'host_id',
+      'cloud.region': 'my-region',
+      'cloud.account.id': '12345',
+    };
+    const mockAwsMonitoredResource = {
+      type: 'aws_ec2_instance',
+      labels: {
+        instance_id: 'host_id',
+        project_id: 'project_id',
+        region: 'aws:my-region',
+        aws_account: '12345',
+      },
+    };
+    const mockGCResource = {
+      'cloud.provider': 'gcp',
+      'host.id': 'host_id',
+      'cloud.zone': 'my-zone',
+    };
+    const mockGCMonitoredResource = {
+      type: 'gce_instance',
+      labels: {
+        instance_id: 'host_id',
+        project_id: 'project_id',
+        zone: 'my-zone',
+      },
+    };
+
+    it('should return a Google Cloud Monitoring Metric with a default resource', () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = { ['keyb']: 'value2', ['keya']: 'value1' };
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
 
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
-        labelKeys: ['keya', 'keyb'],
       });
       counter.bind(labels).add(10);
       meter.collect();
       const [record] = meter.getBatcher().checkPointSet();
-      const ts = createTimeSeries(record, 'otel', new Date().toISOString());
+      const ts = createTimeSeries(
+        record,
+        'otel',
+        new Date().toISOString(),
+        'project_id'
+      );
       assert.strictEqual(ts.metric.type, 'otel/metric-name');
       assert.strictEqual(ts.metric.labels['keya'], 'value1');
       assert.strictEqual(ts.metric.labels['keyb'], 'value2');
+      assert.strictEqual(
+        ts.metric.labels[TEST_ONLY.OPENTELEMETRY_TASK],
+        OPENTELEMETRY_TASK_VALUE_DEFAULT
+      );
       assert.deepStrictEqual(ts.resource, {
-        labels: {},
+        labels: { project_id: 'project_id' },
         type: 'global',
       });
       assert.strictEqual(ts.metricKind, MetricKind.CUMULATIVE);
       assert.strictEqual(ts.valueType, ValueType.DOUBLE);
       assert.strictEqual(ts.points.length, 1);
       assert.deepStrictEqual(ts.points[0].value, { doubleValue: 10 });
+    });
+    it('should detect an AWS instance', () => {
+      const meter = new MeterProvider({
+        resource: new Resource(mockAwsResource),
+      }).getMeter('test-meter');
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const counter = meter.createCounter(METRIC_NAME, {
+        description: METRIC_DESCRIPTION,
+      });
+      counter.bind(labels).add(10);
+      meter.collect();
+      const [record] = meter.getBatcher().checkPointSet();
+      const ts = createTimeSeries(
+        record,
+        'otel',
+        new Date().toISOString(),
+        'project_id'
+      );
+      assert.deepStrictEqual(ts.resource, mockAwsMonitoredResource);
+    });
+    it('should detect a Google Cloud VM instance', () => {
+      const meter = new MeterProvider({
+        resource: new Resource(mockGCResource),
+      }).getMeter('test-meter');
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const counter = meter.createCounter(METRIC_NAME, {
+        description: METRIC_DESCRIPTION,
+      });
+      counter.bind(labels).add(10);
+      meter.collect();
+      const [record] = meter.getBatcher().checkPointSet();
+      const ts = createTimeSeries(
+        record,
+        'otel',
+        new Date().toISOString(),
+        'project_id'
+      );
+      assert.deepStrictEqual(ts.resource, mockGCMonitoredResource);
+    });
+
+    it('should return global for an incomplete resource', () => {
+      // Missing host.id
+      const incompleteResource = {
+        'cloud.provider': 'gcp',
+        'cloud.zone': 'my-zone',
+      };
+      const meter = new MeterProvider({
+        resource: new Resource(incompleteResource),
+      }).getMeter('test-meter');
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const counter = meter.createCounter(METRIC_NAME, {
+        description: METRIC_DESCRIPTION,
+      });
+      counter.bind(labels).add(10);
+      meter.collect();
+      const [record] = meter.getBatcher().checkPointSet();
+      const ts = createTimeSeries(
+        record,
+        'otel',
+        new Date().toISOString(),
+        'project_id'
+      );
+      assert.deepStrictEqual(ts.resource, {
+        labels: { project_id: 'project_id' },
+        type: 'global',
+      });
+    });
+
+    it('should return a Google Cloud Monitoring Metric for an observer', () => {
+      const meter = new MeterProvider().getMeter('test-meter');
+      const labels: Labels = { keya: 'value1', keyb: 'value2' };
+      const observer = meter.createObserver(METRIC_NAME, {
+        description: METRIC_DESCRIPTION,
+        valueType: OTValueType.INT,
+      });
+      const int64Value = 0;
+      observer.setCallback(result => {
+        result.observe(() => int64Value, labels);
+      });
+      meter.collect();
+      const [record] = meter.getBatcher().checkPointSet();
+      const ts = createTimeSeries(
+        record,
+        'otel',
+        new Date().toISOString(),
+        'project_id'
+      );
+      assert(!ts.points[0].interval.startTime);
+      assert(ts.points[0].interval.endTime);
+      assert.strictEqual(ts.metric.type, `otel/${METRIC_NAME}`);
+      assert.strictEqual(ts.metric.labels['keya'], 'value1');
+      assert.strictEqual(ts.metric.labels['keyb'], 'value2');
+      assert.strictEqual(
+        ts.metric.labels[TEST_ONLY.OPENTELEMETRY_TASK],
+        OPENTELEMETRY_TASK_VALUE_DEFAULT
+      );
+      assert.deepStrictEqual(ts.resource, {
+        labels: { project_id: 'project_id' },
+        type: 'global',
+      });
+      assert.strictEqual(ts.metricKind, MetricKind.GAUGE);
+      assert.strictEqual(ts.valueType, ValueType.INT64);
+      assert.strictEqual(ts.points.length, 1);
+      assert.deepStrictEqual(ts.points[0].value, { int64Value });
+    });
+
+    it('should return a point', () => {
+      const metricDescriptor: OTMetricDescriptor = {
+        name: METRIC_NAME,
+        description: METRIC_DESCRIPTION,
+        unit: DEFAULT_UNIT,
+        metricKind: OTMetricKind.OBSERVER,
+        valueType: OTValueType.INT,
+      };
+      const point: OTPoint = {
+        value: 50,
+        timestamp: process.hrtime(),
+      };
+
+      const result = TEST_ONLY.transformPoint(
+        point,
+        metricDescriptor,
+        new Date().toISOString()
+      );
+
+      assert.deepStrictEqual(result.value, { int64Value: 50 });
+      assert(result.interval.endTime);
+      assert(!result.interval.startTime);
+    });
+
+    it('should throw an error when given a distribution value', () => {
+      const metricDescriptor: OTMetricDescriptor = {
+        name: METRIC_NAME,
+        description: METRIC_DESCRIPTION,
+        unit: DEFAULT_UNIT,
+        metricKind: OTMetricKind.COUNTER,
+        valueType: OTValueType.DOUBLE,
+      };
+      const point: OTPoint = {
+        value: {
+          min: 20.0,
+          max: 75.4,
+          count: 22,
+          sum: 150,
+        },
+        timestamp: process.hrtime(),
+      };
+
+      try {
+        TEST_ONLY.transformPoint(
+          point,
+          metricDescriptor,
+          new Date().toISOString()
+        );
+        assert.fail('should have thrown an error');
+      } catch (err) {
+        assert(err.message.toLowerCase().includes('distributions'));
+      }
+    });
+
+    it('should thrown an error when given a histogram value', () => {
+      const metricDescriptor: OTMetricDescriptor = {
+        name: METRIC_NAME,
+        description: METRIC_DESCRIPTION,
+        unit: DEFAULT_UNIT,
+        metricKind: OTMetricKind.COUNTER,
+        valueType: OTValueType.DOUBLE,
+      };
+      const point: OTPoint = {
+        value: {
+          buckets: {
+            boundaries: [10, 30],
+            counts: [1, 2],
+          },
+          sum: 70,
+          count: 3,
+        },
+        timestamp: process.hrtime(),
+      };
+
+      try {
+        TEST_ONLY.transformPoint(
+          point,
+          metricDescriptor,
+          new Date().toISOString()
+        );
+        assert.fail('should have thrown an error');
+      } catch (err) {
+        assert(err.message.toLowerCase().includes('histograms'));
+      }
     });
   });
 });

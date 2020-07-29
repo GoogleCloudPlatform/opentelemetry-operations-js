@@ -112,16 +112,31 @@ export class MetricExporter implements IMetricExporter {
       );
       if (isRegistered) {
         timeSeries.push(
-          createTimeSeries(metric, this._metricPrefix, this._startTime)
+          createTimeSeries(
+            metric,
+            this._metricPrefix,
+            this._startTime,
+            this._projectId
+          )
         );
       }
     }
 
+    let sendFailed = false;
     for (const batchedTimeSeries of partitionList(
       timeSeries,
       MAX_BATCH_EXPORT_SIZE
     )) {
-      await this._sendTimeSeries(batchedTimeSeries);
+      try {
+        await this._sendTimeSeries(batchedTimeSeries);
+      } catch (err) {
+        const message = `Send TimeSeries failed: ${err.message}`;
+        sendFailed = true;
+        this._logger.error(message);
+      }
+    }
+    if (sendFailed) {
+      return cb(ExportResult.FAILED_RETRYABLE);
     }
     cb(ExportResult.SUCCESS);
   }
