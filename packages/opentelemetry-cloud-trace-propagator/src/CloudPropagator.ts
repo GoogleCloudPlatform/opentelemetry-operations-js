@@ -68,7 +68,11 @@ export class CloudPropagator implements HttpTextPropagator {
       /^([0-9a-fA-F]{32})(?:\/([0-9]+))(?:;o=(.*))?/
     );
 
-    if (!matches) {
+    if (
+      !matches ||
+      matches[1] === '00000000000000000000000000000000' ||
+      matches[2] === '0000000000000000'
+    ) {
       return context;
     }
 

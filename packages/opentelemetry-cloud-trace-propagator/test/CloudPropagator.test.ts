@@ -170,6 +170,10 @@ describe('CloudPropagator', () => {
         too_short_id: '1111111111111/7929822056569588882;o=1',
         missing_trace_id: '/7929822056569588882;o=1',
         invalid_flag: 'o=1',
+        invalid_trace_id_all_zeros:
+          '00000000000000000000000000000000/7929822056569588882;o=1',
+        invalid_span_id_all_zeros:
+          'd4cda95b652f4a1592b449d5929fda1b/0000000000000000;o=1',
       };
 
       for (const [testName, testData] of Object.entries(testCases)) {
