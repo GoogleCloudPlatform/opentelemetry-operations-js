@@ -32,12 +32,12 @@ unit_tests: &unit_tests
 jobs:
   lint:
     docker:
-      - image: node:12
+      - image: circleci/node:12
     steps:
       - checkout
       - run:
           name: Install minimal modules globally
-          command: npm i -g lerna gts@1.1.0 typescript
+          command: npm install
       - run:
           name: Check code style and linting
           command: npm run lint
