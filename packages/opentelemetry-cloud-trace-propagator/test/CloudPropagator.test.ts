@@ -102,17 +102,19 @@ describe('CloudPropagator', () => {
       });
     });
 
-    it('should extract specified traceId and auto-generated spanId.', () => {
-      carrier[X_CLOUD_TRACE_HEADER] = 'b75dc0042a82efcb6b0a194911272926';
+    it('should handle invalid trace_flags', () => {
+      carrier[X_CLOUD_TRACE_HEADER] =
+        'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=123';
       const extractedSpanContext = getExtractedSpanContext(
         cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
       );
 
-      assert.deepStrictEqual(
-        extractedSpanContext!.traceId,
-        'b75dc0042a82efcb6b0a194911272926'
-      );
-      assert.deepStrictEqual(extractedSpanContext!.traceFlags, TraceFlags.NONE);
+      assert.deepStrictEqual(extractedSpanContext, {
+        traceId: 'd4cda95b652f4a1592b449d5929fda1b',
+        spanId: '6e0c63257de34c92',
+        traceFlags: TraceFlags.NONE,
+        isRemote: true,
+      });
     });
 
     it('should handle missing trace_flags', () => {
@@ -145,30 +147,6 @@ describe('CloudPropagator', () => {
       });
     });
 
-    it('should auto-generated IDs when X-Cloud-Trace-Context: o=1', () => {
-      carrier[X_CLOUD_TRACE_HEADER] = 'o=1';
-      const extractedSpanContext = getExtractedSpanContext(
-        cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
-      );
-
-      assert.deepStrictEqual(
-        extractedSpanContext!.traceFlags,
-        TraceFlags.SAMPLED
-      );
-    });
-
-    it('should auto-generated IDs when X-Cloud-Trace-Context: ;o=1', () => {
-      carrier[X_CLOUD_TRACE_HEADER] = ';o=1';
-      const extractedSpanContext = getExtractedSpanContext(
-        cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
-      );
-
-      assert.deepStrictEqual(
-        extractedSpanContext!.traceFlags,
-        TraceFlags.SAMPLED
-      );
-    });
-
     it('returns undefined if x-cloud-trace-context header is missing', () => {
       assert.deepStrictEqual(
         getExtractedSpanContext(
@@ -185,15 +163,13 @@ describe('CloudPropagator', () => {
 
       const testCases: Record<string, string> = {
         invalid_header_value: 'invalid!',
-        invalid_span_id1:
-          'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882o=1',
-        invalid_span_id2:
+        invalid_span_id:
           'd4cda95b652f4a1592b449d5929fda1b/foo7929822056569588882bar;o=1',
         too_long_id:
           '111111111111111111111111111111111111111111111/7929822056569588882;o=1',
         too_short_id: '1111111111111/7929822056569588882;o=1',
-        invalid_flag:
-          'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=123',
+        missing_trace_id: '/7929822056569588882;o=1',
+        invalid_flag: 'o=1',
       };
 
       for (const [testName, testData] of Object.entries(testCases)) {

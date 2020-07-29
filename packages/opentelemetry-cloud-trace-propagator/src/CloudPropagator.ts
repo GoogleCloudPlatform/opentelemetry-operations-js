@@ -23,8 +23,6 @@ import { decToHex, hexToDec } from 'hex2dec';
 import {
   setExtractedSpanContext,
   getParentSpanContext,
-  randomSpanId,
-  randomTraceId,
 } from '@opentelemetry/core';
 
 /**
@@ -67,7 +65,7 @@ export class CloudPropagator implements HttpTextPropagator {
       return context;
     }
     const matches = traceContextHeaderValue.match(
-      /^([0-9a-fA-F]{32})?(\/([0-9]+))?((^|;)o=([01]))?$/
+      /^([0-9a-fA-F]{32})(?:\/([0-9]+))(?:;o=(.*))?/
     );
 
     if (!matches) {
@@ -75,22 +73,12 @@ export class CloudPropagator implements HttpTextPropagator {
     }
 
     const spanContext = {
-      traceId: matches[1] === undefined ? randomTraceId() : matches[1],
-      spanId:
-        matches[3] === undefined
-          ? randomSpanId()
-          : decToHex(matches[3], { prefix: false }).padStart(16, '0'),
-      traceFlags: matches[6] === '1' ? TraceFlags.SAMPLED : TraceFlags.NONE,
+      traceId: matches[1],
+      spanId: decToHex(matches[2], { prefix: false }).padStart(16, '0'),
+      traceFlags: matches[3] === '1' ? TraceFlags.SAMPLED : TraceFlags.NONE,
       isRemote: true,
     };
 
-    if (
-      spanContext.traceId !== '00000000000000000000000000000000' &&
-      spanContext.spanId.length === 16 &&
-      spanContext.spanId !== '0000000000000000'
-    ) {
-      return setExtractedSpanContext(context, spanContext);
-    }
-    return context;
+    return setExtractedSpanContext(context, spanContext);
   }
 }
