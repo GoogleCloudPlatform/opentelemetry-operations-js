@@ -27,6 +27,10 @@
     "LICENSE",
     "README.md"
   ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://wombat-dressing-room.appspot.com"
+  },
   "devDependencies": {
     "gts": "2.0.2",
     "typescript": "3.9.7"
