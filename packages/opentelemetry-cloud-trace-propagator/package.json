@@ -43,7 +43,7 @@
     "nyc": "15.1.0",
     "rimraf": "3.0.2",
     "ts-mocha": "7.0.0",
-    "typescript": "3.9.5"
+    "typescript": "3.9.7"
   },
   "dependencies": {
     "@opentelemetry/api": "^0.10.0",
