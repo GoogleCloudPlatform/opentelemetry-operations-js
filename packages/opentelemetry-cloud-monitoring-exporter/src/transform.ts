@@ -257,14 +257,14 @@ function transformValue(
 function isDistributionValue(
   value: number | OTDistribution | OTHistogram
 ): value is OTDistribution {
-  return value.hasOwnProperty('min');
+  return Object.prototype.hasOwnProperty.call(value, 'min');
 }
 
 /** Returns true if value is of type OTHistogram */
 function isHistogramValue(
   value: number | OTDistribution | OTHistogram
 ): value is OTHistogram {
-  return value.hasOwnProperty('buckets');
+  return Object.prototype.hasOwnProperty.call(value, 'buckets');
 }
 
 /** Returns a task label value in the format of 'nodejs-<pid>@<hostname>'. */

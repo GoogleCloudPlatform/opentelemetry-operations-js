@@ -39,7 +39,3 @@ coverage/
 
 #docs files
 docs
-
-# lock files
-package-lock.json
-packages/**/package-lock.json
