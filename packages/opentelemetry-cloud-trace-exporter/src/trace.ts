@@ -131,10 +131,13 @@ export class TraceExporter implements SpanExporter {
     this._logger.debug(
       'Google Cloud Trace got authentication. Initializaing rpc client'
     );
-    const packageDefinition = protoloader.loadSync(
+    const packageDefinition = await protoloader.load(
       protofiles.getProtoPath('devtools', 'cloudtrace', 'v2', 'tracing.proto'),
       {
         includeDirs: [protofiles.getProtoPath('..')],
+        longs: String,
+        defaults: true,
+        oneofs: true,
       }
     );
     /* tslint:disable-next-line:no-any */
