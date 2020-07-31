@@ -57,6 +57,6 @@
     "@opentelemetry/resources": "^0.7.0",
     "@opentelemetry/tracing": "^0.7.0",
     "google-auth-library": "^5.7.0",
-    "googleapis": "^46.0.0"
+    "googleapis": "^57.0.0"
   }
 }
