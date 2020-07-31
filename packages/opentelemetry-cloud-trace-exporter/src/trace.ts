@@ -102,7 +102,9 @@ export class TraceExporter implements SpanExporter {
 
     const metadata = new grpc.Metadata();
     metadata.add(OT_REQUEST_HEADER, '1');
-    const batchWriteSpans = promisify(this._traceServiceClient.BatchWriteSpans);
+    const batchWriteSpans = promisify(
+      this._traceServiceClient.BatchWriteSpans
+    ).bind(this._traceServiceClient);
     try {
       await batchWriteSpans(spans, metadata);
       const successMsg = 'batchWriteSpans successfully';
@@ -134,7 +136,7 @@ export class TraceExporter implements SpanExporter {
         oneofs: true,
       }
     );
-    /* tslint:disable-next-line:no-any */
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     const { google }: any = grpc.loadPackageDefinition(packageDefinition);
     const traceService = google.devtools.cloudtrace.v2.TraceService;
     const sslCreds = grpc.credentials.createSsl();
