@@ -24,6 +24,8 @@ import { TraceExporterOptions } from './external-types';
 import { getReadableSpanTransformer } from './transform';
 import { TraceService, NamedSpans } from './types';
 
+const OT_REQUEST_HEADER = 'x-opentelemetry-outgoing-request';
+
 /**
  * Format and sends span information to Google Cloud Trace.
  */
@@ -100,7 +102,7 @@ export class TraceExporter implements SpanExporter {
       }
 
       const metadata = new grpc.Metadata();
-      metadata.add('x-opentelemetry-outgoing-request', '1');
+      metadata.add(OT_REQUEST_HEADER, '1');
       this._traceServiceClient.BatchWriteSpans(
         spans,
         metadata,
