@@ -20,6 +20,7 @@ import * as protoloader from '@grpc/proto-loader';
 import * as protofiles from 'google-proto-files';
 import * as grpc from 'grpc';
 import { GoogleAuth } from 'google-auth-library';
+import { promisify } from 'util';
 import { TraceExporterOptions } from './external-types';
 import { getReadableSpanTransformer } from './transform';
 import { TraceService, NamedSpans } from './types';
@@ -87,38 +88,31 @@ export class TraceExporter implements SpanExporter {
    * service.
    * @param spans
    */
-  private _batchWriteSpans(spans: NamedSpans): Promise<ExportResult> {
+  private async _batchWriteSpans(spans: NamedSpans): Promise<ExportResult> {
     this._logger.debug('Google Cloud Trace batch writing traces');
-    // Always resolve with the ExportResult code
-    return new Promise(async resolve => {
-      if (!this._traceServiceClient) {
-        try {
-          this._traceServiceClient = await this._getClient();
-        } catch (err) {
-          err.message = `authorize error: ${err.message}`;
-          this._logger.error(err.message);
-          return resolve(ExportResult.FAILED_NOT_RETRYABLE);
-        }
+    if (!this._traceServiceClient) {
+      try {
+        this._traceServiceClient = await this._getClient();
+      } catch (err) {
+        err.message = `authorize error: ${err.message}`;
+        this._logger.error(err.message);
+        return ExportResult.FAILED_NOT_RETRYABLE;
       }
+    }
 
-      const metadata = new grpc.Metadata();
-      metadata.add(OT_REQUEST_HEADER, '1');
-      this._traceServiceClient.BatchWriteSpans(
-        spans,
-        metadata,
-        (err: Error) => {
-          if (err) {
-            err.message = `batchWriteSpans error: ${err.message}`;
-            this._logger.error(err.message);
-            resolve(ExportResult.FAILED_RETRYABLE);
-          } else {
-            const successMsg = 'batchWriteSpans successfully';
-            this._logger.debug(successMsg);
-            resolve(ExportResult.SUCCESS);
-          }
-        }
-      );
-    });
+    const metadata = new grpc.Metadata();
+    metadata.add(OT_REQUEST_HEADER, '1');
+    const batchWriteSpans = promisify(this._traceServiceClient.BatchWriteSpans);
+    try {
+      await batchWriteSpans(spans, metadata);
+      const successMsg = 'batchWriteSpans successfully';
+      this._logger.debug(successMsg);
+      return ExportResult.SUCCESS;
+    } catch (err) {
+      err.message = `batchWriteSpans error: ${err.message}`;
+      this._logger.error(err.message);
+      return ExportResult.FAILED_RETRYABLE;
+    }
   }
 
   /**
