@@ -33,8 +33,8 @@ export interface Span {
 }
 
 export interface Timestamp {
-  seconds?: number;
-  nanos?: number;
+  seconds: number;
+  nanos: number;
 }
 
 export interface AttributeMap {
