@@ -90,14 +90,12 @@ export class TraceExporter implements SpanExporter {
    */
   private async _batchWriteSpans(spans: NamedSpans): Promise<ExportResult> {
     this._logger.debug('Google Cloud Trace batch writing traces');
-    if (!this._traceServiceClient) {
-      try {
-        this._traceServiceClient = await this._getClient();
-      } catch (err) {
-        err.message = `authorize error: ${err.message}`;
-        this._logger.error(err.message);
-        return ExportResult.FAILED_NOT_RETRYABLE;
-      }
+    try {
+      this._traceServiceClient = await this._getClient();
+    } catch (err) {
+      err.message = `authorize error: ${err.message}`;
+      this._logger.error(err.message);
+      return ExportResult.FAILED_NOT_RETRYABLE;
     }
 
     const metadata = new grpc.Metadata();
@@ -122,6 +120,9 @@ export class TraceExporter implements SpanExporter {
    * authenticates with google credentials and initializes the rpc client
    */
   private async _getClient(): Promise<TraceService> {
+    if (this._traceServiceClient) {
+      return this._traceServiceClient;
+    }
     this._logger.debug('Google Cloud Trace authenticating');
     const creds = await this._auth.getClient();
     this._logger.debug(
