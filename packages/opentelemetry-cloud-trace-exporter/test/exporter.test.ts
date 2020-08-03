@@ -283,7 +283,7 @@ describe('Google Cloud Trace Exporter', () => {
           resolve(result);
         });
       });
-      assert(error.getCall(0).args[0].match(/authorize error: fail/));
+      assert(error.getCall(0).args[0].match(/failed to create client: fail/));
       assert(traceServiceConstructor.calledOnce);
       assert.deepStrictEqual(result, ExportResult.FAILED_NOT_RETRYABLE);
     });

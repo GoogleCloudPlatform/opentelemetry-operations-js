@@ -93,7 +93,7 @@ export class TraceExporter implements SpanExporter {
     try {
       this._traceServiceClient = await this._getClient();
     } catch (err) {
-      err.message = `authorize error: ${err.message}`;
+      err.message = `failed to create client: ${err.message}`;
       this._logger.error(err.message);
       return ExportResult.FAILED_NOT_RETRYABLE;
     }
