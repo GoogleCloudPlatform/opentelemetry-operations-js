@@ -13,7 +13,7 @@ Format:
 
 * {SPAN_ID}
     * is the decimal representation of the (unsigned) span ID.
-    * It should be 0 for the first span in your trace.
+    * It should be randomly generated and unique in your trace.
     * For subsequent requests, set SPAN_ID to the span ID of the parent request.
 
 * {TRACE_TRUE}
