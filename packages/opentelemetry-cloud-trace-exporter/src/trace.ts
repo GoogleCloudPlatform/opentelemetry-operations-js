@@ -105,8 +105,7 @@ export class TraceExporter implements SpanExporter {
     ).bind(this._traceServiceClient);
     try {
       await batchWriteSpans(spans, metadata);
-      const successMsg = 'batchWriteSpans successfully';
-      this._logger.debug(successMsg);
+      this._logger.debug('batchWriteSpans successfully');
       return ExportResult.SUCCESS;
     } catch (err) {
       err.message = `batchWriteSpans error: ${err.message}`;
