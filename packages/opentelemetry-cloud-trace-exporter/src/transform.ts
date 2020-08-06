@@ -13,10 +13,7 @@
 // limitations under the License.
 
 import * as ot from '@opentelemetry/api';
-import {
-  hrTimeToTimeStamp,
-  VERSION as CORE_VERSION,
-} from '@opentelemetry/core';
+import { VERSION as CORE_VERSION } from '@opentelemetry/core';
 import { Resource } from '@opentelemetry/resources';
 import { ReadableSpan } from '@opentelemetry/tracing';
 import {
@@ -26,6 +23,7 @@ import {
   Link,
   LinkType,
   Span,
+  Timestamp,
   TruncatableString,
 } from './types';
 import { VERSION } from './version';
@@ -52,15 +50,15 @@ export function getReadableSpanTransformer(
       links: {
         link: span.links.map(transformLink),
       },
-      endTime: hrTimeToTimeStamp(span.endTime),
-      startTime: hrTimeToTimeStamp(span.startTime),
+      endTime: transformTime(span.endTime),
+      startTime: transformTime(span.startTime),
       name: `projects/${projectId}/traces/${span.spanContext.traceId}/spans/${span.spanContext.spanId}`,
       spanId: span.spanContext.spanId,
-      sameProcessAsParentSpan: !span.spanContext.isRemote,
+      sameProcessAsParentSpan: { value: !span.spanContext.isRemote },
       status: span.status,
       timeEvents: {
         timeEvent: span.events.map(e => ({
-          time: hrTimeToTimeStamp(e.time),
+          time: transformTime(e.time),
           annotation: {
             attributes: transformAttributes(e.attributes),
             description: stringToTruncatableString(e.name),
@@ -74,6 +72,13 @@ export function getReadableSpanTransformer(
     }
 
     return out;
+  };
+}
+
+function transformTime(time: ot.HrTime): Timestamp {
+  return {
+    seconds: time[0],
+    nanos: time[1],
   };
 }
 

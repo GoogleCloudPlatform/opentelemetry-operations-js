@@ -21,7 +21,11 @@ import { ReadableSpan } from '@opentelemetry/tracing';
 import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
+import * as protoloader from '@grpc/proto-loader';
+import * as grpc from 'grpc';
+import { OAuth2Client } from 'google-auth-library';
 import { TraceExporter } from '../src';
+import { TraceService } from '../src/types';
 import {
   BASE_PATH,
   HEADER_NAME,
@@ -73,10 +77,26 @@ describe('Google Cloud Trace Exporter', () => {
   });
 
   describe('export', () => {
+    const mockChannelCreds: grpc.ChannelCredentials = {
+      compose: sinon.stub(),
+    };
+    const mockCallCreds: grpc.CallCredentials = {
+      compose: sinon.stub(),
+      generateMetadata: sinon.stub(),
+    };
+    const mockCombinedCreds: grpc.ChannelCredentials = {
+      compose: sinon.stub(),
+    };
+    const mockClient = sinon.mock(OAuth2Client);
+
     let exporter: TraceExporter;
     let logger: ConsoleLogger;
     /* tslint:disable-next-line:no-any */
-    let batchWrite: sinon.SinonSpy<[any, any], any>;
+    let batchWrite: sinon.SinonSpy<[any, any, any], any>;
+    let traceServiceConstructor: sinon.SinonSpy;
+    let createSsl: sinon.SinonStub;
+    let createFromGoogleCreds: sinon.SinonStub;
+    let combineChannelCreds: sinon.SinonStub;
     let debug: sinon.SinonSpy;
     let info: sinon.SinonSpy;
     let warn: sinon.SinonSpy;
@@ -93,8 +113,13 @@ describe('Google Cloud Trace Exporter', () => {
       });
 
       batchWrite = sinon.spy(
-        /* tslint:disable-next-line:no-any */
-        (spans: any, callback: (err: Error | null) => void): any => {
+        /* tslint:disable:no-any */
+        (
+          spans: any,
+          metadata: any,
+          callback: (err: Error | null) => void
+        ): any => {
+          /* tslint:enable:no-any */
           if (batchWriteShouldFail) {
             callback(new Error('fail'));
           } else {
@@ -103,20 +128,57 @@ describe('Google Cloud Trace Exporter', () => {
         }
       );
 
-      sinon.replace(
-        TraceExporter['_cloudTrace'].projects.traces,
-        'batchWrite',
-        /* tslint:disable-next-line:no-any */
-        batchWrite as any
-      );
-
       sinon.replace(exporter['_auth'], 'getClient', () => {
         if (getClientShouldFail) {
           throw new Error('fail');
         }
         /* tslint:disable-next-line:no-any */
-        return {} as any;
+        return mockClient as any;
       });
+
+      sinon.stub(protoloader, 'loadSync');
+
+      createSsl = sinon
+        .stub(grpc.credentials, 'createSsl')
+        .returns(mockChannelCreds);
+
+      createFromGoogleCreds = sinon
+        .stub(grpc.credentials, 'createFromGoogleCredential')
+        .returns(mockCallCreds);
+
+      combineChannelCreds = sinon
+        .stub(grpc.credentials, 'combineChannelCredentials')
+        .returns(mockCombinedCreds);
+
+      sinon.replace(
+        grpc,
+        'loadPackageDefinition',
+        (): grpc.GrpcObject => {
+          traceServiceConstructor = sinon.spy(
+            (host: string, creds: grpc.ChannelCredentials) => {}
+          );
+          /* tslint:disable-next-line:no-any */
+          const def: any = {
+            google: {
+              devtools: {
+                cloudtrace: {
+                  v2: {},
+                },
+              },
+            },
+          };
+          // Replace the TraceService with a mock TraceService
+          def.google.devtools.cloudtrace.v2.TraceService = class MockTraceService
+            implements TraceService {
+            /* tslint:disable-next-line:variable-name */
+            BatchWriteSpans = batchWrite;
+            constructor(host: string, creds: grpc.ChannelCredentials) {
+              traceServiceConstructor(host, creds);
+            }
+          };
+          return def;
+        }
+      );
 
       debug = sinon.spy();
       info = sinon.spy();
@@ -161,11 +223,64 @@ describe('Google Cloud Trace Exporter', () => {
       });
 
       assert.deepStrictEqual(
-        batchWrite.getCall(0).args[0].resource.spans[0].displayName.value,
+        batchWrite.getCall(0).args[0].spans[0].displayName.value,
         'my-span'
       );
 
+      assert(createSsl.calledOnceWithExactly());
+      assert(createFromGoogleCreds.calledOnceWithExactly(mockClient));
+      assert(
+        combineChannelCreds.calledOnceWithExactly(
+          mockChannelCreds,
+          mockCallCreds
+        )
+      );
+      assert(
+        traceServiceConstructor.calledOnceWithExactly(
+          'cloudtrace.googleapis.com:443',
+          mockCombinedCreds
+        )
+      );
       assert.deepStrictEqual(result, ExportResult.SUCCESS);
+    });
+
+    it('should memoize the rpc client', async () => {
+      const readableSpan: ReadableSpan = {
+        attributes: {},
+        duration: [32, 800000000],
+        startTime: [1566156729, 709],
+        endTime: [1566156731, 709],
+        ended: true,
+        events: [],
+        kind: types.SpanKind.CLIENT,
+        links: [],
+        name: 'my-span',
+        spanContext: {
+          traceId: 'd4cda95b652f4a1592b449d5929fda1b',
+          spanId: '6e0c63257de34c92',
+          traceFlags: TraceFlags.NONE,
+          isRemote: true,
+        },
+        status: { code: types.CanonicalCode.OK },
+        resource: Resource.empty(),
+      };
+
+      await new Promise((resolve, reject) => {
+        exporter.export([readableSpan], result => {
+          resolve(result);
+        });
+      });
+
+      await new Promise((resolve, reject) => {
+        exporter.export([readableSpan], result => {
+          resolve(result);
+        });
+      });
+
+      assert(createSsl.calledOnce);
+      assert(createFromGoogleCreds.calledOnce);
+      assert(combineChannelCreds.calledOnce);
+      assert(traceServiceConstructor.calledOnce);
     });
 
     it('should return not retryable if authorization fails', async () => {
@@ -196,9 +311,8 @@ describe('Google Cloud Trace Exporter', () => {
           resolve(result);
         });
       });
-
-      assert(batchWrite.notCalled);
-      assert(error.getCall(0).args[0].match(/authorize error: fail/));
+      assert(error.getCall(0).args[0].match(/failed to create client: fail/));
+      assert(traceServiceConstructor.calledOnce);
       assert.deepStrictEqual(result, ExportResult.FAILED_NOT_RETRYABLE);
     });
 
@@ -230,7 +344,6 @@ describe('Google Cloud Trace Exporter', () => {
           resolve(result);
         });
       });
-
       assert.deepStrictEqual(result, ExportResult.FAILED_RETRYABLE);
     });
 
