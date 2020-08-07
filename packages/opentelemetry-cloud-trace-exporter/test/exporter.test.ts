@@ -26,6 +26,18 @@ import * as grpc from 'grpc';
 import { OAuth2Client } from 'google-auth-library';
 import { TraceExporter } from '../src';
 import { TraceService } from '../src/types';
+import {
+  BASE_PATH,
+  HEADER_NAME,
+  HEADER_VALUE,
+  HOST_ADDRESS,
+} from 'gcp-metadata';
+
+const HEADERS: {} = {
+  [HEADER_NAME.toLowerCase()]: HEADER_VALUE,
+};
+
+const PROJECT_ID_PATH: string = BASE_PATH + '/project/project-id';
 
 describe('Google Cloud Trace Exporter', () => {
   beforeEach(() => {
@@ -44,6 +56,22 @@ describe('Google Cloud Trace Exporter', () => {
       assert(exporter);
       return (exporter['_projectId'] as Promise<string>).then(id => {
         assert.deepStrictEqual(id, 'not-real');
+      });
+    });
+
+    it('should construct exporter in GCE/GCP environment without args', async () => {
+      // This variable is set by the test env and must be undefined to force
+      // a metadata server request.
+      delete process.env.GCLOUD_PROJECT;
+      const gcpMock = nock(HOST_ADDRESS)
+        .get(PROJECT_ID_PATH)
+        .reply(200, () => 'not-real', HEADERS);
+      const exporter = new TraceExporter();
+
+      assert(exporter);
+      return (exporter['_projectId'] as Promise<string>).then(id => {
+        assert.deepStrictEqual(id, 'not-real');
+        gcpMock.done();
       });
     });
   });
