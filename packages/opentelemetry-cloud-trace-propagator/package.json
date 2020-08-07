@@ -48,8 +48,10 @@
     "typescript": "3.9.7"
   },
   "dependencies": {
-    "@opentelemetry/api": "^0.10.0",
-    "@opentelemetry/core": "^0.10.0",
     "hex2dec": "^1.0.1"
+  },
+  "peerDependencies": {
+    "@opentelemetry/api": "^0.10.0",
+    "@opentelemetry/core": "^0.10.0"
   }
 }
