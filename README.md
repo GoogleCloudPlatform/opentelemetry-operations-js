@@ -27,15 +27,14 @@ const { BatchSpanProcessor } = require('@opentelemetry/tracing');
 // Exporters use Application Default Credentials (ADCs) to authenticate.
 // See https://developers.google.com/identity/protocols/application-default-credentials
 // for more details.
-// Expects ADCs to be provided through the environment as ${GOOGLE_APPLICATION_CREDENTIALS}
-const projectId = process.env.GOOGLE_PROJECT_ID;
 
 // Use your existing provider
 const provider = new NodeTracerProvider();
 provider.register();
 
-// Initialize the exporter
-const exporter = new TraceExporter({projectId: projectId});
+// Initialize the exporter. When your application is running on Google Cloud,
+// you don't need to provide auth credentials or a project id.
+const exporter = new TraceExporter();
 
 // Add the exporter to the provider
 provider.addSpanProcessor(new BatchSpanProcessor(exporter));

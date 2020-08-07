@@ -12,4 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * from './CloudPropagator';
+module.exports = {
+    "env": {
+        "mocha": true,
+        "commonjs": true,
+        "node": true,
+    },
+    ...require('../../eslint.config.js')
+}

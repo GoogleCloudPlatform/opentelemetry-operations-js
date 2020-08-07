@@ -28,19 +28,11 @@ const { TraceExporter } = require('@google-cloud/opentelemetry-cloud-trace-expor
 // Exporters use Application Default Credentials (ADCs) to authenticate.
 // See https://developers.google.com/identity/protocols/application-default-credentials
 // for more details.
-// Expects ADCs to be provided through the environment as ${GOOGLE_APPLICATION_CREDENTIALS}
-const projectId = process.env.GOOGLE_PROJECT_ID;
-
-// GOOGLE_APPLICATION_CREDENTIALS are expected by a dependency of this code
-// and not this code itself. Checking for existence here but not retaining (as not needed)
-if (!projectId || !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-  throw Error('Unable to proceed without a Project ID');
-}
-
 const provider = new NodeTracerProvider();
 
-// Initialize the exporter
-const exporter = new TraceExporter({projectId: projectId});
+// Initialize the exporter. When your application is running on Google Cloud,
+// you don't need to provide auth credentials or a project id.
+const exporter = new TraceExporter();
 
 // Configure the span processor to send spans to the exporter
 provider.addSpanProcessor(new SimpleSpanProcessor(exporter));

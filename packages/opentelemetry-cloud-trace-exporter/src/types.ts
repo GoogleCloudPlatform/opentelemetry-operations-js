@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Compute, JWT, OAuth2Client } from 'google-auth-library';
+import { Metadata } from 'grpc';
 
 export interface Span {
   name?: string;
   spanId?: string;
   parentSpanId?: string;
   displayName?: TruncatableString;
-  startTime?: string;
-  endTime?: string;
+  startTime?: Timestamp;
+  endTime?: Timestamp;
   attributes?: Attributes;
   // This property is currently unused. keeping it here as it is part
   // of the stack driver trace types and may be used in the future
@@ -28,8 +28,13 @@ export interface Span {
   timeEvents?: TimeEvents;
   links?: Links;
   status?: Status;
-  sameProcessAsParentSpan?: boolean;
+  sameProcessAsParentSpan?: BoolValue;
   childSpanCount?: number;
+}
+
+export interface Timestamp {
+  seconds: number;
+  nanos: number;
 }
 
 export interface AttributeMap {
@@ -103,7 +108,7 @@ export interface TimeEvents {
 
 export interface TimeEvent {
   annotation?: Annotation;
-  time?: string;
+  time?: Timestamp;
   // This property is currently unused. keeping it here as it is part
   // of the stack driver trace types and may be used in the future
   messageEvent?: MessageEvent;
@@ -133,8 +138,22 @@ export enum LinkType {
   PARENT_LINKED_SPAN = 2,
 }
 
-export interface SpansWithCredentials {
+/**
+ * A protobuf boolean
+ */
+export interface BoolValue {
+  value: boolean;
+}
+
+export interface NamedSpans {
   name: string;
-  resource: { spans: {} };
-  auth: JWT | OAuth2Client | Compute;
+  spans: Span[];
+}
+
+export interface TraceService {
+  BatchWriteSpans: (
+    call: NamedSpans,
+    metadata: Metadata,
+    callback: Function
+  ) => void;
 }

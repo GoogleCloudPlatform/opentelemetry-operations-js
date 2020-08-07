@@ -1,6 +1,6 @@
 {
   "name": "@google-cloud/opentelemetry-cloud-monitoring-exporter",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "OpenTelemetry Google Cloud Monitoring Exporter allows the user to send collected metrics to Google Cloud Monitoring.",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -44,6 +44,7 @@
     "codecov": "3.7.2",
     "gts": "2.0.2",
     "mocha": "7.2.0",
+    "nock": "12.0.3",
     "nyc": "15.1.0",
     "rimraf": "3.0.2",
     "sinon": "9.0.2",
@@ -55,6 +56,7 @@
     "@opentelemetry/base": "^0.7.0",
     "@opentelemetry/core": "^0.7.0",
     "@opentelemetry/metrics": "^0.9.0",
+    "@opentelemetry/resources": "0.9.0",
     "google-auth-library": "^5.7.0",
     "googleapis": "^46.0.0"
   }

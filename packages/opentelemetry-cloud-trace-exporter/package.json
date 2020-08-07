@@ -1,6 +1,6 @@
 {
   "name": "@google-cloud/opentelemetry-cloud-trace-exporter",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "OpenTelemetry Google Cloud Trace Exporter allows the user to send collected traces to Google Cloud Trace.",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -38,12 +38,13 @@
   },
   "devDependencies": {
     "@types/mocha": "7.0.2",
-    "@types/nock": "11.1.0",
     "@types/node": "12.12.51",
     "@types/sinon": "9.0.4",
     "codecov": "3.7.2",
+    "gcp-metadata": "^4.1.0",
     "gts": "2.0.2",
     "mocha": "7.2.0",
+    "nock": "12.0.3",
     "nyc": "15.1.0",
     "rimraf": "3.0.2",
     "sinon": "9.0.2",
@@ -51,12 +52,14 @@
     "typescript": "3.9.7"
   },
   "dependencies": {
+    "@grpc/proto-loader": "^0.5.4",
     "@opentelemetry/api": "^0.7.0",
     "@opentelemetry/base": "^0.7.0",
     "@opentelemetry/core": "^0.7.0",
     "@opentelemetry/resources": "^0.7.0",
     "@opentelemetry/tracing": "^0.7.0",
     "google-auth-library": "^5.7.0",
-    "googleapis": "^46.0.0"
+    "google-proto-files": "^2.1.0",
+    "grpc": "^1.24.3"
   }
 }
