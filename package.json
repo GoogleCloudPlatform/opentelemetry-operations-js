@@ -13,7 +13,7 @@
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint:fix"
   },
-  "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
+  "repository": "https://github.com/GoogleCloudPlatform/opentelemetry-operations-js",
   "keywords": [
     "opentelemetry",
     "nodejs",
