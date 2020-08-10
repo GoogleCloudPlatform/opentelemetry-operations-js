@@ -60,7 +60,13 @@ Merge the PR, and pull the changes locally (using the commands in the first step
 
 ## Publish all packages
 
-Publish with Wombot (Google).
+Publish the packages with Wombot (see internal documentation). First, get
+a token:
+
+```bash
+# Run and follow instructions to get a 24h token
+npm login --registry https://wombat-dressing-room.appspot.com
+```
 
 Go into each directory and use `npm publish` to publish the package. You can use the following
 script to automate this.
