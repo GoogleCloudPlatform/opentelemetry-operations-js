@@ -49,17 +49,24 @@
     "rimraf": "3.0.2",
     "sinon": "9.0.2",
     "ts-mocha": "7.0.0",
-    "typescript": "3.9.7"
-  },
-  "dependencies": {
-    "@grpc/proto-loader": "^0.5.4",
+    "typescript": "3.9.7",
     "@opentelemetry/api": "^0.7.0",
     "@opentelemetry/base": "^0.7.0",
     "@opentelemetry/core": "^0.7.0",
     "@opentelemetry/resources": "^0.7.0",
-    "@opentelemetry/tracing": "^0.7.0",
+    "@opentelemetry/tracing": "^0.7.0"
+  },
+  "dependencies": {
+    "@grpc/proto-loader": "^0.5.4",
     "google-auth-library": "^5.7.0",
     "google-proto-files": "^2.1.0",
     "grpc": "^1.24.3"
+  },
+  "peerDependencies": {
+    "@opentelemetry/api": "^0.7.0",
+    "@opentelemetry/base": "^0.7.0",
+    "@opentelemetry/core": "^0.7.0",
+    "@opentelemetry/resources": "^0.7.0",
+    "@opentelemetry/tracing": "^0.7.0"
   }
 }
