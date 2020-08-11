@@ -237,23 +237,15 @@ function transformValue(
   value: number | OTDistribution | OTHistogram
 ) {
   if (isDistributionValue(value)) {
-    // minimum two buckets due to mandatory buckets params in Cloud Monitoring API v3
-    return {
-      distributionValue: {
-        count: value.count,
-        mean: value.sum / value.count,
-        // sumOfSquaredDeviation param not aggregated
-        bucketOptions: { explicitBuckets: { bounds: [value.min] } },
-        bucketCounts: [0, value.count],
-      },
-    };
+    throw Error('unsupported distribution value type');
+    // no buckets aggregated, which is a required param in `histogramValue` for Cloud Monitoring v3
   }
   if (isHistogramValue(value)) {
     return {
       distributionValue: {
+        // sumOfSquaredDeviation param not aggregated
         count: value.count,
         mean: value.sum / value.count,
-        // sumOfSquaredDeviation param not aggregated
         bucketOptions: {
           explicitBuckets: { bounds: value.buckets.boundaries },
         },
