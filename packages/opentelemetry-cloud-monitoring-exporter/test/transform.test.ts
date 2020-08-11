@@ -359,26 +359,13 @@ describe('transform', () => {
         timestamp: process.hrtime(),
       };
 
-      const result = TEST_ONLY.transformPoint(
-        point,
-        metricDescriptor,
-        new Date().toISOString()
-      );
-
-      assert.deepStrictEqual(result.value, {
-        distributionValue: {
-          bucketCounts: [0, 22],
-          bucketOptions: {
-            explicitBuckets: {
-              bounds: [20],
-            },
-          },
-          count: 22,
-          mean: 6.818181818181818,
-        },
-      });
-      assert(result.interval.endTime);
-      assert(result.interval.startTime);
+      assert.throws(() => {
+        return TEST_ONLY.transformPoint(
+          point,
+          metricDescriptor,
+          new Date().toISOString()
+        )
+      }, "unsupported distribution value type");
     });
 
     it('should export a histogram value', () => {
