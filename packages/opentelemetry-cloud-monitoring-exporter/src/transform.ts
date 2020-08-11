@@ -238,7 +238,7 @@ function transformValue(
 ) {
   if (isDistributionValue(value)) {
     throw Error('unsupported distribution value type');
-    // no buckets aggregated, which is a required param in `histogramValue` for Cloud Monitoring v3
+    // no buckets aggregated, which is a required param in `distributionValue` for Cloud Monitoring v3
   }
   if (isHistogramValue(value)) {
     return {
