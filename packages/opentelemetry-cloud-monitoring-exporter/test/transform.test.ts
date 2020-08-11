@@ -132,8 +132,8 @@ describe('transform', () => {
       );
       try {
         TEST_ONLY.transformValueType(100, point);
-      } catch(err) {
-        assert.equal(err, `unsupported value type: 100`);
+      } catch (err) {
+        assert.equal(err, 'unsupported value type: 100');
       }
     });
 
