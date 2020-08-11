@@ -365,7 +365,7 @@ describe('transform', () => {
           metricDescriptor,
           new Date().toISOString()
         )
-      }, "unsupported distribution value type");
+      }, /unsupported distribution value type/);
     });
 
     it('should export a histogram value', () => {
