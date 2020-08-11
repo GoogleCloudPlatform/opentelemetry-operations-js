@@ -46,8 +46,8 @@
     "rimraf": "3.0.2",
     "ts-mocha": "7.0.0",
     "typescript": "3.9.7",
-    "@opentelemetry/api": "^0.10.0",
-    "@opentelemetry/core": "^0.10.0"
+    "@opentelemetry/api": "0.10.2",
+    "@opentelemetry/core": "0.10.2"
   },
   "dependencies": {
     "hex2dec": "^1.0.1"
