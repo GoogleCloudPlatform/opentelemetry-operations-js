@@ -36,6 +36,3 @@ build/
 
 #istanbul files
 coverage/
-
-#docs files
-docs
