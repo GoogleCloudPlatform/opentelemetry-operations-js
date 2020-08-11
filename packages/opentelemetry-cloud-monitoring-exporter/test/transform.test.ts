@@ -66,7 +66,7 @@ describe('transform', () => {
       value: {
         buckets: {
           boundaries: [5],
-          counts: [1,1],
+          counts: [1, 1],
         },
         sum: 10,
         count: 2,
