@@ -103,6 +103,10 @@ describe('transform', () => {
         TEST_ONLY.transformMetricKind(OTMetricKind.VALUE_RECORDER),
         MetricKind.GAUGE
       );
+      assert.strictEqual(
+        TEST_ONLY.transformMetricKind(100),
+        MetricKind.UNSPECIFIED
+      );
     });
 
     it('should return a Google Cloud Monitoring ValueType', () => {
@@ -126,6 +130,11 @@ describe('transform', () => {
         TEST_ONLY.transformValueType(2, point),
         ValueType.VALUE_TYPE_UNSPECIFIED
       );
+      try {
+        TEST_ONLY.transformValueType(100, point);
+      } catch(err) {
+        assert.equal(err, `unsupported value type: 100`);
+      }
     });
 
     it('should return a Google Cloud Monitoring DisplayName', () => {
