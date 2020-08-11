@@ -62,6 +62,17 @@ describe('transform', () => {
       },
       timestamp: process.hrtime(),
     };
+    const historgramPoint: OTPoint = {
+      value: {
+        buckets: {
+          boundaries: [5],
+          counts: [1,1],
+        },
+        sum: 10,
+        count: 2,
+      },
+      timestamp: process.hrtime(),
+    };
 
     it('should return a Google Cloud Monitoring MetricKind', () => {
       assert.strictEqual(
@@ -105,6 +116,10 @@ describe('transform', () => {
       );
       assert.strictEqual(
         TEST_ONLY.transformValueType(OTValueType.DOUBLE, distributionPoint),
+        ValueType.DISTRIBUTION
+      );
+      assert.strictEqual(
+        TEST_ONLY.transformValueType(OTValueType.DOUBLE, historgramPoint),
         ValueType.DISTRIBUTION
       );
       assert.strictEqual(
