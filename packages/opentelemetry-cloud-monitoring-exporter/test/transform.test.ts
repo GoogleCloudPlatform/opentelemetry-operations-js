@@ -364,7 +364,7 @@ describe('transform', () => {
           point,
           metricDescriptor,
           new Date().toISOString()
-        )
+        );
       }, /unsupported distribution value type/);
     });
 
