@@ -1,6 +1,6 @@
 {
   "name": "@google-cloud/opentelemetry-cloud-trace-propagator",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "OpenTelemetry propagation package for Google Cloud Trace format",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -37,6 +37,8 @@
     "registry": "https://wombat-dressing-room.appspot.com"
   },
   "devDependencies": {
+    "@opentelemetry/api": "0.10.2",
+    "@opentelemetry/core": "0.10.2",
     "@types/mocha": "7.0.2",
     "@types/node": "14.0.14",
     "codecov": "3.7.1",
@@ -45,9 +47,7 @@
     "nyc": "15.1.0",
     "rimraf": "3.0.2",
     "ts-mocha": "7.0.0",
-    "typescript": "3.9.7",
-    "@opentelemetry/api": "0.10.2",
-    "@opentelemetry/core": "0.10.2"
+    "typescript": "3.9.7"
   },
   "dependencies": {
     "hex2dec": "^1.0.1"
