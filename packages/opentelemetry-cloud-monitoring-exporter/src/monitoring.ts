@@ -17,8 +17,7 @@ import {
   MetricRecord,
   MetricDescriptor as OTMetricDescriptor,
 } from '@opentelemetry/metrics';
-import { ExportResult } from '@opentelemetry/base';
-import { NoopLogger, VERSION } from '@opentelemetry/core';
+import { ExportResult, NoopLogger, VERSION } from '@opentelemetry/core';
 import { Logger } from '@opentelemetry/api';
 import { ExporterOptions } from './external-types';
 import { GoogleAuth, JWT } from 'google-auth-library';

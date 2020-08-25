@@ -16,8 +16,7 @@ import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import { MetricExporter } from '../src';
-import { ConsoleLogger, LogLevel } from '@opentelemetry/core';
-import { ExportResult } from '@opentelemetry/base';
+import { ConsoleLogger, ExportResult, LogLevel } from '@opentelemetry/core';
 import { MeterProvider } from '@opentelemetry/metrics';
 import { Labels } from '@opentelemetry/api';
 
