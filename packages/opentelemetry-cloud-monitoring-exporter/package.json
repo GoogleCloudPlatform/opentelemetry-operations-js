@@ -60,9 +60,9 @@
     "googleapis": "^46.0.0"
   },
   "peerDependencies": {
-    "@opentelemetry/api": ">=0.8.3 <=0.10.x",
-    "@opentelemetry/core": ">=0.8.0 <=0.10.x",
-    "@opentelemetry/metrics": ">=0.9.0 <=0.10.x",
-    "@opentelemetry/resources": ">=0.9.0 <=0.10.x"
+    "@opentelemetry/api": "0.8.3 - 0.10.x",
+    "@opentelemetry/core": "0.8.0 - 0.10.x",
+    "@opentelemetry/metrics": "0.9.0 - 0.10.x",
+    "@opentelemetry/resources": "0.9.0 - 0.10.x"
   }
 }
