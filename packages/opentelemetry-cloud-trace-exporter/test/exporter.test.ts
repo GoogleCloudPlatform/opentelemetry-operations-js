@@ -14,8 +14,7 @@
 
 import * as types from '@opentelemetry/api';
 import { TraceFlags } from '@opentelemetry/api';
-import { ExportResult } from '@opentelemetry/base';
-import { ConsoleLogger, LogLevel } from '@opentelemetry/core';
+import { ConsoleLogger, ExportResult, LogLevel } from '@opentelemetry/core';
 import { Resource } from '@opentelemetry/resources';
 import { ReadableSpan } from '@opentelemetry/tracing';
 import * as assert from 'assert';

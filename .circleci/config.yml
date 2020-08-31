@@ -26,6 +26,25 @@ unit_tests: &unit_tests
         name: Unit tests
         command: npm run test
     - run:
+        name: Verify package.json dependencies of samples
+        command: |
+          set +eo pipefail
+          for sample_dir in $(realpath samples/*); do
+            pushd $sample_dir
+            npm ci
+
+            # verify dependencies are met without warnings or errors. Ignore
+            # "extraneous" messages, they are because of the local install
+            npm ls |& grep -v "extraneous" | grep "ERR!"
+            if [ $? -eq 0 ]; then
+              >&2 echo "Found dependency errors in $sample_dir package.json"
+              exit 1
+            else
+              exit 0
+            fi
+            popd
+          done
+    - run:
         name: report coverage
         command: if [ "${CIRCLE_NODE_VERSION}" = "v12" ]; then npm run codecov; fi
 
@@ -43,27 +62,27 @@ jobs:
           command: npm run lint
   node8:
     docker:
-      - image: node:8
+      - image: circleci/node:8
         environment: *test_env
     <<: *unit_tests
   node10:
     docker:
-      - image: node:10
+      - image: circleci/node:10
         environment: *test_env
     <<: *unit_tests
   node12:
     docker:
-      - image: node:12
+      - image: circleci/node:12
         environment: *test_env
     <<: *unit_tests
   node13:
     docker:
-      - image: node:13
+      - image: circleci/node:13
         environment: *test_env
     <<: *unit_tests
   node14:
     docker:
-      - image: node:14
+      - image: circleci/node:14
         environment: *test_env
     <<: *unit_tests
 
