@@ -38,15 +38,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Setup environment variables
-          command: |
-            echo "export CIRCLE_NODE_VERSION=\$(node --version | grep -oE 'v[0-9]+')" >> $BASH_ENV
-            source $BASH_ENV
-      - run:
           name: Log out node.js version
-          command: |
-            node --version
-            echo "CIRCLE_NODE_VERSION=${CIRCLE_NODE_VERSION}"
+          command: node --version
       - run:
           name: Install Root Dependencies
           command: npm install --ignore-scripts
@@ -75,9 +68,13 @@ jobs:
               fi
               popd
             done
-      - run:
-          name: report coverage
-          command: if [ "${CIRCLE_NODE_VERSION}" = "v12" ]; then npm run codecov; fi
+      - when:
+          condition:
+            equal: [ << parameters.node_version >>, 14 ]
+          steps:
+            - run:
+                name: report coverage
+                command: npm run codecov
 
 workflows:
   version: 2
