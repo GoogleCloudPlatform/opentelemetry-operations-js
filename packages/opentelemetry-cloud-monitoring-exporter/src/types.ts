@@ -88,7 +88,7 @@ export interface Point {
 export interface Distribution {
   count: number;
   mean: number;
-  sumOfSquaredDeviation: number;
+  sumOfSquaredDeviation?: number;
   bucketOptions: { explicitBuckets: { bounds: Bucket[] } };
   bucketCounts: number[];
   exemplars?: Exemplar[];

@@ -237,12 +237,21 @@ function transformValue(
   value: number | OTDistribution | OTHistogram
 ) {
   if (isDistributionValue(value)) {
-    // TODO: Add support for Distribution
-    throw new Error('Distributions are not yet supported');
+    throw Error('unsupported distribution value type');
+    // no buckets aggregated, which is a required param in `distributionValue` for Cloud Monitoring v3
   }
   if (isHistogramValue(value)) {
-    // TODO: Add support for Histogram
-    throw new Error('Histograms are not yet supported');
+    return {
+      distributionValue: {
+        // sumOfSquaredDeviation param not aggregated
+        count: value.count,
+        mean: value.sum / value.count,
+        bucketOptions: {
+          explicitBuckets: { bounds: value.buckets.boundaries },
+        },
+        bucketCounts: value.buckets.counts,
+      },
+    };
   }
 
   if (valueType === OTValueType.INT) {
