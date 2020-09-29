@@ -24,6 +24,8 @@ import {
   MetricDescriptor as OTMetricDescriptor,
   Point as OTPoint,
   MeterProvider,
+  Distribution,
+  Histogram,
 } from '@opentelemetry/metrics';
 import { ValueType as OTValueType, Labels } from '@opentelemetry/api';
 import { MetricKind, ValueType, MetricDescriptor } from '../src/types';
@@ -46,7 +48,7 @@ describe('transform', () => {
       name: METRIC_NAME,
       description: METRIC_DESCRIPTION,
       unit: DEFAULT_UNIT,
-      metricKind: OTMetricKind.OBSERVER,
+      metricKind: OTMetricKind.UP_DOWN_SUM_OBSERVER,
       valueType: OTValueType.DOUBLE,
     };
 
@@ -61,10 +63,6 @@ describe('transform', () => {
       );
       assert.strictEqual(
         TEST_ONLY.transformMetricKind(OTMetricKind.UP_DOWN_COUNTER),
-        MetricKind.GAUGE
-      );
-      assert.strictEqual(
-        TEST_ONLY.transformMetricKind(OTMetricKind.OBSERVER),
         MetricKind.GAUGE
       );
       assert.strictEqual(
@@ -180,7 +178,7 @@ describe('transform', () => {
       },
     };
 
-    it('should return a Google Cloud Monitoring Metric with a default resource', () => {
+    it('should return a Google Cloud Monitoring Metric with a default resource', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
       const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
 
@@ -188,7 +186,7 @@ describe('transform', () => {
         description: METRIC_DESCRIPTION,
       });
       counter.bind(labels).add(10);
-      meter.collect();
+      await meter.collect();
       const [record] = meter.getBatcher().checkPointSet();
       const ts = createTimeSeries(
         record,
@@ -212,7 +210,7 @@ describe('transform', () => {
       assert.strictEqual(ts.points.length, 1);
       assert.deepStrictEqual(ts.points[0].value, { doubleValue: 10 });
     });
-    it('should detect an AWS instance', () => {
+    it('should detect an AWS instance', async () => {
       const meter = new MeterProvider({
         resource: new Resource(mockAwsResource),
       }).getMeter('test-meter');
@@ -221,7 +219,7 @@ describe('transform', () => {
         description: METRIC_DESCRIPTION,
       });
       counter.bind(labels).add(10);
-      meter.collect();
+      await meter.collect();
       const [record] = meter.getBatcher().checkPointSet();
       const ts = createTimeSeries(
         record,
@@ -231,7 +229,7 @@ describe('transform', () => {
       );
       assert.deepStrictEqual(ts.resource, mockAwsMonitoredResource);
     });
-    it('should detect a Google Cloud VM instance', () => {
+    it('should detect a Google Cloud VM instance', async () => {
       const meter = new MeterProvider({
         resource: new Resource(mockGCResource),
       }).getMeter('test-meter');
@@ -240,7 +238,7 @@ describe('transform', () => {
         description: METRIC_DESCRIPTION,
       });
       counter.bind(labels).add(10);
-      meter.collect();
+      await meter.collect();
       const [record] = meter.getBatcher().checkPointSet();
       const ts = createTimeSeries(
         record,
@@ -251,7 +249,7 @@ describe('transform', () => {
       assert.deepStrictEqual(ts.resource, mockGCMonitoredResource);
     });
 
-    it('should return global for an incomplete resource', () => {
+    it('should return global for an incomplete resource', async () => {
       // Missing host.id
       const incompleteResource = {
         'cloud.provider': 'gcp',
@@ -265,7 +263,7 @@ describe('transform', () => {
         description: METRIC_DESCRIPTION,
       });
       counter.bind(labels).add(10);
-      meter.collect();
+      await meter.collect();
       const [record] = meter.getBatcher().checkPointSet();
       const ts = createTimeSeries(
         record,
@@ -279,18 +277,21 @@ describe('transform', () => {
       });
     });
 
-    it('should return a Google Cloud Monitoring Metric for an observer', () => {
+    it('should return a Google Cloud Monitoring Metric for an observer', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
       const labels: Labels = { keya: 'value1', keyb: 'value2' };
-      const observer = meter.createObserver(METRIC_NAME, {
-        description: METRIC_DESCRIPTION,
-        valueType: OTValueType.INT,
-      });
+      meter.createSumObserver(
+        METRIC_NAME,
+        {
+          description: METRIC_DESCRIPTION,
+          valueType: OTValueType.INT,
+        },
+        result => {
+          result.observe(int64Value, labels);
+        }
+      );
       const int64Value = 0;
-      observer.setCallback(result => {
-        result.observe(() => int64Value, labels);
-      });
-      meter.collect();
+      await meter.collect();
       const [record] = meter.getBatcher().checkPointSet();
       const ts = createTimeSeries(
         record,
@@ -298,7 +299,7 @@ describe('transform', () => {
         new Date().toISOString(),
         'project_id'
       );
-      assert(!ts.points[0].interval.startTime);
+      assert(ts.points[0].interval.startTime);
       assert(ts.points[0].interval.endTime);
       assert.strictEqual(ts.metric.type, `otel/${METRIC_NAME}`);
       assert.strictEqual(ts.metric.labels['keya'], 'value1');
@@ -311,7 +312,7 @@ describe('transform', () => {
         labels: { project_id: 'project_id' },
         type: 'global',
       });
-      assert.strictEqual(ts.metricKind, MetricKind.GAUGE);
+      assert.strictEqual(ts.metricKind, MetricKind.CUMULATIVE);
       assert.strictEqual(ts.valueType, ValueType.INT64);
       assert.strictEqual(ts.points.length, 1);
       assert.deepStrictEqual(ts.points[0].value, { int64Value });
@@ -322,10 +323,10 @@ describe('transform', () => {
         name: METRIC_NAME,
         description: METRIC_DESCRIPTION,
         unit: DEFAULT_UNIT,
-        metricKind: OTMetricKind.OBSERVER,
+        metricKind: OTMetricKind.SUM_OBSERVER,
         valueType: OTValueType.INT,
       };
-      const point: OTPoint = {
+      const point: OTPoint<number> = {
         value: 50,
         timestamp: process.hrtime(),
       };
@@ -338,7 +339,7 @@ describe('transform', () => {
 
       assert.deepStrictEqual(result.value, { int64Value: 50 });
       assert(result.interval.endTime);
-      assert(!result.interval.startTime);
+      assert(result.interval.startTime);
     });
 
     it('should export a distribution value', () => {
@@ -349,10 +350,11 @@ describe('transform', () => {
         metricKind: OTMetricKind.COUNTER,
         valueType: OTValueType.DOUBLE,
       };
-      const point: OTPoint = {
+      const point: OTPoint<Distribution> = {
         value: {
           min: 20.0,
           max: 75.4,
+          last: 40.3,
           count: 22,
           sum: 150,
         },
@@ -376,7 +378,7 @@ describe('transform', () => {
         metricKind: OTMetricKind.COUNTER,
         valueType: OTValueType.DOUBLE,
       };
-      const point: OTPoint = {
+      const point: OTPoint<Histogram> = {
         value: {
           buckets: {
             boundaries: [10, 30],

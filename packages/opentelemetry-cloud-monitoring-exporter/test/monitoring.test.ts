@@ -150,7 +150,7 @@ describe('MetricExporter', () => {
       const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
       const counter = meter.createCounter('name');
       counter.add(10, labels);
-      meter.collect();
+      await meter.collect();
       const records = meter.getBatcher().checkPointSet();
 
       const result = await new Promise((resolve, reject) => {
@@ -174,7 +174,7 @@ describe('MetricExporter', () => {
       const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
       const counter = meter.createCounter('name');
       counter.add(10, labels);
-      meter.collect();
+      await meter.collect();
       const records = meter.getBatcher().checkPointSet();
       createTimeSeriesShouldFail = true;
       const result = await new Promise((resolve, reject) => {
@@ -201,7 +201,7 @@ describe('MetricExporter', () => {
         const counter = meter.createCounter(`name${nMetrics.toString()}`);
         counter.bind(labels).add(10);
       }
-      meter.collect();
+      await meter.collect();
       const records = meter.getBatcher().checkPointSet();
 
       const result = await new Promise((resolve, reject) => {
