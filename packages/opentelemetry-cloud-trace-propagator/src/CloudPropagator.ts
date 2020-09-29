@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {
-  HttpTextPropagator,
+  TextMapPropagator,
   Context,
   SetterFunction,
   GetterFunction,
@@ -44,7 +44,7 @@ import {
 /** Header that carries span context across Google infrastructure. */
 export const X_CLOUD_TRACE_HEADER = 'x-cloud-trace-context';
 
-export class CloudPropagator implements HttpTextPropagator {
+export class CloudPropagator implements TextMapPropagator {
   inject(context: Context, carrier: unknown, setter: SetterFunction): void {
     const spanContext = getParentSpanContext(context);
     if (!spanContext) return;
