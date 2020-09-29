@@ -12,8 +12,8 @@
   "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
   "dependencies": {
     "@google-cloud/opentelemetry-cloud-trace-exporter": "file:../../packages/opentelemetry-cloud-trace-exporter",
-    "@opentelemetry/api": "0.10.2",
-    "@opentelemetry/node": "0.10.2",
-    "@opentelemetry/tracing": "0.10.2"
+    "@opentelemetry/api": "^0.11.0",
+    "@opentelemetry/node": "^0.11.0",
+    "@opentelemetry/tracing": "^0.11.0"
   }
 }
