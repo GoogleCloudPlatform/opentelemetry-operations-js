@@ -100,7 +100,7 @@ function transformAttributes(
     {},
     requestAttributes,
     serviceAttributes,
-    resource.labels
+    resource.attributes
   );
 
   const attributeMap = transformAttributeValues(attributes);

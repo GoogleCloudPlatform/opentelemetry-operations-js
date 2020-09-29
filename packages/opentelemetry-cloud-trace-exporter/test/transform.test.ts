@@ -53,6 +53,7 @@ describe('transform', () => {
         version: 1,
         cost: 112.12,
       }),
+      instrumentationLibrary: { name: 'default', version: '0.0.1' },
     };
   });
 
