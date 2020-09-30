@@ -19,6 +19,7 @@ import {
   Distribution as OTDistribution,
   Histogram as OTHistogram,
   Point as OTPoint,
+  PointValueType,
 } from '@opentelemetry/metrics';
 import { ValueType as OTValueType } from '@opentelemetry/api';
 import {
@@ -81,8 +82,6 @@ function transformMetricKind(kind: OTMetricKind): MetricKind {
     case OTMetricKind.COUNTER:
     case OTMetricKind.SUM_OBSERVER:
       return MetricKind.CUMULATIVE;
-    // OTMetricKind.OBSERVER will be removed in opentelemetry-js #1146
-    case OTMetricKind.OBSERVER:
     case OTMetricKind.UP_DOWN_COUNTER:
     case OTMetricKind.VALUE_OBSERVER:
     case OTMetricKind.UP_DOWN_SUM_OBSERVER:
@@ -142,7 +141,7 @@ function transformResource(
 
   for (const key of Object.keys(templateResource.labels)) {
     // Checks the resource's value for a required key
-    const resourceValue = resource.labels[templateResource.labels[key]];
+    const resourceValue = resource.attributes[templateResource.labels[key]];
     if (!resourceValue) {
       return { type: 'global', labels: { project_id: projectId } };
     }
@@ -164,7 +163,7 @@ function transformResource(
  * @param resource
  */
 function getTypeAndMappings(resource: Resource): MonitoredResource {
-  const cloudProvider = `${resource.labels[CLOUD_RESOURCE.PROVIDER]}`;
+  const cloudProvider = `${resource.attributes[CLOUD_RESOURCE.PROVIDER]}`;
   if (cloudProvider === 'gcp') {
     return {
       type: GCP_GCE_INSTANCE,
@@ -204,7 +203,7 @@ function transformMetric(
  * Transform timeseries's point, so that metric can be uploaded to StackDriver.
  */
 function transformPoint(
-  point: OTPoint,
+  point: OTPoint<PointValueType>,
   metricDescriptor: OTMetricDescriptor,
   startTime: string
 ): Point {
@@ -232,10 +231,7 @@ function transformPoint(
 }
 
 /** Transforms a OpenTelemetry Point's value to a StackDriver Point value. */
-function transformValue(
-  valueType: OTValueType,
-  value: number | OTDistribution | OTHistogram
-) {
+function transformValue(valueType: OTValueType, value: PointValueType) {
   if (isDistributionValue(value)) {
     throw Error('unsupported distribution value type');
     // no buckets aggregated, which is a required param in `distributionValue` for Cloud Monitoring v3

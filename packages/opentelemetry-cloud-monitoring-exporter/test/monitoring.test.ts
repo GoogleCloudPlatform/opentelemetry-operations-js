@@ -150,7 +150,7 @@ describe('MetricExporter', () => {
       const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
       const counter = meter.createCounter('name');
       counter.add(10, labels);
-      meter.collect();
+      await meter.collect();
       const records = meter.getBatcher().checkPointSet();
 
       const result = await new Promise((resolve, reject) => {
@@ -174,7 +174,7 @@ describe('MetricExporter', () => {
       const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
       const counter = meter.createCounter('name');
       counter.add(10, labels);
-      meter.collect();
+      await meter.collect();
       const records = meter.getBatcher().checkPointSet();
       createTimeSeriesShouldFail = true;
       const result = await new Promise((resolve, reject) => {
@@ -201,7 +201,7 @@ describe('MetricExporter', () => {
         const counter = meter.createCounter(`name${nMetrics.toString()}`);
         counter.bind(labels).add(10);
       }
-      meter.collect();
+      await meter.collect();
       const records = meter.getBatcher().checkPointSet();
 
       const result = await new Promise((resolve, reject) => {
@@ -227,6 +227,45 @@ describe('MetricExporter', () => {
       assert.strictEqual(timeSeries.callCount, 3);
 
       assert.deepStrictEqual(result, ExportResult.SUCCESS);
+    });
+
+    it('should use the same startTime for cumulative metrics each export', async () => {
+      const meter = new MeterProvider().getMeter('test-meter');
+      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const counter = meter.createCounter('name');
+      counter.add(10, labels);
+      await meter.collect();
+      const records1 = meter.getBatcher().checkPointSet();
+
+      await exporter.export(records1, () => {});
+
+      assert(timeSeries.calledOnce);
+      const calledWithSeries1 =
+        timeSeries.firstCall.args[0].resource.timeSeries;
+      assert.strictEqual(calledWithSeries1.length, 1);
+      assert.strictEqual(calledWithSeries1[0].points.length, 1);
+      const interval1 = calledWithSeries1[0].points[0].interval;
+      assert(interval1.startTime);
+      assert(interval1.endTime);
+
+      // Export a second time
+      counter.add(15, labels);
+      await meter.collect();
+      const records2 = meter.getBatcher().checkPointSet();
+
+      await exporter.export(records2, () => {});
+
+      assert(timeSeries.calledTwice);
+      const calledWithSeries2 =
+        timeSeries.secondCall.args[0].resource.timeSeries;
+      assert.strictEqual(calledWithSeries2.length, 1);
+      assert.strictEqual(calledWithSeries2[0].points.length, 1);
+      const interval2 = calledWithSeries2[0].points[0].interval;
+      assert(interval1.startTime);
+      assert(interval1.endTime);
+
+      assert.strictEqual(interval1.startTime, interval2.startTime);
+      assert(interval2.endTime);
     });
   });
 });

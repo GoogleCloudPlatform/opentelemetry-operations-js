@@ -213,6 +213,7 @@ describe('Google Cloud Trace Exporter', () => {
         },
         status: { code: types.CanonicalCode.OK },
         resource: Resource.empty(),
+        instrumentationLibrary: { name: 'default', version: '0.0.1' },
       };
 
       const result = await new Promise((resolve, reject) => {
@@ -262,6 +263,7 @@ describe('Google Cloud Trace Exporter', () => {
         },
         status: { code: types.CanonicalCode.OK },
         resource: Resource.empty(),
+        instrumentationLibrary: { name: 'default', version: '0.0.1' },
       };
 
       await new Promise((resolve, reject) => {
@@ -301,6 +303,7 @@ describe('Google Cloud Trace Exporter', () => {
         },
         status: { code: types.CanonicalCode.OK },
         resource: Resource.empty(),
+        instrumentationLibrary: { name: 'default', version: '0.0.1' },
       };
 
       getClientShouldFail = true;
@@ -334,6 +337,7 @@ describe('Google Cloud Trace Exporter', () => {
         },
         status: { code: types.CanonicalCode.OK },
         resource: Resource.empty(),
+        instrumentationLibrary: { name: 'default', version: '0.0.1' },
       };
 
       batchWriteShouldFail = true;
@@ -365,6 +369,7 @@ describe('Google Cloud Trace Exporter', () => {
         },
         status: { code: types.CanonicalCode.OK },
         resource: Resource.empty(),
+        instrumentationLibrary: { name: 'default', version: '0.0.1' },
       };
 
       await exporter['_projectId'];
