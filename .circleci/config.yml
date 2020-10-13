@@ -49,25 +49,6 @@ jobs:
       - run:
           name: Unit tests
           command: npm run test
-      - run:
-          name: Verify package.json dependencies of samples
-          command: |
-            set +eo pipefail
-            for sample_dir in $(realpath samples/*); do
-              pushd $sample_dir
-              npm ci
-
-              # verify dependencies are met without warnings or errors. Ignore
-              # "extraneous" messages, they are because of the local install
-              npm ls |& grep -v "extraneous" | grep "ERR!"
-              if [ $? -eq 0 ]; then
-                >&2 echo "Found dependency errors in $sample_dir package.json"
-                exit 1
-              else
-                exit 0
-              fi
-              popd
-            done
       - when:
           condition:
             equal: [ << parameters.node_version >>, 14 ]
