@@ -9,13 +9,13 @@ executors:
       - image: cimg/node:10.22
   node12:
     docker:
-      - image: cimg/node:12.18
+      - image: cimg/node:12.19
   node13:
     docker:
       - image: cimg/node:13.14
   node14:
     docker:
-      - image: cimg/node:14.11
+      - image: cimg/node:14.14
 
 jobs:
   lint:
