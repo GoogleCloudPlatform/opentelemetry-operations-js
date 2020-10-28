@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import * as types from '@opentelemetry/api';
 import {TraceFlags} from '@opentelemetry/api';
 import {ConsoleLogger, ExportResult, LogLevel} from '@opentelemetry/core';
@@ -23,8 +21,8 @@ import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import * as protoloader from '@grpc/proto-loader';
-import * as grpc from 'grpc';
-import {OAuth2Client} from 'google-auth-library';
+import * as grpc from '@grpc/grpc-js';
+import {GoogleAuth, OAuth2Client} from 'google-auth-library';
 import {TraceExporter} from '../src';
 import {TraceService} from '../src/types';
 import {BASE_PATH, HEADER_NAME, HEADER_VALUE, HOST_ADDRESS} from 'gcp-metadata';
@@ -73,21 +71,27 @@ describe('Google Cloud Trace Exporter', () => {
   });
 
   describe('export', () => {
-    const mockChannelCreds: grpc.ChannelCredentials = {
+    const mockChannelCreds: Partial<grpc.ChannelCredentials> = {
       compose: sinon.stub(),
     };
-    const mockCallCreds: grpc.CallCredentials = {
+    const mockCallCreds: Partial<grpc.CallCredentials> = {
       compose: sinon.stub(),
       generateMetadata: sinon.stub(),
     };
-    const mockCombinedCreds: grpc.ChannelCredentials = {
+    const mockCombinedCreds: Partial<grpc.ChannelCredentials> = {
       compose: sinon.stub(),
     };
-    const mockClient = sinon.mock(OAuth2Client);
+    const mockClient: Partial<OAuth2Client> = {
+      ...OAuth2Client.prototype,
+      ...sinon.mock(OAuth2Client),
+    };
 
     let exporter: TraceExporter;
     let logger: ConsoleLogger;
-    let batchWrite: sinon.SinonSpy<[any, any, any], any>;
+    let batchWrite: sinon.SinonSpy<
+      Parameters<TraceService['BatchWriteSpans']>,
+      ReturnType<TraceService['BatchWriteSpans']>
+    >;
     let traceServiceConstructor: sinon.SinonSpy;
     let createSsl: sinon.SinonStub;
     let createFromGoogleCreds: sinon.SinonStub;
@@ -107,12 +111,8 @@ describe('Google Cloud Trace Exporter', () => {
         logger,
       });
 
-      batchWrite = sinon.spy(
-        (
-          spans: any,
-          metadata: any,
-          callback: (err: Error | null) => void
-        ): any => {
+      batchWrite = sinon.spy<TraceService['BatchWriteSpans']>(
+        (_spans, _metadata, callback) => {
           if (batchWriteShouldFail) {
             callback(new Error('fail'));
           } else {
@@ -121,37 +121,39 @@ describe('Google Cloud Trace Exporter', () => {
         }
       );
 
-      sinon.replace(exporter['_auth'], 'getClient', () => {
+      sinon.replace(exporter['_auth'], 'getClient', async () => {
         if (getClientShouldFail) {
           throw new Error('fail');
         }
-        return mockClient as any;
+        return mockClient as ReturnType<GoogleAuth['getClient']>;
       });
 
       sinon.stub(protoloader, 'loadSync');
 
       createSsl = sinon
         .stub(grpc.credentials, 'createSsl')
-        .returns(mockChannelCreds);
+        .returns(mockChannelCreds as grpc.ChannelCredentials);
 
       createFromGoogleCreds = sinon
         .stub(grpc.credentials, 'createFromGoogleCredential')
-        .returns(mockCallCreds);
+        .returns(mockCallCreds as grpc.CallCredentials);
 
       combineChannelCreds = sinon
         .stub(grpc.credentials, 'combineChannelCredentials')
-        .returns(mockCombinedCreds);
+        .returns(mockCombinedCreds as grpc.ChannelCredentials);
 
-      sinon.replace(
+      sinon.replaceGetter(
         grpc,
         'loadPackageDefinition',
-        (): grpc.GrpcObject => {
+        () => (): grpc.GrpcObject => {
           traceServiceConstructor = sinon.spy(() => {});
-          const def: any = {
+          const def = {
             google: {
               devtools: {
                 cloudtrace: {
-                  v2: {},
+                  v2: {
+                    TraceService: {},
+                  },
                 },
               },
             },
@@ -212,7 +214,7 @@ describe('Google Cloud Trace Exporter', () => {
       });
 
       assert.deepStrictEqual(
-        batchWrite.getCall(0).args[0].spans[0].displayName.value,
+        batchWrite.getCall(0).args[0].spans[0].displayName?.value,
         'my-span'
       );
 
