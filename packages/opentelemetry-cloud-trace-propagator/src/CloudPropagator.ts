@@ -18,12 +18,10 @@ import {
   SetterFunction,
   GetterFunction,
   TraceFlags,
-} from '@opentelemetry/api';
-import { decToHex, hexToDec } from 'hex2dec';
-import {
   setExtractedSpanContext,
   getParentSpanContext,
-} from '@opentelemetry/core';
+} from '@opentelemetry/api';
+import { decToHex, hexToDec } from 'hex2dec';
 
 /**
  * This file implements propagation for the Stackdriver Trace v1 Trace Context

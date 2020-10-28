@@ -13,17 +13,15 @@
 // limitations under the License.
 
 import {
-  Context,
   defaultSetter,
   defaultGetter,
   SpanContext,
   TraceFlags,
+  ROOT_CONTEXT,
+  setExtractedSpanContext,
+  getActiveSpan,
 } from '@opentelemetry/api';
 import * as assert from 'assert';
-import {
-  setExtractedSpanContext,
-  getExtractedSpanContext,
-} from '@opentelemetry/core';
 import { CloudPropagator, X_CLOUD_TRACE_HEADER } from '../src/CloudPropagator';
 
 describe('CloudPropagator', () => {
@@ -43,7 +41,7 @@ describe('CloudPropagator', () => {
       };
 
       cloudPropagator.inject(
-        setExtractedSpanContext(Context.ROOT_CONTEXT, spanContext),
+        setExtractedSpanContext(ROOT_CONTEXT, spanContext),
         carrier,
         defaultSetter
       );
@@ -60,7 +58,7 @@ describe('CloudPropagator', () => {
         traceFlags: TraceFlags.NONE,
       };
       cloudPropagator.inject(
-        setExtractedSpanContext(Context.ROOT_CONTEXT, spanContext),
+        setExtractedSpanContext(ROOT_CONTEXT, spanContext),
         carrier,
         defaultSetter
       );
@@ -75,9 +73,9 @@ describe('CloudPropagator', () => {
     it('should extract context of a sampled span from carrier', () => {
       carrier[X_CLOUD_TRACE_HEADER] =
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=1';
-      const extractedSpanContext = getExtractedSpanContext(
-        cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
-      );
+      const extractedSpanContext = getActiveSpan(
+        cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultGetter)
+      )?.context();
 
       assert.deepStrictEqual(extractedSpanContext, {
         traceId: 'd4cda95b652f4a1592b449d5929fda1b',
@@ -90,9 +88,9 @@ describe('CloudPropagator', () => {
     it('should extract context of a unsampled span from carrier', () => {
       carrier[X_CLOUD_TRACE_HEADER] =
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=0';
-      const extractedSpanContext = getExtractedSpanContext(
-        cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
-      );
+      const extractedSpanContext = getActiveSpan(
+        cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultGetter)
+      )?.context();
 
       assert.deepStrictEqual(extractedSpanContext, {
         traceId: 'd4cda95b652f4a1592b449d5929fda1b',
@@ -105,9 +103,9 @@ describe('CloudPropagator', () => {
     it('should handle trace_flags other than 0 and 1', () => {
       carrier[X_CLOUD_TRACE_HEADER] =
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=123';
-      const extractedSpanContext = getExtractedSpanContext(
-        cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
-      );
+      const extractedSpanContext = getActiveSpan(
+        cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultGetter)
+      )?.context();
 
       assert.deepStrictEqual(extractedSpanContext, {
         traceId: 'd4cda95b652f4a1592b449d5929fda1b',
@@ -120,9 +118,9 @@ describe('CloudPropagator', () => {
     it('should handle missing trace_flags', () => {
       carrier[X_CLOUD_TRACE_HEADER] =
         'b75dc0042a82efcb6b0a194911272926/1258215';
-      const extractedSpanContext = getExtractedSpanContext(
-        cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
-      );
+      const extractedSpanContext = getActiveSpan(
+        cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultGetter)
+      )?.context();
 
       assert.deepStrictEqual(
         extractedSpanContext!.traceId,
@@ -136,9 +134,9 @@ describe('CloudPropagator', () => {
       carrier[X_CLOUD_TRACE_HEADER] = [
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=1',
       ];
-      const extractedSpanContext = getExtractedSpanContext(
-        cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
-      );
+      const extractedSpanContext = getActiveSpan(
+        cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultGetter)
+      )?.context();
       assert.deepStrictEqual(extractedSpanContext, {
         traceId: 'd4cda95b652f4a1592b449d5929fda1b',
         spanId: '6e0c63257de34c92',
@@ -149,9 +147,9 @@ describe('CloudPropagator', () => {
 
     it('returns undefined if x-cloud-trace-context header is missing', () => {
       assert.deepStrictEqual(
-        getExtractedSpanContext(
-          cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
-        ),
+        getActiveSpan(
+          cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultGetter)
+        )?.context(),
         undefined
       );
     });
@@ -179,9 +177,9 @@ describe('CloudPropagator', () => {
       for (const [testName, testData] of Object.entries(testCases)) {
         carrier[X_CLOUD_TRACE_HEADER] = testData;
 
-        const extractedSpanContext = getExtractedSpanContext(
-          cloudPropagator.extract(Context.ROOT_CONTEXT, carrier, defaultGetter)
-        );
+        const extractedSpanContext = getActiveSpan(
+          cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultGetter)
+        )?.context();
 
         assert.deepStrictEqual(extractedSpanContext, undefined, testName);
       }

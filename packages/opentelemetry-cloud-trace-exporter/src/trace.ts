@@ -80,7 +80,7 @@ export class TraceExporter implements SpanExporter {
     resultCallback(result);
   }
 
-  shutdown(): void {}
+  async shutdown(): Promise<void> {}
 
   /**
    * Sends new spans to new or existing traces in the Google Cloud Trace format to the

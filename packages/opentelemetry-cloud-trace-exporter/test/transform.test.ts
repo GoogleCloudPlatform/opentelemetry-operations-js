@@ -130,6 +130,7 @@ describe('transform', () => {
   });
 
   it('should drop unknown attribute types', () => {
+    // @ts-expect-error
     readableSpan.attributes.testUnknownType = { message: 'dropped' };
     const result = transformer(readableSpan);
     assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 1);
@@ -172,6 +173,7 @@ describe('transform', () => {
       },
       attributes: {
         testAttr: 'value',
+        // @ts-expect-error
         droppedAttr: {},
       },
     });
@@ -230,6 +232,7 @@ describe('transform', () => {
       name: 'something happened',
       attributes: {
         error: true,
+        // @ts-expect-error
         dropped: {},
       },
       time: [1566156729, 809],

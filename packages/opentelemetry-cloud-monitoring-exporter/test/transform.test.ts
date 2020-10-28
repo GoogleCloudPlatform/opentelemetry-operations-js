@@ -24,7 +24,6 @@ import {
   MetricDescriptor as OTMetricDescriptor,
   Point as OTPoint,
   MeterProvider,
-  Distribution,
   Histogram,
 } from '@opentelemetry/metrics';
 import { ValueType as OTValueType, Labels } from '@opentelemetry/api';
@@ -340,34 +339,6 @@ describe('transform', () => {
       assert.deepStrictEqual(result.value, { int64Value: 50 });
       assert(result.interval.endTime);
       assert(result.interval.startTime);
-    });
-
-    it('should export a distribution value', () => {
-      const metricDescriptor: OTMetricDescriptor = {
-        name: METRIC_NAME,
-        description: METRIC_DESCRIPTION,
-        unit: DEFAULT_UNIT,
-        metricKind: OTMetricKind.COUNTER,
-        valueType: OTValueType.DOUBLE,
-      };
-      const point: OTPoint<Distribution> = {
-        value: {
-          min: 20.0,
-          max: 75.4,
-          last: 40.3,
-          count: 22,
-          sum: 150,
-        },
-        timestamp: process.hrtime(),
-      };
-
-      assert.throws(() => {
-        return TEST_ONLY.transformPoint(
-          point,
-          metricDescriptor,
-          new Date().toISOString()
-        );
-      }, /unsupported distribution value type/);
     });
 
     it('should export a histogram value', () => {

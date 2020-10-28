@@ -16,7 +16,6 @@ import {
   MetricDescriptor as OTMetricDescriptor,
   MetricKind as OTMetricKind,
   MetricRecord,
-  Distribution as OTDistribution,
   Histogram as OTHistogram,
   Point as OTPoint,
   PointValueType,
@@ -232,10 +231,6 @@ function transformPoint(
 
 /** Transforms a OpenTelemetry Point's value to a StackDriver Point value. */
 function transformValue(valueType: OTValueType, value: PointValueType) {
-  if (isDistributionValue(value)) {
-    throw Error('unsupported distribution value type');
-    // no buckets aggregated, which is a required param in `distributionValue` for Cloud Monitoring v3
-  }
   if (isHistogramValue(value)) {
     return {
       distributionValue: {
@@ -258,17 +253,8 @@ function transformValue(valueType: OTValueType, value: PointValueType) {
   throw Error(`unsupported value type: ${valueType}`);
 }
 
-/** Returns true if value is of type OTDistribution */
-function isDistributionValue(
-  value: number | OTDistribution | OTHistogram
-): value is OTDistribution {
-  return Object.prototype.hasOwnProperty.call(value, 'min');
-}
-
 /** Returns true if value is of type OTHistogram */
-function isHistogramValue(
-  value: number | OTDistribution | OTHistogram
-): value is OTHistogram {
+function isHistogramValue(value: PointValueType): value is OTHistogram {
   return Object.prototype.hasOwnProperty.call(value, 'buckets');
 }
 
