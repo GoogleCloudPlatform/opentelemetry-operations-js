@@ -140,7 +140,7 @@ export class MetricExporter implements IMetricExporter {
     cb(ExportResult.SUCCESS);
   }
 
-  shutdown(): void {}
+  async shutdown(): Promise<void> {}
 
   /**
    * Returns true if the given metricDescriptor is successfully registered to
