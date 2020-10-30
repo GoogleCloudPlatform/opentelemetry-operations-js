@@ -2,7 +2,7 @@
 [![NPM Published Version][npm-img]][npm-url]
 [![Apache License][license-image]][license-image]
 
-OpenTelemetry Google Cloud Trace Propagator allow other services to create spans with the right context.
+OpenTelemetry Google Cloud Trace Propagator allows other services to create spans with the right context.
 
 Format:
 `TRACE_ID/SPAN_ID;o=TRACE_TRUE`
