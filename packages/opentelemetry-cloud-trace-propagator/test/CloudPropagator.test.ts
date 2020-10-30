@@ -22,11 +22,11 @@ import {
   getActiveSpan,
 } from '@opentelemetry/api';
 import * as assert from 'assert';
-import { CloudPropagator, X_CLOUD_TRACE_HEADER } from '../src/CloudPropagator';
+import {CloudPropagator, X_CLOUD_TRACE_HEADER} from '../src/CloudPropagator';
 
 describe('CloudPropagator', () => {
   const cloudPropagator = new CloudPropagator();
-  let carrier: { [key: string]: unknown };
+  let carrier: {[key: string]: unknown};
 
   beforeEach(() => {
     carrier = {};

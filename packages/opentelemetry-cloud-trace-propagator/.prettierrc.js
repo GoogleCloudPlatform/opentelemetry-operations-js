@@ -12,14 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {TimeSeries} from './types';
-
-/** Returns the minimum number of arrays of max size chunkSize, partitioned from the given array. */
-export function partitionList(list: TimeSeries[], chunkSize: number) {
-  const listCopy = [...list];
-  const results = [];
-  while (listCopy.length) {
-    results.push(listCopy.splice(0, chunkSize));
-  }
-  return results;
+module.exports = {
+  ...require('gts/.prettierrc.json')
 }

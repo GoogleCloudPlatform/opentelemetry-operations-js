@@ -21,7 +21,7 @@ import {
   setExtractedSpanContext,
   getParentSpanContext,
 } from '@opentelemetry/api';
-import { decToHex, hexToDec } from 'hex2dec';
+import {decToHex, hexToDec} from 'hex2dec';
 
 /**
  * This file implements propagation for the Stackdriver Trace v1 Trace Context
@@ -47,9 +47,9 @@ export class CloudPropagator implements TextMapPropagator {
     const spanContext = getParentSpanContext(context);
     if (!spanContext) return;
 
-    const header = `${spanContext.traceId}/${hexToDec(
-      spanContext.spanId
-    )};o=${spanContext.traceFlags & TraceFlags.SAMPLED}`;
+    const header = `${spanContext.traceId}/${hexToDec(spanContext.spanId)};o=${
+      spanContext.traceFlags & TraceFlags.SAMPLED
+    }`;
 
     setter(carrier, X_CLOUD_TRACE_HEADER, header);
   }
@@ -76,7 +76,7 @@ export class CloudPropagator implements TextMapPropagator {
 
     const spanContext = {
       traceId: matches[1],
-      spanId: decToHex(matches[2], { prefix: false }).padStart(16, '0'),
+      spanId: decToHex(matches[2], {prefix: false}).padStart(16, '0'),
       traceFlags:
         isNaN(Number(matches[3])) || matches[3] === '0'
           ? TraceFlags.NONE

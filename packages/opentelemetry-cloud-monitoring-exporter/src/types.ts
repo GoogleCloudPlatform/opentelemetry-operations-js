@@ -32,7 +32,7 @@ export interface MetricDescriptor {
  * monitored resource and a fully-specified metric.
  */
 export interface TimeSeries {
-  metric: { type: string; labels: { [key: string]: string } };
+  metric: {type: string; labels: {[key: string]: string}};
   resource: MonitoredResource;
   metricKind: MetricKind;
   valueType: ValueType;
@@ -67,12 +67,12 @@ export interface LabelDescriptor {
 /** Resource information. */
 export interface MonitoredResource {
   type: string;
-  labels: { [key: string]: string };
+  labels: {[key: string]: string};
 }
 
 /** A single data point in a time series. */
 export interface Point {
-  interval: { endTime: string; startTime?: string };
+  interval: {endTime: string; startTime?: string};
   value: {
     boolValue?: boolean;
     int64Value?: number;
@@ -89,7 +89,7 @@ export interface Distribution {
   count: number;
   mean: number;
   sumOfSquaredDeviation?: number;
-  bucketOptions: { explicitBuckets: { bounds: Bucket[] } };
+  bucketOptions: {explicitBuckets: {bounds: Bucket[]}};
   bucketCounts: number[];
   exemplars?: Exemplar[];
 }

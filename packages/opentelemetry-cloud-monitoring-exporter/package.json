@@ -7,12 +7,13 @@
   "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
   "scripts": {
     "codecov": "nyc report --reporter=json && codecov -f coverage/*.json -p ../../",
-    "lint": "gts check",
-    "lint:fix": "gts fix",
-    "clean": "rimraf build/*",
-    "compile": "tsc -p .",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc",
     "prepare": "npm run compile",
-    "test": "nyc ts-mocha -p tsconfig.json 'test/**/*.test.ts'"
+    "test": "nyc ts-mocha -p tsconfig.json 'test/**/*.test.ts'",
+    "fix": "gts fix",
+    "pretest": "npm run compile"
   },
   "keywords": [
     "opentelemetry",
@@ -43,17 +44,17 @@
     "@opentelemetry/resources": "^0.12.0",
     "@types/mocha": "7.0.2",
     "@types/nock": "11.1.0",
-    "@types/node": "12.12.51",
+    "@types/node": "^14.11.2",
     "@types/sinon": "9.0.4",
     "codecov": "3.7.2",
-    "gts": "2.0.2",
+    "gts": "^3.0.2",
     "mocha": "7.2.0",
     "nock": "12.0.3",
     "nyc": "15.1.0",
     "rimraf": "3.0.2",
     "sinon": "9.0.2",
     "ts-mocha": "8.0.0",
-    "typescript": "3.9.7"
+    "typescript": "^4.0.3"
   },
   "dependencies": {
     "google-auth-library": "^5.7.0",

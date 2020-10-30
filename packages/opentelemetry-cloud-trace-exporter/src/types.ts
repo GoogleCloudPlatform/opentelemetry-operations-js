@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Metadata } from 'grpc';
+import {Metadata} from 'grpc';
 
 export interface Span {
   name?: string;

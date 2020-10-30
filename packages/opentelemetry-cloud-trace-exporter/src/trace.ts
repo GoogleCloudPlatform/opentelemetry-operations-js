@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ExportResult, NoopLogger } from '@opentelemetry/core';
-import { ReadableSpan, SpanExporter } from '@opentelemetry/tracing';
-import { Logger } from '@opentelemetry/api';
+import {ExportResult, NoopLogger} from '@opentelemetry/core';
+import {ReadableSpan, SpanExporter} from '@opentelemetry/tracing';
+import {Logger} from '@opentelemetry/api';
 import * as protoloader from '@grpc/proto-loader';
 import * as protofiles from 'google-proto-files';
 import * as grpc from 'grpc';
-import { GoogleAuth } from 'google-auth-library';
-import { promisify } from 'util';
-import { TraceExporterOptions } from './external-types';
-import { getReadableSpanTransformer } from './transform';
-import { TraceService, NamedSpans } from './types';
+import {GoogleAuth} from 'google-auth-library';
+import {promisify} from 'util';
+import {TraceExporterOptions} from './external-types';
+import {getReadableSpanTransformer} from './transform';
+import {TraceService, NamedSpans} from './types';
 
 const OT_REQUEST_HEADER = 'x-opentelemetry-outgoing-request';
 
@@ -136,7 +136,7 @@ export class TraceExporter implements SpanExporter {
       }
     );
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    const { google }: any = grpc.loadPackageDefinition(packageDefinition);
+    const {google}: any = grpc.loadPackageDefinition(packageDefinition);
     const traceService = google.devtools.cloudtrace.v2.TraceService;
     const sslCreds = grpc.credentials.createSsl();
     const callCreds = grpc.credentials.createFromGoogleCredential(creds);

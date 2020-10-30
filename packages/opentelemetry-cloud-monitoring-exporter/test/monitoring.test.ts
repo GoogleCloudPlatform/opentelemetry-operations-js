@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
-import { MetricExporter } from '../src';
-import { ConsoleLogger, ExportResult, LogLevel } from '@opentelemetry/core';
-import { MeterProvider } from '@opentelemetry/metrics';
-import { Labels } from '@opentelemetry/api';
+import {MetricExporter} from '../src';
+import {ConsoleLogger, ExportResult, LogLevel} from '@opentelemetry/core';
+import {MeterProvider} from '@opentelemetry/metrics';
+import {Labels} from '@opentelemetry/api';
 
 describe('MetricExporter', () => {
   beforeEach(() => {
@@ -51,9 +53,7 @@ describe('MetricExporter', () => {
   describe('export', () => {
     let exporter: MetricExporter;
     let logger: ConsoleLogger;
-    /* tslint:disable no-any */
     let metricDescriptors: sinon.SinonSpy<[any, any, any], any>;
-    /* tslint:disable no-any */
     let timeSeries: sinon.SinonSpy<[any, any, any], any>;
     let debug: sinon.SinonSpy;
     let info: sinon.SinonSpy;
@@ -71,7 +71,6 @@ describe('MetricExporter', () => {
       });
 
       metricDescriptors = sinon.spy(
-        /* tslint:disable no-any */
         (
           request: any,
           params: any,
@@ -84,12 +83,10 @@ describe('MetricExporter', () => {
       sinon.replace(
         MetricExporter['_monitoring'].projects.metricDescriptors,
         'create',
-        /* tslint:disable no-any */
         metricDescriptors as any
       );
 
       timeSeries = sinon.spy(
-        /* tslint:disable no-any */
         (
           request: any,
           params: any,
@@ -105,7 +102,6 @@ describe('MetricExporter', () => {
       sinon.replace(
         MetricExporter['_monitoring'].projects.timeSeries,
         'create',
-        /* tslint:disable no-any */
         timeSeries as any
       );
 
@@ -113,7 +109,6 @@ describe('MetricExporter', () => {
         if (getClientShouldFail) {
           throw new Error('fail');
         }
-        /* tslint:disable no-any */
         return {} as any;
       });
 
@@ -136,7 +131,7 @@ describe('MetricExporter', () => {
       await exporter['_projectId'];
       exporter['_projectId'] = undefined;
 
-      const result = await new Promise((resolve, reject) => {
+      const result = await new Promise(resolve => {
         exporter.export([], result => {
           resolve(result);
         });
@@ -147,13 +142,13 @@ describe('MetricExporter', () => {
 
     it('should export metrics', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter('name');
       counter.add(10, labels);
       await meter.collect();
       const records = meter.getBatcher().checkPointSet();
 
-      const result = await new Promise((resolve, reject) => {
+      const result = await new Promise(resolve => {
         exporter.export(records, result => {
           resolve(result);
         });
@@ -171,13 +166,13 @@ describe('MetricExporter', () => {
 
     it('should return retryable if there is an error sending TimeSeries', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter('name');
       counter.add(10, labels);
       await meter.collect();
       const records = meter.getBatcher().checkPointSet();
       createTimeSeriesShouldFail = true;
-      const result = await new Promise((resolve, reject) => {
+      const result = await new Promise(resolve => {
         exporter.export(records, result => {
           resolve(result);
         });
@@ -194,7 +189,7 @@ describe('MetricExporter', () => {
     it('should enforce batch size limit on metrics', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
 
-      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
       let nMetrics = 401;
       while (nMetrics > 0) {
         nMetrics -= 1;
@@ -204,7 +199,7 @@ describe('MetricExporter', () => {
       await meter.collect();
       const records = meter.getBatcher().checkPointSet();
 
-      const result = await new Promise((resolve, reject) => {
+      const result = await new Promise(resolve => {
         exporter.export(records, result => {
           resolve(result);
         });
@@ -231,7 +226,7 @@ describe('MetricExporter', () => {
 
     it('should use the same startTime for cumulative metrics each export', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter('name');
       counter.add(10, labels);
       await meter.collect();

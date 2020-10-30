@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import * as ot from '@opentelemetry/api';
-import { VERSION as CORE_VERSION } from '@opentelemetry/core';
-import { Resource } from '@opentelemetry/resources';
-import { ReadableSpan } from '@opentelemetry/tracing';
+import {VERSION as CORE_VERSION} from '@opentelemetry/core';
+import {Resource} from '@opentelemetry/resources';
+import {ReadableSpan} from '@opentelemetry/tracing';
 import {
   AttributeMap,
   Attributes,
@@ -26,7 +26,7 @@ import {
   Timestamp,
   TruncatableString,
 } from './types';
-import { VERSION } from './version';
+import {VERSION} from './version';
 
 const AGENT_LABEL_KEY = 'g.co/agent';
 const AGENT_LABEL_VALUE = `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`;
@@ -54,7 +54,7 @@ export function getReadableSpanTransformer(
       startTime: transformTime(span.startTime),
       name: `projects/${projectId}/traces/${span.spanContext.traceId}/spans/${span.spanContext.spanId}`,
       spanId: span.spanContext.spanId,
-      sameProcessAsParentSpan: { value: !span.spanContext.isRemote },
+      sameProcessAsParentSpan: {value: !span.spanContext.isRemote},
       status: span.status,
       timeEvents: {
         timeEvent: span.events.map(e => ({
@@ -129,7 +129,7 @@ function transformAttributeValues(attributes: ot.Attributes): AttributeMap {
 }
 
 function stringToTruncatableString(value: string): TruncatableString {
-  return { value };
+  return {value};
 }
 
 function valueToAttributeValue(
@@ -138,11 +138,11 @@ function valueToAttributeValue(
   switch (typeof value) {
     case 'number':
       // TODO: Consider to change to doubleValue when available in V2 API.
-      return { intValue: String(Math.round(value)) };
+      return {intValue: String(Math.round(value))};
     case 'boolean':
-      return { boolValue: value };
+      return {boolValue: value};
     case 'string':
-      return { stringValue: stringToTruncatableString(value) };
+      return {stringValue: stringToTruncatableString(value)};
     default:
       return {};
   }

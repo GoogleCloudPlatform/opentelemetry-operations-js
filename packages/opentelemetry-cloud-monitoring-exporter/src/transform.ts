@@ -20,7 +20,7 @@ import {
   Point as OTPoint,
   PointValueType,
 } from '@opentelemetry/metrics';
-import { ValueType as OTValueType } from '@opentelemetry/api';
+import {ValueType as OTValueType} from '@opentelemetry/api';
 import {
   Resource,
   CLOUD_RESOURCE,
@@ -136,13 +136,13 @@ function transformResource(
 ): MonitoredResource {
   const templateResource = getTypeAndMappings(resource);
   const type = templateResource.type;
-  const labels: { [key: string]: string } = { project_id: projectId };
+  const labels: {[key: string]: string} = {project_id: projectId};
 
   for (const key of Object.keys(templateResource.labels)) {
     // Checks the resource's value for a required key
     const resourceValue = resource.attributes[templateResource.labels[key]];
     if (!resourceValue) {
-      return { type: 'global', labels: { project_id: projectId } };
+      return {type: 'global', labels: {project_id: projectId}};
     }
     if (
       type === AWS_EC2_INSTANCE &&
@@ -153,7 +153,7 @@ function transformResource(
       labels[key] = `${resourceValue}`;
     }
   }
-  return { type, labels };
+  return {type, labels};
 }
 
 /**
@@ -181,21 +181,21 @@ function getTypeAndMappings(resource: Resource): MonitoredResource {
       },
     };
   }
-  return { type: 'global', labels: {} };
+  return {type: 'global', labels: {}};
 }
 
 function transformMetric(
   metric: MetricRecord,
   metricPrefix: string
-): { type: string; labels: { [key: string]: string } } {
+): {type: string; labels: {[key: string]: string}} {
   const type = transformMetricType(metricPrefix, metric.descriptor.name);
-  const labels: { [key: string]: string } = {};
+  const labels: {[key: string]: string} = {};
 
   Object.keys(metric.labels).forEach(
     key => (labels[key] = `${metric.labels[key]}`)
   );
   labels[OPENTELEMETRY_TASK] = OPENTELEMETRY_TASK_VALUE_DEFAULT;
-  return { type, labels };
+  return {type, labels};
 }
 
 /**
@@ -238,7 +238,7 @@ function transformValue(valueType: OTValueType, value: PointValueType) {
         count: value.count,
         mean: value.sum / value.count,
         bucketOptions: {
-          explicitBuckets: { bounds: value.buckets.boundaries },
+          explicitBuckets: {bounds: value.buckets.boundaries},
         },
         bucketCounts: value.buckets.counts,
       },
@@ -246,9 +246,9 @@ function transformValue(valueType: OTValueType, value: PointValueType) {
   }
 
   if (valueType === OTValueType.INT) {
-    return { int64Value: value };
+    return {int64Value: value};
   } else if (valueType === OTValueType.DOUBLE) {
-    return { doubleValue: value };
+    return {doubleValue: value};
   }
   throw Error(`unsupported value type: ${valueType}`);
 }

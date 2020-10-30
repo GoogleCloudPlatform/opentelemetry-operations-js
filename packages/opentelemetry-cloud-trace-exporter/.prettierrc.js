@@ -13,10 +13,5 @@
 // limitations under the License.
 
 module.exports = {
-    "env": {
-        "mocha": true,
-        "commonjs": true,
-        "node": true,
-    },
-    ...require('../../eslint.config.js')
+  ...require('gts/.prettierrc.json')
 }
