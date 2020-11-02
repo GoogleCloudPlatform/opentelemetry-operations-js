@@ -7,16 +7,16 @@ executors:
   node12:
     docker:
       - image: cimg/node:12.19
-  node13:
-    docker:
-      - image: cimg/node:13.14
   node14:
     docker:
       - image: cimg/node:14.15
+  node15:
+    docker:
+      - image: cimg/node:15.0
 
 jobs:
   lint:
-    executor: node14
+    executor: node15
     steps:
       - checkout
       - run:
@@ -63,4 +63,4 @@ workflows:
           name: node<< matrix.node_version >>
           matrix:
             parameters:
-              node_version: [10, 12, 13, 14]
+              node_version: [10, 12, 14, 15]
