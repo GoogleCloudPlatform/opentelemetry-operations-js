@@ -17,7 +17,7 @@ import {ReadableSpan, SpanExporter} from '@opentelemetry/tracing';
 import {Logger} from '@opentelemetry/api';
 import * as protoloader from '@grpc/proto-loader';
 import * as protofiles from 'google-proto-files';
-import * as grpc from 'grpc';
+import * as grpc from '@grpc/grpc-js';
 import {GoogleAuth} from 'google-auth-library';
 import {promisify} from 'util';
 import {TraceExporterOptions} from './external-types';
