@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@grpc/proto-loader": "^0.5.4",
-    "google-auth-library": "^5.7.0",
+    "google-auth-library": "^6.0.0",
     "google-proto-files": "^2.1.0",
     "grpc": "^1.24.3"
   },
