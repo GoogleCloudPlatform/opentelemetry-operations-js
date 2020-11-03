@@ -1,6 +1,10 @@
 # OpenTelemetry Operations Exporters for JavaScript
 
+The packages in this repository support all [officially supported Node.js versions](https://nodejs.org/en/about/releases/) (10, 12, 14, 15).
+
 ## OpenTelemetry Google Cloud Trace Exporter
+
+[![npm version](https://badge.fury.io/js/%40google-cloud%2Fopentelemetry-cloud-trace-exporter.svg)](https://badge.fury.io/js/%40google-cloud%2Fopentelemetry-cloud-trace-exporter)
 
 OpenTelemetry Google Cloud Trace Exporter allows the user to send collected traces to Google Cloud.
 
@@ -39,10 +43,21 @@ const exporter = new TraceExporter();
 // Add the exporter to the provider
 provider.addSpanProcessor(new BatchSpanProcessor(exporter));
 ```
-See [README.md](https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/master/packages/opentelemetry-cloud-trace-exporter/README.md) for installation and usage information.
+See [README.md](packages/opentelemetry-cloud-trace-exporter/README.md) for installation and usage information.
+
+ 
+## OpenTelemetry Google Cloud Trace Propagator
+
+ [![npm version](https://badge.fury.io/js/%40google-cloud%2Fopentelemetry-cloud-trace-propagator.svg)](https://badge.fury.io/js/%40google-cloud%2Fopentelemetry-cloud-trace-propagator)
+
+OpenTelemetry Google Cloud Trace Propagator allows other services to create spans with the right context.
+
+See [README.md](packages/opentelemetry-cloud-trace-propagator/README.md) for installation and usage information.
 
 ## OpenTelemetry Google Cloud Monitoring Exporter
 
+[![npm version](https://badge.fury.io/js/%40google-cloud%2Fopentelemetry-cloud-monitoring-exporter.svg)](https://badge.fury.io/js/%40google-cloud%2Fopentelemetry-cloud-monitoring-exporter)
+
 OpenTelemetry Google Cloud Monitoring Exporter allows the user to send collected metrics to Google Cloud Monitoring.
 
-See [README.md](https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/master/packages/opentelemetry-cloud-monitoring-exporter/README.md) for installation and usage information.
+See [README.md](packages/opentelemetry-cloud-monitoring-exporter/README.md) for installation and usage information.

@@ -1,25 +1,22 @@
 version: 2.1
 
 executors:
-  node8:
-    docker:
-      - image: cimg/node:8.17
   node10:
     docker:
       - image: cimg/node:10.23
   node12:
     docker:
       - image: cimg/node:12.19
-  node13:
-    docker:
-      - image: cimg/node:13.14
   node14:
     docker:
       - image: cimg/node:14.15
+  node15:
+    docker:
+      - image: cimg/node:15.0
 
 jobs:
   lint:
-    executor: node14
+    executor: node15
     steps:
       - checkout
       - run:
@@ -51,7 +48,7 @@ jobs:
           command: npm run test
       - when:
           condition:
-            equal: [ << parameters.node_version >>, 14 ]
+            equal: [<< parameters.node_version >>, 14]
           steps:
             - run:
                 name: report coverage
@@ -66,4 +63,4 @@ workflows:
           name: node<< matrix.node_version >>
           matrix:
             parameters:
-              node_version: [8, 10, 12, 13, 14]
+              node_version: [10, 12, 14, 15]
