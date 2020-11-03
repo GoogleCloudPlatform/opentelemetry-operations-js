@@ -26,9 +26,9 @@ import {
   MeterProvider,
   Histogram,
 } from '@opentelemetry/metrics';
-import { ValueType as OTValueType, Labels } from '@opentelemetry/api';
-import { MetricKind, ValueType, MetricDescriptor } from '../src/types';
-import { Resource } from '@opentelemetry/resources';
+import {ValueType as OTValueType, Labels} from '@opentelemetry/api';
+import {MetricKind, ValueType, MetricDescriptor} from '../src/types';
+import {Resource} from '@opentelemetry/resources';
 
 describe('transform', () => {
   const METRIC_NAME = 'metric-name';
@@ -179,7 +179,7 @@ describe('transform', () => {
 
     it('should return a Google Cloud Monitoring Metric with a default resource', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
 
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
@@ -201,19 +201,19 @@ describe('transform', () => {
         OPENTELEMETRY_TASK_VALUE_DEFAULT
       );
       assert.deepStrictEqual(ts.resource, {
-        labels: { project_id: 'project_id' },
+        labels: {project_id: 'project_id'},
         type: 'global',
       });
       assert.strictEqual(ts.metricKind, MetricKind.CUMULATIVE);
       assert.strictEqual(ts.valueType, ValueType.DOUBLE);
       assert.strictEqual(ts.points.length, 1);
-      assert.deepStrictEqual(ts.points[0].value, { doubleValue: 10 });
+      assert.deepStrictEqual(ts.points[0].value, {doubleValue: 10});
     });
     it('should detect an AWS instance', async () => {
       const meter = new MeterProvider({
         resource: new Resource(mockAwsResource),
       }).getMeter('test-meter');
-      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
       });
@@ -232,7 +232,7 @@ describe('transform', () => {
       const meter = new MeterProvider({
         resource: new Resource(mockGCResource),
       }).getMeter('test-meter');
-      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
       });
@@ -257,7 +257,7 @@ describe('transform', () => {
       const meter = new MeterProvider({
         resource: new Resource(incompleteResource),
       }).getMeter('test-meter');
-      const labels: Labels = { ['keya']: 'value1', ['keyb']: 'value2' };
+      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
       });
@@ -271,14 +271,14 @@ describe('transform', () => {
         'project_id'
       );
       assert.deepStrictEqual(ts.resource, {
-        labels: { project_id: 'project_id' },
+        labels: {project_id: 'project_id'},
         type: 'global',
       });
     });
 
     it('should return a Google Cloud Monitoring Metric for an observer', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = { keya: 'value1', keyb: 'value2' };
+      const labels: Labels = {keya: 'value1', keyb: 'value2'};
       meter.createSumObserver(
         METRIC_NAME,
         {
@@ -308,13 +308,13 @@ describe('transform', () => {
         OPENTELEMETRY_TASK_VALUE_DEFAULT
       );
       assert.deepStrictEqual(ts.resource, {
-        labels: { project_id: 'project_id' },
+        labels: {project_id: 'project_id'},
         type: 'global',
       });
       assert.strictEqual(ts.metricKind, MetricKind.CUMULATIVE);
       assert.strictEqual(ts.valueType, ValueType.INT64);
       assert.strictEqual(ts.points.length, 1);
-      assert.deepStrictEqual(ts.points[0].value, { int64Value });
+      assert.deepStrictEqual(ts.points[0].value, {int64Value});
     });
 
     it('should return a point', () => {
@@ -336,7 +336,7 @@ describe('transform', () => {
         new Date().toISOString()
       );
 
-      assert.deepStrictEqual(result.value, { int64Value: 50 });
+      assert.deepStrictEqual(result.value, {int64Value: 50});
       assert(result.interval.endTime);
       assert(result.interval.startTime);
     });

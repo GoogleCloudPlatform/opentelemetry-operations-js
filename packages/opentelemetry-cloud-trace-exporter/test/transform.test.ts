@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import * as types from '@opentelemetry/api';
-import { TraceFlags } from '@opentelemetry/api';
-import { VERSION as CORE_VERSION } from '@opentelemetry/core';
-import { Resource } from '@opentelemetry/resources';
-import { ReadableSpan } from '@opentelemetry/tracing';
+import {TraceFlags} from '@opentelemetry/api';
+import {VERSION as CORE_VERSION} from '@opentelemetry/core';
+import {Resource} from '@opentelemetry/resources';
+import {ReadableSpan} from '@opentelemetry/tracing';
 import * as assert from 'assert';
-import { getReadableSpanTransformer } from '../src/transform';
-import { LinkType, Span } from '../src/types';
-import { VERSION } from '../src/version';
+import {getReadableSpanTransformer} from '../src/transform';
+import {LinkType, Span} from '../src/types';
+import {VERSION} from '../src/version';
 
 describe('transform', () => {
   let readableSpan: ReadableSpan;
@@ -47,13 +47,13 @@ describe('transform', () => {
       links: [],
       name: 'my-span',
       spanContext,
-      status: { code: types.CanonicalCode.OK },
+      status: {code: types.CanonicalCode.OK},
       resource: new Resource({
         service: 'ui',
         version: 1,
         cost: 112.12,
       }),
-      instrumentationLibrary: { name: 'default', version: '0.0.1' },
+      instrumentationLibrary: {name: 'default', version: '0.0.1'},
     };
   });
 
@@ -63,32 +63,32 @@ describe('transform', () => {
     assert.deepStrictEqual(result, {
       attributes: {
         attributeMap: {
-          project_id: { stringValue: { value: 'project-id' } },
+          project_id: {stringValue: {value: 'project-id'}},
           'g.co/agent': {
             stringValue: {
               value: `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`,
             },
           },
-          cost: { intValue: '112' },
-          service: { stringValue: { value: 'ui' } },
-          version: { intValue: '1' },
+          cost: {intValue: '112'},
+          service: {stringValue: {value: 'ui'}},
+          version: {intValue: '1'},
         },
         droppedAttributesCount: 0,
       },
-      displayName: { value: 'my-span' },
-      links: { link: [] },
-      endTime: { seconds: 1566156731, nanos: 709 },
-      startTime: { seconds: 1566156729, nanos: 709 },
+      displayName: {value: 'my-span'},
+      links: {link: []},
+      endTime: {seconds: 1566156731, nanos: 709},
+      startTime: {seconds: 1566156729, nanos: 709},
       name:
         'projects/project-id/traces/d4cda95b652f4a1592b449d5929fda1b/spans/6e0c63257de34c92',
       spanId: '6e0c63257de34c92',
-      status: { code: 0 },
-      timeEvents: { timeEvent: [] },
-      sameProcessAsParentSpan: { value: false },
+      status: {code: 0},
+      timeEvents: {timeEvent: []},
+      sameProcessAsParentSpan: {value: false},
     });
   });
   it('should transform spans with parent', () => {
-    /* tslint:disable-next-line:no-any */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (readableSpan as any).parentSpanId = '3e0c63257de34c92';
     const result = transformer(readableSpan);
     assert.deepStrictEqual(result.parentSpanId, '3e0c63257de34c92');
@@ -101,13 +101,13 @@ describe('transform', () => {
 
   it('should transform remote spans', () => {
     const remote = transformer(readableSpan);
-    assert.deepStrictEqual(remote.sameProcessAsParentSpan, { value: false });
+    assert.deepStrictEqual(remote.sameProcessAsParentSpan, {value: false});
   });
 
   it('should transform local spans', () => {
     readableSpan.spanContext.isRemote = false;
     const local = transformer(readableSpan);
-    assert.deepStrictEqual(local.sameProcessAsParentSpan, { value: true });
+    assert.deepStrictEqual(local.sameProcessAsParentSpan, {value: true});
   });
 
   it('should transform attributes', () => {
@@ -124,14 +124,14 @@ describe('transform', () => {
       intValue: '3',
     });
     assert.deepStrictEqual(result.attributes!.attributeMap!.testString, {
-      stringValue: { value: 'str' },
+      stringValue: {value: 'str'},
     });
     assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 0);
   });
 
   it('should drop unknown attribute types', () => {
-    // @ts-expect-error
-    readableSpan.attributes.testUnknownType = { message: 'dropped' };
+    // @ts-expect-error testing behavior with unsupported type
+    readableSpan.attributes.testUnknownType = {message: 'dropped'};
     const result = transformer(readableSpan);
     assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 1);
     assert.deepStrictEqual(
@@ -173,7 +173,7 @@ describe('transform', () => {
       },
       attributes: {
         testAttr: 'value',
-        // @ts-expect-error
+        // @ts-expect-error testing behavior with unsupported type
         droppedAttr: {},
       },
     });
@@ -221,7 +221,7 @@ describe('transform', () => {
               value: 'something happened',
             },
           },
-          time: { seconds: 1566156729, nanos: 809 },
+          time: {seconds: 1566156729, nanos: 809},
         },
       ],
     });
@@ -232,7 +232,7 @@ describe('transform', () => {
       name: 'something happened',
       attributes: {
         error: true,
-        // @ts-expect-error
+        // @ts-expect-error testing behavior with unsupported type
         dropped: {},
       },
       time: [1566156729, 809],
@@ -256,7 +256,7 @@ describe('transform', () => {
               value: 'something happened',
             },
           },
-          time: { seconds: 1566156729, nanos: 809 },
+          time: {seconds: 1566156729, nanos: 809},
         },
       ],
     });

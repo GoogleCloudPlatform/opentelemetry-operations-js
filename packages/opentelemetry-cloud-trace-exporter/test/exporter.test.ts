@@ -12,25 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import * as types from '@opentelemetry/api';
-import { TraceFlags } from '@opentelemetry/api';
-import { ConsoleLogger, ExportResult, LogLevel } from '@opentelemetry/core';
-import { Resource } from '@opentelemetry/resources';
-import { ReadableSpan } from '@opentelemetry/tracing';
+import {TraceFlags} from '@opentelemetry/api';
+import {ConsoleLogger, ExportResult, LogLevel} from '@opentelemetry/core';
+import {Resource} from '@opentelemetry/resources';
+import {ReadableSpan} from '@opentelemetry/tracing';
 import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import * as protoloader from '@grpc/proto-loader';
 import * as grpc from 'grpc';
-import { OAuth2Client } from 'google-auth-library';
-import { TraceExporter } from '../src';
-import { TraceService } from '../src/types';
-import {
-  BASE_PATH,
-  HEADER_NAME,
-  HEADER_VALUE,
-  HOST_ADDRESS,
-} from 'gcp-metadata';
+import {OAuth2Client} from 'google-auth-library';
+import {TraceExporter} from '../src';
+import {TraceService} from '../src/types';
+import {BASE_PATH, HEADER_NAME, HEADER_VALUE, HOST_ADDRESS} from 'gcp-metadata';
 
 const HEADERS: {} = {
   [HEADER_NAME.toLowerCase()]: HEADER_VALUE,
@@ -90,7 +87,6 @@ describe('Google Cloud Trace Exporter', () => {
 
     let exporter: TraceExporter;
     let logger: ConsoleLogger;
-    /* tslint:disable-next-line:no-any */
     let batchWrite: sinon.SinonSpy<[any, any, any], any>;
     let traceServiceConstructor: sinon.SinonSpy;
     let createSsl: sinon.SinonStub;
@@ -112,13 +108,11 @@ describe('Google Cloud Trace Exporter', () => {
       });
 
       batchWrite = sinon.spy(
-        /* tslint:disable:no-any */
         (
           spans: any,
           metadata: any,
           callback: (err: Error | null) => void
         ): any => {
-          /* tslint:enable:no-any */
           if (batchWriteShouldFail) {
             callback(new Error('fail'));
           } else {
@@ -131,7 +125,6 @@ describe('Google Cloud Trace Exporter', () => {
         if (getClientShouldFail) {
           throw new Error('fail');
         }
-        /* tslint:disable-next-line:no-any */
         return mockClient as any;
       });
 
@@ -153,10 +146,7 @@ describe('Google Cloud Trace Exporter', () => {
         grpc,
         'loadPackageDefinition',
         (): grpc.GrpcObject => {
-          traceServiceConstructor = sinon.spy(
-            (host: string, creds: grpc.ChannelCredentials) => {}
-          );
-          /* tslint:disable-next-line:no-any */
+          traceServiceConstructor = sinon.spy(() => {});
           const def: any = {
             google: {
               devtools: {
@@ -169,7 +159,6 @@ describe('Google Cloud Trace Exporter', () => {
           // Replace the TraceService with a mock TraceService
           def.google.devtools.cloudtrace.v2.TraceService = class MockTraceService
             implements TraceService {
-            /* tslint:disable-next-line:variable-name */
             BatchWriteSpans = batchWrite;
             constructor(host: string, creds: grpc.ChannelCredentials) {
               traceServiceConstructor(host, creds);
@@ -211,12 +200,12 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: { code: types.CanonicalCode.OK },
+        status: {code: types.CanonicalCode.OK},
         resource: Resource.empty(),
-        instrumentationLibrary: { name: 'default', version: '0.0.1' },
+        instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
 
-      const result = await new Promise((resolve, reject) => {
+      const result = await new Promise(resolve => {
         exporter.export([readableSpan], result => {
           resolve(result);
         });
@@ -261,18 +250,18 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: { code: types.CanonicalCode.OK },
+        status: {code: types.CanonicalCode.OK},
         resource: Resource.empty(),
-        instrumentationLibrary: { name: 'default', version: '0.0.1' },
+        instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
 
-      await new Promise((resolve, reject) => {
+      await new Promise(resolve => {
         exporter.export([readableSpan], result => {
           resolve(result);
         });
       });
 
-      await new Promise((resolve, reject) => {
+      await new Promise(resolve => {
         exporter.export([readableSpan], result => {
           resolve(result);
         });
@@ -301,14 +290,14 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: { code: types.CanonicalCode.OK },
+        status: {code: types.CanonicalCode.OK},
         resource: Resource.empty(),
-        instrumentationLibrary: { name: 'default', version: '0.0.1' },
+        instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
 
       getClientShouldFail = true;
 
-      const result = await new Promise((resolve, reject) => {
+      const result = await new Promise(resolve => {
         exporter.export([readableSpan], result => {
           resolve(result);
         });
@@ -335,14 +324,14 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: { code: types.CanonicalCode.OK },
+        status: {code: types.CanonicalCode.OK},
         resource: Resource.empty(),
-        instrumentationLibrary: { name: 'default', version: '0.0.1' },
+        instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
 
       batchWriteShouldFail = true;
 
-      const result = await new Promise((resolve, reject) => {
+      const result = await new Promise(resolve => {
         exporter.export([readableSpan], result => {
           resolve(result);
         });
@@ -367,15 +356,15 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: { code: types.CanonicalCode.OK },
+        status: {code: types.CanonicalCode.OK},
         resource: Resource.empty(),
-        instrumentationLibrary: { name: 'default', version: '0.0.1' },
+        instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
 
       await exporter['_projectId'];
       exporter['_projectId'] = undefined;
 
-      const result = await new Promise((resolve, reject) => {
+      const result = await new Promise(resolve => {
         exporter.export([readableSpan], result => {
           resolve(result);
         });

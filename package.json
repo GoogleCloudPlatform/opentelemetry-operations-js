@@ -11,7 +11,7 @@
     "test": "lerna run test",
     "bootstrap": "lerna bootstrap",
     "lint": "lerna run lint",
-    "lint:fix": "lerna run lint:fix"
+    "fix": "lerna run fix"
   },
   "repository": "https://github.com/GoogleCloudPlatform/opentelemetry-operations-js",
   "keywords": [

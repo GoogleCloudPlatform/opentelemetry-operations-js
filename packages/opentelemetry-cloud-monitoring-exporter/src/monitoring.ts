@@ -17,14 +17,14 @@ import {
   MetricRecord,
   MetricDescriptor as OTMetricDescriptor,
 } from '@opentelemetry/metrics';
-import { ExportResult, NoopLogger, VERSION } from '@opentelemetry/core';
-import { Logger } from '@opentelemetry/api';
-import { ExporterOptions } from './external-types';
-import { GoogleAuth, JWT } from 'google-auth-library';
-import { google } from 'googleapis';
-import { transformMetricDescriptor, createTimeSeries } from './transform';
-import { TimeSeries } from './types';
-import { partitionList } from './utils';
+import {ExportResult, NoopLogger, VERSION} from '@opentelemetry/core';
+import {Logger} from '@opentelemetry/api';
+import {ExporterOptions} from './external-types';
+import {GoogleAuth, JWT} from 'google-auth-library';
+import {google} from 'googleapis';
+import {transformMetricDescriptor, createTimeSeries} from './transform';
+import {TimeSeries} from './types';
+import {partitionList} from './utils';
 
 // Stackdriver Monitoring v3 only accepts up to 200 TimeSeries per
 // CreateTimeSeries call.
@@ -37,7 +37,7 @@ const OT_USER_AGENT = {
 const OT_REQUEST_HEADER = {
   'x-opentelemetry-outgoing-request': 0x1,
 };
-google.options({ headers: OT_REQUEST_HEADER });
+google.options({headers: OT_REQUEST_HEADER});
 
 /**
  * Format and sends metrics information to Google Cloud Monitoring.
@@ -200,7 +200,7 @@ export class MetricExporter implements IMetricExporter {
       return new Promise((resolve, reject) => {
         MetricExporter._monitoring.projects.metricDescriptors.create(
           request,
-          { headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT] },
+          {headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT]},
           (err: Error | null) => {
             this._logger.debug('sent metric descriptor', request.resource);
             err ? reject(err) : resolve();
@@ -222,14 +222,14 @@ export class MetricExporter implements IMetricExporter {
     return this._authorize().then(authClient => {
       const request = {
         name: `projects/${this._projectId}`,
-        resource: { timeSeries },
+        resource: {timeSeries},
         auth: authClient,
       };
 
       return new Promise((resolve, reject) => {
         MetricExporter._monitoring.projects.timeSeries.create(
           request,
-          { headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT] },
+          {headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT]},
           (err: Error | null) => {
             this._logger.debug('sent time series', request.resource.timeSeries);
             err ? reject(err) : resolve();
