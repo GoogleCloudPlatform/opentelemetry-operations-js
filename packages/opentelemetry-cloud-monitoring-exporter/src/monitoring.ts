@@ -17,7 +17,12 @@ import {
   MetricRecord,
   MetricDescriptor as OTMetricDescriptor,
 } from '@opentelemetry/metrics';
-import {ExportResult, NoopLogger, VERSION} from '@opentelemetry/core';
+import {
+  ExportResult,
+  ExportResultCode,
+  NoopLogger,
+  VERSION,
+} from '@opentelemetry/core';
 import {Logger} from '@opentelemetry/api';
 import {ExporterOptions} from './external-types';
 import {GoogleAuth, JWT} from 'google-auth-library';
@@ -99,8 +104,9 @@ export class MetricExporter implements IMetricExporter {
     }
 
     if (!this._projectId) {
-      this._logger.error('expecting a non-blank ProjectID');
-      return cb(ExportResult.FAILED_NOT_RETRYABLE);
+      const error = new Error('expecting a non-blank ProjectID');
+      this._logger.error(error.message);
+      return cb({code: ExportResultCode.FAILED, error});
     }
 
     this._logger.debug('Google Cloud Monitoring export');
@@ -121,7 +127,9 @@ export class MetricExporter implements IMetricExporter {
       }
     }
 
-    let sendFailed = false;
+    let failure: {sendFailed: false} | {sendFailed: true; error: Error} = {
+      sendFailed: false,
+    };
     for (const batchedTimeSeries of partitionList(
       timeSeries,
       MAX_BATCH_EXPORT_SIZE
@@ -129,15 +137,15 @@ export class MetricExporter implements IMetricExporter {
       try {
         await this._sendTimeSeries(batchedTimeSeries);
       } catch (err) {
-        const message = `Send TimeSeries failed: ${err.message}`;
-        sendFailed = true;
-        this._logger.error(message);
+        err.message = `Send TimeSeries failed: ${err.message}`;
+        failure = {sendFailed: true, error: err};
+        this._logger.error(err.message);
       }
     }
-    if (sendFailed) {
-      return cb(ExportResult.FAILED_RETRYABLE);
+    if (failure.sendFailed) {
+      return cb({code: ExportResultCode.FAILED, error: failure.error});
     }
-    cb(ExportResult.SUCCESS);
+    cb({code: ExportResultCode.SUCCESS});
   }
 
   async shutdown(): Promise<void> {}

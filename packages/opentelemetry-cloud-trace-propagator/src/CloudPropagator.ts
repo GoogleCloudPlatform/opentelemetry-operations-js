@@ -15,11 +15,11 @@
 import {
   TextMapPropagator,
   Context,
-  SetterFunction,
-  GetterFunction,
   TraceFlags,
   setExtractedSpanContext,
   getParentSpanContext,
+  TextMapSetter,
+  TextMapGetter,
 } from '@opentelemetry/api';
 import {decToHex, hexToDec} from 'hex2dec';
 
@@ -41,9 +41,14 @@ import {decToHex, hexToDec} from 'hex2dec';
 
 /** Header that carries span context across Google infrastructure. */
 export const X_CLOUD_TRACE_HEADER = 'x-cloud-trace-context';
+const FIELDS = [X_CLOUD_TRACE_HEADER];
 
 export class CloudPropagator implements TextMapPropagator {
-  inject(context: Context, carrier: unknown, setter: SetterFunction): void {
+  inject(
+    context: Context,
+    carrier: unknown,
+    setter: TextMapSetter<unknown>
+  ): void {
     const spanContext = getParentSpanContext(context);
     if (!spanContext) return;
 
@@ -51,11 +56,15 @@ export class CloudPropagator implements TextMapPropagator {
       spanContext.traceFlags & TraceFlags.SAMPLED
     }`;
 
-    setter(carrier, X_CLOUD_TRACE_HEADER, header);
+    setter.set(carrier, X_CLOUD_TRACE_HEADER, header);
   }
 
-  extract(context: Context, carrier: unknown, getter: GetterFunction): Context {
-    const traceContextHeader = getter(carrier, X_CLOUD_TRACE_HEADER);
+  extract(
+    context: Context,
+    carrier: unknown,
+    getter: TextMapGetter<unknown>
+  ): Context {
+    const traceContextHeader = getter.get(carrier, X_CLOUD_TRACE_HEADER);
     const traceContextHeaderValue = Array.isArray(traceContextHeader)
       ? traceContextHeader[0]
       : traceContextHeader;
@@ -85,5 +94,9 @@ export class CloudPropagator implements TextMapPropagator {
     };
 
     return setExtractedSpanContext(context, spanContext);
+  }
+
+  fields(): string[] {
+    return FIELDS;
   }
 }

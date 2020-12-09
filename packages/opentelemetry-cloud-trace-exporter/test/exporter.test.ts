@@ -14,7 +14,12 @@
 
 import * as types from '@opentelemetry/api';
 import {TraceFlags} from '@opentelemetry/api';
-import {ConsoleLogger, ExportResult, LogLevel} from '@opentelemetry/core';
+import {
+  ConsoleLogger,
+  ExportResult,
+  ExportResultCode,
+  LogLevel,
+} from '@opentelemetry/core';
 import {Resource} from '@opentelemetry/resources';
 import {ReadableSpan} from '@opentelemetry/tracing';
 import * as assert from 'assert';
@@ -202,12 +207,12 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: {code: types.CanonicalCode.OK},
+        status: {code: types.StatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
 
-      const result = await new Promise(resolve => {
+      const result = await new Promise<ExportResult>(resolve => {
         exporter.export([readableSpan], result => {
           resolve(result);
         });
@@ -232,7 +237,7 @@ describe('Google Cloud Trace Exporter', () => {
           mockCombinedCreds
         )
       );
-      assert.deepStrictEqual(result, ExportResult.SUCCESS);
+      assert.strictEqual(result.code, ExportResultCode.SUCCESS);
     });
 
     it('should memoize the rpc client', async () => {
@@ -252,7 +257,7 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: {code: types.CanonicalCode.OK},
+        status: {code: types.StatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
@@ -275,7 +280,7 @@ describe('Google Cloud Trace Exporter', () => {
       assert(traceServiceConstructor.calledOnce);
     });
 
-    it('should return not retryable if authorization fails', async () => {
+    it('should return FAILED if authorization fails', async () => {
       const readableSpan: ReadableSpan = {
         attributes: {},
         duration: [32, 800000000],
@@ -292,24 +297,24 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: {code: types.CanonicalCode.OK},
+        status: {code: types.StatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
 
       getClientShouldFail = true;
 
-      const result = await new Promise(resolve => {
+      const result = await new Promise<ExportResult>(resolve => {
         exporter.export([readableSpan], result => {
           resolve(result);
         });
       });
       assert(error.getCall(0).args[0].match(/failed to create client: fail/));
       assert(traceServiceConstructor.calledOnce);
-      assert.deepStrictEqual(result, ExportResult.FAILED_NOT_RETRYABLE);
+      assert.strictEqual(result.code, ExportResultCode.FAILED);
     });
 
-    it('should return retryable if span writing fails', async () => {
+    it('should return FAILED if span writing fails', async () => {
       const readableSpan: ReadableSpan = {
         attributes: {},
         duration: [32, 800000000],
@@ -326,22 +331,22 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: {code: types.CanonicalCode.OK},
+        status: {code: types.StatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
 
       batchWriteShouldFail = true;
 
-      const result = await new Promise(resolve => {
+      const result = await new Promise<ExportResult>(resolve => {
         exporter.export([readableSpan], result => {
           resolve(result);
         });
       });
-      assert.deepStrictEqual(result, ExportResult.FAILED_RETRYABLE);
+      assert.strictEqual(result.code, ExportResultCode.FAILED);
     });
 
-    it('should return not retryable if project id missing', async () => {
+    it('should return FAILED if project id missing', async () => {
       const readableSpan: ReadableSpan = {
         attributes: {},
         duration: [32, 800000000],
@@ -358,7 +363,7 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: {code: types.CanonicalCode.OK},
+        status: {code: types.StatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
@@ -366,13 +371,13 @@ describe('Google Cloud Trace Exporter', () => {
       await exporter['_projectId'];
       exporter['_projectId'] = undefined;
 
-      const result = await new Promise(resolve => {
+      const result = await new Promise<ExportResult>(resolve => {
         exporter.export([readableSpan], result => {
           resolve(result);
         });
       });
 
-      assert.deepStrictEqual(result, ExportResult.FAILED_NOT_RETRYABLE);
+      assert.strictEqual(result.code, ExportResultCode.FAILED);
     });
   });
 });

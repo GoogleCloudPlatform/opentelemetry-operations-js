@@ -47,7 +47,7 @@ describe('transform', () => {
       links: [],
       name: 'my-span',
       spanContext,
-      status: {code: types.CanonicalCode.OK},
+      status: {code: types.StatusCode.OK},
       resource: new Resource({
         service: 'ui',
         version: 1,
