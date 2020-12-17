@@ -139,9 +139,12 @@ describe('transform', () => {
     assert.deepStrictEqual(result.attributes!.attributeMap!['/http/method'], {
       stringValue: {value: 'POST'},
     });
-    assert.deepStrictEqual(result.attributes!.attributeMap!['/http/client_protocol'], {
-      stringValue: {value: 'https'},
-    });
+    assert.deepStrictEqual(
+      result.attributes!.attributeMap!['/http/client_protocol'],
+      {
+        stringValue: {value: 'https'},
+      }
+    );
     assert.deepStrictEqual(result.attributes!.attributeMap!['/http/host'], {
       stringValue: {value: 'example.com'},
     });
