@@ -163,7 +163,8 @@ const HTTP_ATTRIBUTE_MAPPING: { [key: string]: string} = {
   'http.response_content_length_uncompressed': '/http/response_content_length_uncompressed',
   'http.server_name': '/http/server_name',
   'http.route': '/http/route',
-  'http.client_ip': '/http/client_ip'
+  'http.client_ip': '/http/client_ip',
+  'http.path': '/http/path'
 }
 function transformAttributeNames(attributes: ot.Attributes): ot.Attributes {
   const out: ot.Attributes = {};
