@@ -151,21 +151,13 @@ function valueToAttributeValue(
 const HTTP_ATTRIBUTE_MAPPING: {[key: string]: string} = {
   'http.method': '/http/method',
   'http.url': '/http/url',
-  'http.target': '/http/target',
   'http.host': '/http/host',
   'http.scheme': '/http/client_protocol',
   'http.status_code': '/http/status_code',
-  'http.flavor': '/http/flavor',
   'http.user_agent': '/http/user_agent',
-  'http.request_content_length': '/http/request_content_length',
-  'http.request_content_length_uncompressed':
-    '/http/request_content_length_uncompressed',
-  'http.response_content_length': '/http/response_content_length',
-  'http.response_content_length_uncompressed':
-    '/http/response_content_length_uncompressed',
-  'http.server_name': '/http/server_name',
+  'http.request_content_length': '/http/request/size',
+  'http.response_content_length': '/http/response/size',
   'http.route': '/http/route',
-  'http.client_ip': '/http/client_ip',
   'http.path': '/http/path',
 };
 function transformAttributeNames(attributes: ot.Attributes): ot.Attributes {
