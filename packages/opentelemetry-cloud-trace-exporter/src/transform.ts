@@ -102,8 +102,8 @@ function transformAttributes(
     serviceAttributes,
     resource.attributes
   );
-
-  const attributeMap = transformAttributeValues(attributes);
+  const changedAttributes = transformAttributeNames(attributes);
+  const attributeMap = transformAttributeValues(changedAttributes);
   return {
     attributeMap,
     // @todo get dropped attribute count from sdk ReadableSpan
@@ -146,4 +146,27 @@ function valueToAttributeValue(
     default:
       return {};
   }
+}
+
+const HTTP_ATTRIBUTE_MAPPING: {[key: string]: string} = {
+  'http.method': '/http/method',
+  'http.url': '/http/url',
+  'http.host': '/http/host',
+  'http.scheme': '/http/client_protocol',
+  'http.status_code': '/http/status_code',
+  'http.user_agent': '/http/user_agent',
+  'http.request_content_length': '/http/request/size',
+  'http.response_content_length': '/http/response/size',
+  'http.route': '/http/route',
+};
+function transformAttributeNames(attributes: ot.Attributes): ot.Attributes {
+  const out: ot.Attributes = {};
+  for (const [key, value] of Object.entries(attributes)) {
+    if (HTTP_ATTRIBUTE_MAPPING[key]) {
+      out[HTTP_ATTRIBUTE_MAPPING[key]] = value;
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
 }
