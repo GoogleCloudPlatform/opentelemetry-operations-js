@@ -158,7 +158,6 @@ const HTTP_ATTRIBUTE_MAPPING: {[key: string]: string} = {
   'http.request_content_length': '/http/request/size',
   'http.response_content_length': '/http/response/size',
   'http.route': '/http/route',
-  'http.path': '/http/path',
 };
 function transformAttributeNames(attributes: ot.Attributes): ot.Attributes {
   const out: ot.Attributes = {};
