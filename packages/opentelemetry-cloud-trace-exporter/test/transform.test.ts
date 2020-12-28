@@ -129,6 +129,27 @@ describe('transform', () => {
     assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 0);
   });
 
+  it('should transform http attributes', () => {
+    readableSpan.attributes['http.method'] = 'POST';
+    readableSpan.attributes['http.scheme'] = 'https';
+    readableSpan.attributes['http.host'] = 'example.com';
+
+    const result = transformer(readableSpan);
+
+    assert.deepStrictEqual(result.attributes!.attributeMap!['/http/method'], {
+      stringValue: {value: 'POST'},
+    });
+    assert.deepStrictEqual(
+      result.attributes!.attributeMap!['/http/client_protocol'],
+      {
+        stringValue: {value: 'https'},
+      }
+    );
+    assert.deepStrictEqual(result.attributes!.attributeMap!['/http/host'], {
+      stringValue: {value: 'example.com'},
+    });
+  });
+
   it('should drop unknown attribute types', () => {
     // @ts-expect-error testing behavior with unsupported type
     readableSpan.attributes.testUnknownType = {message: 'dropped'};
