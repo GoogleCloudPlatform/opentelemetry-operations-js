@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {ExportResult, NoopLogger} from '@opentelemetry/core';
+import {ExportResult, ExportResultCode, NoopLogger} from '@opentelemetry/core';
 import {ReadableSpan, SpanExporter} from '@opentelemetry/tracing';
 import {Logger} from '@opentelemetry/api';
 import * as protoloader from '@grpc/proto-loader';
@@ -66,7 +66,10 @@ export class TraceExporter implements SpanExporter {
     }
 
     if (!this._projectId) {
-      return resultCallback(ExportResult.FAILED_NOT_RETRYABLE);
+      return resultCallback({
+        code: ExportResultCode.FAILED,
+        error: new Error('Was not able to determine GCP project ID'),
+      });
     }
 
     this._logger.debug('Google Cloud Trace export');
@@ -91,10 +94,10 @@ export class TraceExporter implements SpanExporter {
     this._logger.debug('Google Cloud Trace batch writing traces');
     try {
       this._traceServiceClient = await this._getClient();
-    } catch (err) {
-      err.message = `failed to create client: ${err.message}`;
-      this._logger.error(err.message);
-      return ExportResult.FAILED_NOT_RETRYABLE;
+    } catch (error) {
+      error.message = `failed to create client: ${error.message}`;
+      this._logger.error(error.message);
+      return {code: ExportResultCode.FAILED, error};
     }
 
     const metadata = new grpc.Metadata();
@@ -105,11 +108,11 @@ export class TraceExporter implements SpanExporter {
     try {
       await batchWriteSpans(spans, metadata);
       this._logger.debug('batchWriteSpans successfully');
-      return ExportResult.SUCCESS;
-    } catch (err) {
-      err.message = `batchWriteSpans error: ${err.message}`;
-      this._logger.error(err.message);
-      return ExportResult.FAILED_RETRYABLE;
+      return {code: ExportResultCode.SUCCESS};
+    } catch (error) {
+      error.message = `batchWriteSpans error: ${error.message}`;
+      this._logger.error(error.message);
+      return {code: ExportResultCode.FAILED, error};
     }
   }
 

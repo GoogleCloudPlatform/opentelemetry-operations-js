@@ -18,7 +18,12 @@ import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import {MetricExporter} from '../src';
-import {ConsoleLogger, ExportResult, LogLevel} from '@opentelemetry/core';
+import {
+  ConsoleLogger,
+  ExportResult,
+  ExportResultCode,
+  LogLevel,
+} from '@opentelemetry/core';
 import {MeterProvider} from '@opentelemetry/metrics';
 import {Labels} from '@opentelemetry/api';
 
@@ -127,17 +132,17 @@ describe('MetricExporter', () => {
       sinon.restore();
     });
 
-    it('should return not retryable if project id missing', async () => {
+    it('should return FAILED if project id missing', async () => {
       await exporter['_projectId'];
       exporter['_projectId'] = undefined;
 
-      const result = await new Promise(resolve => {
+      const result = await new Promise<ExportResult>(resolve => {
         exporter.export([], result => {
           resolve(result);
         });
       });
 
-      assert.deepStrictEqual(result, ExportResult.FAILED_NOT_RETRYABLE);
+      assert.strictEqual(result.code, ExportResultCode.FAILED);
     });
 
     it('should export metrics', async () => {
@@ -146,9 +151,9 @@ describe('MetricExporter', () => {
       const counter = meter.createCounter('name');
       counter.add(10, labels);
       await meter.collect();
-      const records = meter.getBatcher().checkPointSet();
+      const records = meter.getProcessor().checkPointSet();
 
-      const result = await new Promise(resolve => {
+      const result = await new Promise<ExportResult>(resolve => {
         exporter.export(records, result => {
           resolve(result);
         });
@@ -161,18 +166,18 @@ describe('MetricExporter', () => {
       assert.strictEqual(metricDescriptors.callCount, 1);
       assert.strictEqual(timeSeries.callCount, 1);
 
-      assert.deepStrictEqual(result, ExportResult.SUCCESS);
+      assert.strictEqual(result.code, ExportResultCode.SUCCESS);
     });
 
-    it('should return retryable if there is an error sending TimeSeries', async () => {
+    it('should return FAILED if there is an error sending TimeSeries', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
       const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter('name');
       counter.add(10, labels);
       await meter.collect();
-      const records = meter.getBatcher().checkPointSet();
+      const records = meter.getProcessor().checkPointSet();
       createTimeSeriesShouldFail = true;
-      const result = await new Promise(resolve => {
+      const result = await new Promise<ExportResult>(resolve => {
         exporter.export(records, result => {
           resolve(result);
         });
@@ -181,9 +186,9 @@ describe('MetricExporter', () => {
         metricDescriptors.getCall(0).args[0].resource.type,
         'custom.googleapis.com/opentelemetry/name'
       );
-      assert.equal(metricDescriptors.callCount, 1);
-      assert.equal(timeSeries.callCount, 1);
-      assert.deepStrictEqual(result, ExportResult.FAILED_RETRYABLE);
+      assert.strictEqual(metricDescriptors.callCount, 1);
+      assert.strictEqual(timeSeries.callCount, 1);
+      assert.deepStrictEqual(result.code, ExportResultCode.FAILED);
     });
 
     it('should enforce batch size limit on metrics', async () => {
@@ -197,9 +202,9 @@ describe('MetricExporter', () => {
         counter.bind(labels).add(10);
       }
       await meter.collect();
-      const records = meter.getBatcher().checkPointSet();
+      const records = meter.getProcessor().checkPointSet();
 
-      const result = await new Promise(resolve => {
+      const result = await new Promise<ExportResult>(resolve => {
         exporter.export(records, result => {
           resolve(result);
         });
@@ -221,7 +226,7 @@ describe('MetricExporter', () => {
       assert.strictEqual(metricDescriptors.callCount, 401);
       assert.strictEqual(timeSeries.callCount, 3);
 
-      assert.deepStrictEqual(result, ExportResult.SUCCESS);
+      assert.strictEqual(result.code, ExportResultCode.SUCCESS);
     });
 
     it('should use the same startTime for cumulative metrics each export', async () => {
@@ -230,7 +235,7 @@ describe('MetricExporter', () => {
       const counter = meter.createCounter('name');
       counter.add(10, labels);
       await meter.collect();
-      const records1 = meter.getBatcher().checkPointSet();
+      const records1 = meter.getProcessor().checkPointSet();
 
       await exporter.export(records1, () => {});
 
@@ -246,7 +251,7 @@ describe('MetricExporter', () => {
       // Export a second time
       counter.add(15, labels);
       await meter.collect();
-      const records2 = meter.getBatcher().checkPointSet();
+      const records2 = meter.getProcessor().checkPointSet();
 
       await exporter.export(records2, () => {});
 

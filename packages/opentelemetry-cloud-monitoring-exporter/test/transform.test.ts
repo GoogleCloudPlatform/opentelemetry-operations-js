@@ -186,7 +186,7 @@ describe('transform', () => {
       });
       counter.bind(labels).add(10);
       await meter.collect();
-      const [record] = meter.getBatcher().checkPointSet();
+      const [record] = meter.getProcessor().checkPointSet();
       const ts = createTimeSeries(
         record,
         'otel',
@@ -219,7 +219,7 @@ describe('transform', () => {
       });
       counter.bind(labels).add(10);
       await meter.collect();
-      const [record] = meter.getBatcher().checkPointSet();
+      const [record] = meter.getProcessor().checkPointSet();
       const ts = createTimeSeries(
         record,
         'otel',
@@ -238,7 +238,7 @@ describe('transform', () => {
       });
       counter.bind(labels).add(10);
       await meter.collect();
-      const [record] = meter.getBatcher().checkPointSet();
+      const [record] = meter.getProcessor().checkPointSet();
       const ts = createTimeSeries(
         record,
         'otel',
@@ -263,7 +263,7 @@ describe('transform', () => {
       });
       counter.bind(labels).add(10);
       await meter.collect();
-      const [record] = meter.getBatcher().checkPointSet();
+      const [record] = meter.getProcessor().checkPointSet();
       const ts = createTimeSeries(
         record,
         'otel',
@@ -291,7 +291,7 @@ describe('transform', () => {
       );
       const int64Value = 0;
       await meter.collect();
-      const [record] = meter.getBatcher().checkPointSet();
+      const [record] = meter.getProcessor().checkPointSet();
       const ts = createTimeSeries(
         record,
         'otel',
