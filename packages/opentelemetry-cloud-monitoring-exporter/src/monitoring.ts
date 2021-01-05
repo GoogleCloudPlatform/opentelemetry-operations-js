@@ -205,7 +205,7 @@ export class MetricExporter implements IMetricExporter {
       auth: authClient,
     };
     try {
-      return new Promise((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
         MetricExporter._monitoring.projects.metricDescriptors.create(
           request,
           {headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT]},
@@ -234,7 +234,7 @@ export class MetricExporter implements IMetricExporter {
         auth: authClient,
       };
 
-      return new Promise((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
         MetricExporter._monitoring.projects.timeSeries.create(
           request,
           {headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT]},
