@@ -12,7 +12,7 @@ executors:
       - image: cimg/node:14.15
   node15:
     docker:
-      - image: cimg/node:15.5
+      - image: cimg/node:15.6
 
 jobs:
   lint:
