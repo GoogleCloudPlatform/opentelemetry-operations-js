@@ -11,26 +11,25 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import * as types from '@opentelemetry/api';
-import {TraceFlags} from '@opentelemetry/api';
+import * as api from '@opentelemetry/api';
 import {VERSION as CORE_VERSION} from '@opentelemetry/core';
 import {Resource} from '@opentelemetry/resources';
-import {ReadableSpan} from '@opentelemetry/tracing';
+import type {ReadableSpan} from '@opentelemetry/tracing';
 import * as assert from 'assert';
 import {getReadableSpanTransformer} from '../src/transform';
-import {LinkType, Span} from '../src/types';
+import {LinkType, Span, Code, Status} from '../src/types';
 import {VERSION} from '../src/version';
 
 describe('transform', () => {
   let readableSpan: ReadableSpan;
   let transformer: (readableSpan: ReadableSpan) => Span;
-  let spanContext: types.SpanContext;
+  let spanContext: api.SpanContext;
 
   beforeEach(() => {
     spanContext = {
       traceId: 'd4cda95b652f4a1592b449d5929fda1b',
       spanId: '6e0c63257de34c92',
-      traceFlags: TraceFlags.NONE,
+      traceFlags: api.TraceFlags.NONE,
       isRemote: true,
     };
 
@@ -43,11 +42,11 @@ describe('transform', () => {
       endTime: [1566156731, 709],
       ended: true,
       events: [],
-      kind: types.SpanKind.CLIENT,
+      kind: api.SpanKind.CLIENT,
       links: [],
       name: 'my-span',
       spanContext,
-      status: {code: types.StatusCode.OK},
+      status: {code: api.StatusCode.OK},
       resource: new Resource({
         service: 'ui',
         version: 1,
@@ -82,10 +81,10 @@ describe('transform', () => {
       name:
         'projects/project-id/traces/d4cda95b652f4a1592b449d5929fda1b/spans/6e0c63257de34c92',
       spanId: '6e0c63257de34c92',
-      status: {code: 0},
+      status: {code: Code.OK},
       timeEvents: {timeEvent: []},
       sameProcessAsParentSpan: {value: false},
-    });
+    } as Span);
   });
   it('should transform spans with parent', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -280,6 +279,42 @@ describe('transform', () => {
           time: {seconds: 1566156729, nanos: 809},
         },
       ],
+    });
+  });
+
+  it('should transform statuses', () => {
+    const unsetResult = transformer({
+      ...readableSpan,
+      status: {code: api.StatusCode.UNSET},
+    });
+    assert.strictEqual(unsetResult.status, undefined);
+
+    const okResult = transformer({
+      ...readableSpan,
+      status: {code: api.StatusCode.OK},
+    });
+    assert.deepStrictEqual<Status>(okResult.status, {
+      code: Code.OK,
+    });
+
+    const errorMesssage = 'error occurred';
+    const errorResult = transformer({
+      ...readableSpan,
+      status: {code: api.StatusCode.ERROR, message: errorMesssage},
+    });
+    assert.deepStrictEqual<Status>(errorResult.status, {
+      code: Code.UNKNOWN,
+      message: errorMesssage,
+    });
+
+    // some unexpected status code is converted to error
+    const futureAddedCodeResult = transformer({
+      ...readableSpan,
+      status: {code: -10},
+    });
+    assert.deepStrictEqual<Status>(futureAddedCodeResult.status, {
+      code: Code.UNKNOWN,
+      message: undefined,
     });
   });
 });

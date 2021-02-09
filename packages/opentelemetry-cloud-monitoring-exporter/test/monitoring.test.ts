@@ -25,7 +25,7 @@ import {
   LogLevel,
 } from '@opentelemetry/core';
 import {MeterProvider} from '@opentelemetry/metrics';
-import {Labels} from '@opentelemetry/api';
+import {Labels} from '@opentelemetry/api-metrics';
 
 describe('MetricExporter', () => {
   beforeEach(() => {

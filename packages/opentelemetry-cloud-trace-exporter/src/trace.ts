@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {ExportResult, ExportResultCode, NoopLogger} from '@opentelemetry/core';
+import {ExportResult, ExportResultCode} from '@opentelemetry/core';
 import {ReadableSpan, SpanExporter} from '@opentelemetry/tracing';
-import {Logger} from '@opentelemetry/api';
+import {Logger, NoopLogger} from '@opentelemetry/api';
 import * as protoloader from '@grpc/proto-loader';
 import * as protofiles from 'google-proto-files';
 import * as grpc from '@grpc/grpc-js';

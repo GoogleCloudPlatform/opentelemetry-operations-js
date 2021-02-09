@@ -96,7 +96,7 @@ export interface Module {
 
 export interface Status {
   /** gRPC status code */
-  code?: number;
+  code?: Code;
   message?: string;
 }
 
@@ -156,4 +156,13 @@ export interface TraceService {
     metadata: Metadata,
     callback: Function
   ) => void;
+}
+
+/**
+ * A google.rpc.Code
+ */
+export enum Code {
+  // These are the only two we care about mapping to
+  OK = 0,
+  UNKNOWN = 2,
 }

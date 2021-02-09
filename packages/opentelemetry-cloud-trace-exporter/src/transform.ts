@@ -20,11 +20,13 @@ import {
   AttributeMap,
   Attributes,
   AttributeValue,
+  Code,
   Link,
   LinkType,
   Span,
   Timestamp,
   TruncatableString,
+  Status,
 } from './types';
 import {VERSION} from './version';
 
@@ -55,7 +57,7 @@ export function getReadableSpanTransformer(
       name: `projects/${projectId}/traces/${span.spanContext.traceId}/spans/${span.spanContext.spanId}`,
       spanId: span.spanContext.spanId,
       sameProcessAsParentSpan: {value: !span.spanContext.isRemote},
-      status: span.status,
+      status: transformStatus(span.status),
       timeEvents: {
         timeEvent: span.events.map(e => ({
           time: transformTime(e.time),
@@ -73,6 +75,29 @@ export function getReadableSpanTransformer(
 
     return out;
   };
+}
+
+function transformStatus(status: ot.Status): Status | undefined {
+  switch (status.code) {
+    case ot.StatusCode.UNSET:
+      return undefined;
+    case ot.StatusCode.OK:
+      return {code: Code.OK};
+    case ot.StatusCode.ERROR:
+      return {code: Code.UNKNOWN, message: status.message};
+    default: {
+      exhaust(status.code);
+      // TODO: log failed mapping
+      return {code: Code.UNKNOWN, message: status.message};
+    }
+  }
+}
+
+/**
+ * Assert switch case is exhaustive
+ */
+function exhaust(switchValue: never) {
+  return switchValue;
 }
 
 function transformTime(time: ot.HrTime): Timestamp {
