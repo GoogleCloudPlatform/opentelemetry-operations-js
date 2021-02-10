@@ -65,7 +65,14 @@ describe('Google Cloud Trace Exporter', () => {
       delete process.env.GCLOUD_PROJECT;
       const gcpMock = nock(HOST_ADDRESS)
         .get(PROJECT_ID_PATH)
-        .reply(200, () => 'not-real', HEADERS);
+        .reply(
+          200,
+          () => {
+            console.log('Got fake request!');
+            return 'not-real';
+          },
+          HEADERS
+        );
       const exporter = new TraceExporter();
 
       assert(exporter);
