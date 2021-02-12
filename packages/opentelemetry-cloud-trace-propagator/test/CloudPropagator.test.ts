@@ -15,9 +15,9 @@
 import {
   defaultTextMapGetter,
   defaultTextMapSetter,
-  getActiveSpan,
+  getSpan,
   ROOT_CONTEXT,
-  setExtractedSpanContext,
+  setSpanContext,
   SpanContext,
   TraceFlags,
 } from '@opentelemetry/api';
@@ -41,7 +41,7 @@ describe('CloudPropagator', () => {
       };
 
       cloudPropagator.inject(
-        setExtractedSpanContext(ROOT_CONTEXT, spanContext),
+        setSpanContext(ROOT_CONTEXT, spanContext),
         carrier,
         defaultTextMapSetter
       );
@@ -58,7 +58,7 @@ describe('CloudPropagator', () => {
         traceFlags: TraceFlags.NONE,
       };
       cloudPropagator.inject(
-        setExtractedSpanContext(ROOT_CONTEXT, spanContext),
+        setSpanContext(ROOT_CONTEXT, spanContext),
         carrier,
         defaultTextMapSetter
       );
@@ -73,7 +73,7 @@ describe('CloudPropagator', () => {
     it('should extract context of a sampled span from carrier', () => {
       carrier[X_CLOUD_TRACE_HEADER] =
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=1';
-      const extractedSpanContext = getActiveSpan(
+      const extractedSpanContext = getSpan(
         cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
       )?.context();
 
@@ -88,7 +88,7 @@ describe('CloudPropagator', () => {
     it('should extract context of a unsampled span from carrier', () => {
       carrier[X_CLOUD_TRACE_HEADER] =
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=0';
-      const extractedSpanContext = getActiveSpan(
+      const extractedSpanContext = getSpan(
         cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
       )?.context();
 
@@ -103,7 +103,7 @@ describe('CloudPropagator', () => {
     it('should handle trace_flags other than 0 and 1', () => {
       carrier[X_CLOUD_TRACE_HEADER] =
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=123';
-      const extractedSpanContext = getActiveSpan(
+      const extractedSpanContext = getSpan(
         cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
       )?.context();
 
@@ -118,7 +118,7 @@ describe('CloudPropagator', () => {
     it('should handle missing trace_flags', () => {
       carrier[X_CLOUD_TRACE_HEADER] =
         'b75dc0042a82efcb6b0a194911272926/1258215';
-      const extractedSpanContext = getActiveSpan(
+      const extractedSpanContext = getSpan(
         cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
       )?.context();
 
@@ -134,7 +134,7 @@ describe('CloudPropagator', () => {
       carrier[X_CLOUD_TRACE_HEADER] = [
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=1',
       ];
-      const extractedSpanContext = getActiveSpan(
+      const extractedSpanContext = getSpan(
         cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
       )?.context();
       assert.deepStrictEqual(extractedSpanContext, {
@@ -147,7 +147,7 @@ describe('CloudPropagator', () => {
 
     it('returns undefined if x-cloud-trace-context header is missing', () => {
       assert.deepStrictEqual(
-        getActiveSpan(
+        getSpan(
           cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
         )?.context(),
         undefined
@@ -177,7 +177,7 @@ describe('CloudPropagator', () => {
       for (const [testName, testData] of Object.entries(testCases)) {
         carrier[X_CLOUD_TRACE_HEADER] = testData;
 
-        const extractedSpanContext = getActiveSpan(
+        const extractedSpanContext = getSpan(
           cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
         )?.context();
 

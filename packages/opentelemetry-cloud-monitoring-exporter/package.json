@@ -38,10 +38,11 @@
     "registry": "https://wombat-dressing-room.appspot.com"
   },
   "devDependencies": {
-    "@opentelemetry/api": "^0.14.0",
-    "@opentelemetry/core": "^0.14.0",
-    "@opentelemetry/metrics": "^0.14.0",
-    "@opentelemetry/resources": "^0.14.0",
+    "@opentelemetry/api": "^0.16.0",
+    "@opentelemetry/api-metrics": "^0.16.0",
+    "@opentelemetry/core": "^0.16.0",
+    "@opentelemetry/metrics": "^0.16.0",
+    "@opentelemetry/resources": "^0.16.0",
     "@types/mocha": "7.0.2",
     "@types/nock": "11.1.0",
     "@types/node": "14.14.22",
@@ -61,9 +62,9 @@
     "googleapis": "^67.0.0"
   },
   "peerDependencies": {
-    "@opentelemetry/api": "^0.14.0",
-    "@opentelemetry/core": "^0.14.0",
-    "@opentelemetry/metrics": "^0.14.0",
-    "@opentelemetry/resources": "^0.14.0"
+    "@opentelemetry/api": "^0.16.0",
+    "@opentelemetry/core": "^0.16.0",
+    "@opentelemetry/metrics": "^0.16.0",
+    "@opentelemetry/resources": "^0.16.0"
   }
 }

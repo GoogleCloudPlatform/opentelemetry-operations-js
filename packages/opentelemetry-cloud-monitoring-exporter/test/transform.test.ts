@@ -26,7 +26,7 @@ import {
   MeterProvider,
   Histogram,
 } from '@opentelemetry/metrics';
-import {ValueType as OTValueType, Labels} from '@opentelemetry/api';
+import {ValueType as OTValueType, Labels} from '@opentelemetry/api-metrics';
 import {MetricKind, ValueType, MetricDescriptor} from '../src/types';
 import {Resource} from '@opentelemetry/resources';
 

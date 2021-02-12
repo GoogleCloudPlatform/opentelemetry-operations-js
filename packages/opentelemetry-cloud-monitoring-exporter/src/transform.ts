@@ -20,7 +20,7 @@ import {
   Point as OTPoint,
   PointValueType,
 } from '@opentelemetry/metrics';
-import {ValueType as OTValueType} from '@opentelemetry/api';
+import {ValueType as OTValueType} from '@opentelemetry/api-metrics';
 import {
   Resource,
   CLOUD_RESOURCE,

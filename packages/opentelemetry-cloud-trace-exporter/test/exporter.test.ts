@@ -58,10 +58,9 @@ describe('Google Cloud Trace Exporter', () => {
       });
     });
 
-    it('should construct exporter in GCE/GCP environment without args', async function () {
+    it('should construct exporter in GCE/GCP environment without args', async () => {
       // This variable is set by the test env and must be undefined to force
       // a metadata server request.
-      this.timeout(6000);
       delete process.env.GCLOUD_PROJECT;
       const gcpMock = nock(HOST_ADDRESS)
         .get(PROJECT_ID_PATH)
@@ -73,7 +72,7 @@ describe('Google Cloud Trace Exporter', () => {
         assert.deepStrictEqual(id, 'not-real');
         gcpMock.done();
       });
-    });
+    }).timeout(10000);
   });
 
   describe('export', () => {
