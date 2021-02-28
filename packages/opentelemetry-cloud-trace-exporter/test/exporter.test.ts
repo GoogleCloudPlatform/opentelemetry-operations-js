@@ -13,13 +13,8 @@
 // limitations under the License.
 
 import * as types from '@opentelemetry/api';
-import {TraceFlags} from '@opentelemetry/api';
-import {
-  ConsoleLogger,
-  ExportResult,
-  ExportResultCode,
-  LogLevel,
-} from '@opentelemetry/core';
+import {DiagConsoleLogger, TraceFlags} from '@opentelemetry/api';
+import {ExportResult, ExportResultCode} from '@opentelemetry/core';
 import {Resource} from '@opentelemetry/resources';
 import {ReadableSpan} from '@opentelemetry/tracing';
 import * as assert from 'assert';
@@ -92,7 +87,7 @@ describe('Google Cloud Trace Exporter', () => {
     };
 
     let exporter: TraceExporter;
-    let logger: ConsoleLogger;
+    let logger: DiagConsoleLogger;
     let batchWrite: sinon.SinonSpy<
       Parameters<TraceService['BatchWriteSpans']>,
       ReturnType<TraceService['BatchWriteSpans']>
@@ -111,9 +106,9 @@ describe('Google Cloud Trace Exporter', () => {
     beforeEach(() => {
       getClientShouldFail = false;
       batchWriteShouldFail = false;
-      logger = new ConsoleLogger(LogLevel.ERROR);
+      logger = new DiagConsoleLogger();
       exporter = new TraceExporter({
-        logger,
+        // logger,
       });
 
       batchWrite = sinon.spy<TraceService['BatchWriteSpans']>(
@@ -207,7 +202,7 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: {code: types.StatusCode.OK},
+        status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
@@ -257,7 +252,7 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: {code: types.StatusCode.OK},
+        status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
@@ -297,7 +292,7 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: {code: types.StatusCode.OK},
+        status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
@@ -331,7 +326,7 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: {code: types.StatusCode.OK},
+        status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
@@ -363,7 +358,7 @@ describe('Google Cloud Trace Exporter', () => {
           traceFlags: TraceFlags.NONE,
           isRemote: true,
         },
-        status: {code: types.StatusCode.OK},
+        status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
       };
