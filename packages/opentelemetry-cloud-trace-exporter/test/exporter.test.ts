@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as types from '@opentelemetry/api';
-import {DiagConsoleLogger, TraceFlags} from '@opentelemetry/api';
+import {TraceFlags} from '@opentelemetry/api';
 import {ExportResult, ExportResultCode} from '@opentelemetry/core';
 import {Resource} from '@opentelemetry/resources';
 import {ReadableSpan} from '@opentelemetry/tracing';
@@ -87,7 +87,6 @@ describe('Google Cloud Trace Exporter', () => {
     };
 
     let exporter: TraceExporter;
-    let logger: DiagConsoleLogger;
     let batchWrite: sinon.SinonSpy<
       Parameters<TraceService['BatchWriteSpans']>,
       ReturnType<TraceService['BatchWriteSpans']>
@@ -96,20 +95,13 @@ describe('Google Cloud Trace Exporter', () => {
     let createSsl: sinon.SinonStub;
     let createFromGoogleCreds: sinon.SinonStub;
     let combineChannelCreds: sinon.SinonStub;
-    let debug: sinon.SinonSpy;
-    let info: sinon.SinonSpy;
-    let warn: sinon.SinonSpy;
-    let error: sinon.SinonSpy;
     let getClientShouldFail: boolean;
     let batchWriteShouldFail: boolean;
 
     beforeEach(() => {
       getClientShouldFail = false;
       batchWriteShouldFail = false;
-      logger = new DiagConsoleLogger();
-      exporter = new TraceExporter({
-        // logger,
-      });
+      exporter = new TraceExporter({});
 
       batchWrite = sinon.spy<TraceService['BatchWriteSpans']>(
         (_spans, _metadata, callback) => {
@@ -169,15 +161,6 @@ describe('Google Cloud Trace Exporter', () => {
           return def;
         }
       );
-
-      debug = sinon.spy();
-      info = sinon.spy();
-      warn = sinon.spy();
-      error = sinon.spy();
-      sinon.replace(logger, 'debug', debug);
-      sinon.replace(logger, 'info', info);
-      sinon.replace(logger, 'warn', warn);
-      sinon.replace(logger, 'error', error);
     });
 
     afterEach(() => {
