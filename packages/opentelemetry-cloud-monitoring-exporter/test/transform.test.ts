@@ -314,7 +314,9 @@ describe('transform', () => {
       assert.strictEqual(ts.metricKind, MetricKind.CUMULATIVE);
       assert.strictEqual(ts.valueType, ValueType.INT64);
       assert.strictEqual(ts.points.length, 1);
-      assert.deepStrictEqual(ts.points[0].value, {int64Value});
+      assert.deepStrictEqual(ts.points[0].value, {
+        int64Value: int64Value.toString(),
+      });
     });
 
     it('should return a point', () => {
@@ -336,7 +338,7 @@ describe('transform', () => {
         new Date().toISOString()
       );
 
-      assert.deepStrictEqual(result.value, {int64Value: 50});
+      assert.deepStrictEqual(result.value, {int64Value: '50'});
       assert(result.interval.endTime);
       assert(result.interval.startTime);
     });
@@ -369,13 +371,13 @@ describe('transform', () => {
 
       assert.deepStrictEqual(result.value, {
         distributionValue: {
-          bucketCounts: [1, 2],
+          bucketCounts: ['1', '2'],
           bucketOptions: {
             explicitBuckets: {
               bounds: [10, 30],
             },
           },
-          count: 3,
+          count: '3',
           mean: 23.333333333333332,
         },
       });
