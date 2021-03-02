@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import type {monitoring_v3} from 'googleapis';
+
 /**
  * Defines a metric type and its schema.
  * See: https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.metricDescriptors
  */
-export interface MetricDescriptor {
+export interface MetricDescriptor
+  extends monitoring_v3.Schema$MetricDescriptor {
   description: string;
   displayName: string;
   type: string;
@@ -31,7 +34,7 @@ export interface MetricDescriptor {
  * metric. A time series is identified by a combination of a fully-specified
  * monitored resource and a fully-specified metric.
  */
-export interface TimeSeries {
+export interface TimeSeries extends monitoring_v3.Schema$TimeSeries {
   metric: {type: string; labels: {[key: string]: string}};
   resource: MonitoredResource;
   metricKind: MetricKind;
@@ -58,10 +61,9 @@ export enum ValueType {
 }
 
 /** A description of a label. */
-export interface LabelDescriptor {
+export interface LabelDescriptor extends monitoring_v3.Schema$LabelDescriptor {
   key: string;
   description: string;
-  valueType?: string; // 'STRING' is default value type.
 }
 
 /** Resource information. */
@@ -71,27 +73,8 @@ export interface MonitoredResource {
 }
 
 /** A single data point in a time series. */
-export interface Point {
+export interface Point extends monitoring_v3.Schema$Point {
   interval: {endTime: string; startTime?: string};
-  value: {
-    boolValue?: boolean;
-    int64Value?: number;
-    doubleValue?: number;
-    stringValue?: string;
-    distributionValue?: Distribution;
-  };
-}
-
-/**
- * Distribution contains summary statistics for a population of values.
- */
-export interface Distribution {
-  count: number;
-  mean: number;
-  sumOfSquaredDeviation?: number;
-  bucketOptions: {explicitBuckets: {bounds: Bucket[]}};
-  bucketCounts: number[];
-  exemplars?: Exemplar[];
 }
 
 export type Bucket = number;

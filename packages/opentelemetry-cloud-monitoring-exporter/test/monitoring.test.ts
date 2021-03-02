@@ -23,6 +23,8 @@ import {MeterProvider} from '@opentelemetry/metrics';
 import {Labels} from '@opentelemetry/api-metrics';
 import {diag} from '@opentelemetry/api';
 
+import type {monitoring_v3} from 'googleapis';
+
 describe('MetricExporter', () => {
   beforeEach(() => {
     process.env.GCLOUD_PROJECT = 'not-real';
@@ -53,8 +55,18 @@ describe('MetricExporter', () => {
 
   describe('export', () => {
     let exporter: MetricExporter;
-    let metricDescriptors: sinon.SinonSpy<[any, any, any], any>;
-    let timeSeries: sinon.SinonSpy<[any, any, any], any>;
+    let metricDescriptors: sinon.SinonSpy<
+      [
+        monitoring_v3.Params$Resource$Projects$Metricdescriptors$Create,
+        any,
+        any
+      ],
+      void
+    >;
+    let timeSeries: sinon.SinonSpy<
+      [monitoring_v3.Params$Resource$Projects$Timeseries$Create, any, any],
+      any
+    >;
     let debug: sinon.SinonSpy;
     let info: sinon.SinonSpy;
     let warn: sinon.SinonSpy;
@@ -151,7 +163,7 @@ describe('MetricExporter', () => {
         });
       });
       assert.deepStrictEqual(
-        metricDescriptors.getCall(0).args[0].resource.type,
+        metricDescriptors.getCall(0).args[0].requestBody!.type,
         'custom.googleapis.com/opentelemetry/name'
       );
 
@@ -175,7 +187,7 @@ describe('MetricExporter', () => {
         });
       });
       assert.deepStrictEqual(
-        metricDescriptors.getCall(0).args[0].resource.type,
+        metricDescriptors.getCall(0).args[0].requestBody!.type,
         'custom.googleapis.com/opentelemetry/name'
       );
       assert.strictEqual(metricDescriptors.callCount, 1);
@@ -203,15 +215,15 @@ describe('MetricExporter', () => {
       });
 
       assert.deepStrictEqual(
-        metricDescriptors.getCall(0).args[0].resource.type,
+        metricDescriptors.getCall(0).args[0].requestBody!.type,
         'custom.googleapis.com/opentelemetry/name400'
       );
       assert.deepStrictEqual(
-        metricDescriptors.getCall(100).args[0].resource.type,
+        metricDescriptors.getCall(100).args[0].requestBody!.type,
         'custom.googleapis.com/opentelemetry/name300'
       );
       assert.deepStrictEqual(
-        metricDescriptors.getCall(400).args[0].resource.type,
+        metricDescriptors.getCall(400).args[0].requestBody!.type,
         'custom.googleapis.com/opentelemetry/name0'
       );
 
@@ -232,11 +244,11 @@ describe('MetricExporter', () => {
       await exporter.export(records1, () => {});
 
       assert(timeSeries.calledOnce);
-      const calledWithSeries1 =
-        timeSeries.firstCall.args[0].resource.timeSeries;
+      const calledWithSeries1 = timeSeries.firstCall.args[0].requestBody!
+        .timeSeries!;
       assert.strictEqual(calledWithSeries1.length, 1);
-      assert.strictEqual(calledWithSeries1[0].points.length, 1);
-      const interval1 = calledWithSeries1[0].points[0].interval;
+      assert.strictEqual(calledWithSeries1[0].points!.length, 1);
+      const interval1 = calledWithSeries1[0].points![0].interval!;
       assert(interval1.startTime);
       assert(interval1.endTime);
 
@@ -248,11 +260,11 @@ describe('MetricExporter', () => {
       await exporter.export(records2, () => {});
 
       assert(timeSeries.calledTwice);
-      const calledWithSeries2 =
-        timeSeries.secondCall.args[0].resource.timeSeries;
+      const calledWithSeries2 = timeSeries.secondCall.args[0].requestBody!
+        .timeSeries!;
       assert.strictEqual(calledWithSeries2.length, 1);
-      assert.strictEqual(calledWithSeries2[0].points.length, 1);
-      const interval2 = calledWithSeries2[0].points[0].interval;
+      assert.strictEqual(calledWithSeries2[0].points!.length, 1);
+      const interval2 = calledWithSeries2[0].points![0].interval!;
       assert(interval1.startTime);
       assert(interval1.endTime);
 

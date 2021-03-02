@@ -188,22 +188,22 @@ export class MetricExporter implements IMetricExporter {
    */
   private async _createMetricDescriptor(metricDescriptor: OTMetricDescriptor) {
     const authClient = await this._authorize();
-    const request = {
-      name: `projects/${this._projectId}`,
-      resource: transformMetricDescriptor(
-        metricDescriptor,
-        this._metricPrefix,
-        this._displayNamePrefix
-      ),
-      auth: authClient,
-    };
+    const descriptor = transformMetricDescriptor(
+      metricDescriptor,
+      this._metricPrefix,
+      this._displayNamePrefix
+    );
     try {
       return new Promise<void>((resolve, reject) => {
         MetricExporter._monitoring.projects.metricDescriptors.create(
-          request,
+          {
+            name: `projects/${this._projectId}`,
+            requestBody: descriptor,
+            auth: authClient,
+          },
           {headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT]},
           (err: Error | null) => {
-            diag.debug('sent metric descriptor', request.resource);
+            diag.debug('sent metric descriptor', descriptor);
             err ? reject(err) : resolve();
           }
         );
@@ -219,18 +219,16 @@ export class MetricExporter implements IMetricExporter {
     }
 
     return this._authorize().then(authClient => {
-      const request = {
-        name: `projects/${this._projectId}`,
-        resource: {timeSeries},
-        auth: authClient,
-      };
-
       return new Promise<void>((resolve, reject) => {
         MetricExporter._monitoring.projects.timeSeries.create(
-          request,
+          {
+            name: `projects/${this._projectId}`,
+            requestBody: {timeSeries},
+            auth: authClient,
+          },
           {headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT]},
           (err: Error | null) => {
-            diag.debug('sent time series', request.resource.timeSeries);
+            diag.debug('sent time series', timeSeries);
             err ? reject(err) : resolve();
           }
         );

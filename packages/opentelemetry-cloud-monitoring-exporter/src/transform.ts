@@ -36,6 +36,7 @@ import {
 } from './types';
 import * as path from 'path';
 import * as os from 'os';
+import type {monitoring_v3} from 'googleapis';
 
 const OPENTELEMETRY_TASK = 'opentelemetry_task';
 const OPENTELEMETRY_TASK_DESCRIPTION = 'OpenTelemetry task identifier';
@@ -230,23 +231,26 @@ function transformPoint(
 }
 
 /** Transforms a OpenTelemetry Point's value to a StackDriver Point value. */
-function transformValue(valueType: OTValueType, value: PointValueType) {
+function transformValue(
+  valueType: OTValueType,
+  value: PointValueType
+): monitoring_v3.Schema$TypedValue {
   if (isHistogramValue(value)) {
     return {
       distributionValue: {
         // sumOfSquaredDeviation param not aggregated
-        count: value.count,
+        count: value.count.toString(),
         mean: value.sum / value.count,
         bucketOptions: {
           explicitBuckets: {bounds: value.buckets.boundaries},
         },
-        bucketCounts: value.buckets.counts,
+        bucketCounts: value.buckets.counts.map(count => count.toString()),
       },
     };
   }
 
   if (valueType === OTValueType.INT) {
-    return {int64Value: value};
+    return {int64Value: value.toString()};
   } else if (valueType === OTValueType.DOUBLE) {
     return {doubleValue: value};
   }
