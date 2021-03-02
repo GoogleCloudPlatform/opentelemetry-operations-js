@@ -77,13 +77,13 @@ export function getReadableSpanTransformer(
   };
 }
 
-function transformStatus(status: ot.Status): Status | undefined {
+function transformStatus(status: ot.SpanStatus): Status | undefined {
   switch (status.code) {
-    case ot.StatusCode.UNSET:
+    case ot.SpanStatusCode.UNSET:
       return undefined;
-    case ot.StatusCode.OK:
+    case ot.SpanStatusCode.OK:
       return {code: Code.OK};
-    case ot.StatusCode.ERROR:
+    case ot.SpanStatusCode.ERROR:
       return {code: Code.UNKNOWN, message: status.message};
     default: {
       exhaust(status.code);
@@ -117,8 +117,8 @@ function transformLink(link: ot.Link): Link {
 }
 
 function transformAttributes(
-  requestAttributes: ot.Attributes = {},
-  serviceAttributes: ot.Attributes = {},
+  requestAttributes: ot.SpanAttributes = {},
+  serviceAttributes: ot.SpanAttributes = {},
   resource: Resource = Resource.empty()
 ): Attributes {
   const attributes = Object.assign(
@@ -137,7 +137,7 @@ function transformAttributes(
   };
 }
 
-function transformAttributeValues(attributes: ot.Attributes): AttributeMap {
+function transformAttributeValues(attributes: ot.SpanAttributes): AttributeMap {
   const out: AttributeMap = {};
   for (const [key, value] of Object.entries(attributes)) {
     switch (typeof value) {
@@ -184,8 +184,10 @@ const HTTP_ATTRIBUTE_MAPPING: {[key: string]: string} = {
   'http.response_content_length': '/http/response/size',
   'http.route': '/http/route',
 };
-function transformAttributeNames(attributes: ot.Attributes): ot.Attributes {
-  const out: ot.Attributes = {};
+function transformAttributeNames(
+  attributes: ot.SpanAttributes
+): ot.SpanAttributes {
+  const out: ot.SpanAttributes = {};
   for (const [key, value] of Object.entries(attributes)) {
     if (HTTP_ATTRIBUTE_MAPPING[key]) {
       out[HTTP_ATTRIBUTE_MAPPING[key]] = value;

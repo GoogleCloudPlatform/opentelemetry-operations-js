@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Logger} from '@opentelemetry/api';
-
 export interface ExporterOptions {
   /**
    * Google Cloud Platform project ID where your metrics will be stored.
@@ -21,10 +19,6 @@ export interface ExporterOptions {
    * credentials or from the GCP environment when not specified.
    */
   projectId?: string;
-  /**
-   * Object implementing the logger interface
-   */
-  logger?: Logger;
   /**
    * Path to a .json, .pem, or .p12 key file. This is optional and
    * authentication keys will be inferred from the environment if you

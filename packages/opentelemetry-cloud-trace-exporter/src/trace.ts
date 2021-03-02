@@ -14,7 +14,7 @@
 
 import {ExportResult, ExportResultCode} from '@opentelemetry/core';
 import {ReadableSpan, SpanExporter} from '@opentelemetry/tracing';
-import {Logger, NoopLogger} from '@opentelemetry/api';
+import {diag} from '@opentelemetry/api';
 import * as protoloader from '@grpc/proto-loader';
 import * as protofiles from 'google-proto-files';
 import * as grpc from '@grpc/grpc-js';
@@ -31,13 +31,10 @@ const OT_REQUEST_HEADER = 'x-opentelemetry-outgoing-request';
  */
 export class TraceExporter implements SpanExporter {
   private _projectId: string | void | Promise<string | void>;
-  private readonly _logger: Logger;
   private readonly _auth: GoogleAuth;
   private _traceServiceClient?: TraceService = undefined;
 
   constructor(options: TraceExporterOptions = {}) {
-    this._logger = options.logger || new NoopLogger();
-
     this._auth = new GoogleAuth({
       credentials: options.credentials,
       keyFile: options.keyFile,
@@ -49,7 +46,7 @@ export class TraceExporter implements SpanExporter {
     // Start this async process as early as possible. It will be
     // awaited on the first export because constructors are synchronous
     this._projectId = this._auth.getProjectId().catch(err => {
-      this._logger.error(err);
+      diag.error(err);
     });
   }
 
@@ -72,7 +69,7 @@ export class TraceExporter implements SpanExporter {
       });
     }
 
-    this._logger.debug('Google Cloud Trace export');
+    diag.debug('Google Cloud Trace export');
 
     const namedSpans: NamedSpans = {
       name: `projects/${this._projectId}`,
@@ -91,12 +88,12 @@ export class TraceExporter implements SpanExporter {
    * @param spans
    */
   private async _batchWriteSpans(spans: NamedSpans): Promise<ExportResult> {
-    this._logger.debug('Google Cloud Trace batch writing traces');
+    diag.debug('Google Cloud Trace batch writing traces');
     try {
       this._traceServiceClient = await this._getClient();
     } catch (error) {
       error.message = `failed to create client: ${error.message}`;
-      this._logger.error(error.message);
+      diag.error(error.message);
       return {code: ExportResultCode.FAILED, error};
     }
 
@@ -107,11 +104,11 @@ export class TraceExporter implements SpanExporter {
     ).bind(this._traceServiceClient);
     try {
       await batchWriteSpans(spans, metadata);
-      this._logger.debug('batchWriteSpans successfully');
+      diag.debug('batchWriteSpans successfully');
       return {code: ExportResultCode.SUCCESS};
     } catch (error) {
       error.message = `batchWriteSpans error: ${error.message}`;
-      this._logger.error(error.message);
+      diag.error(error.message);
       return {code: ExportResultCode.FAILED, error};
     }
   }
@@ -124,9 +121,9 @@ export class TraceExporter implements SpanExporter {
     if (this._traceServiceClient) {
       return this._traceServiceClient;
     }
-    this._logger.debug('Google Cloud Trace authenticating');
+    diag.debug('Google Cloud Trace authenticating');
     const creds = await this._auth.getClient();
-    this._logger.debug(
+    diag.debug(
       'Google Cloud Trace got authentication. Initializaing rpc client'
     );
     const packageDefinition = await protoloader.load(
