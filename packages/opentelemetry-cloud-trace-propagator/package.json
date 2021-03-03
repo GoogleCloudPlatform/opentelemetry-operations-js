@@ -55,6 +55,6 @@
   },
   "peerDependencies": {
     "@opentelemetry/api": "^0.18.0",
-    "@opentelemetry/core": "^0.17.0"
+    "@opentelemetry/core": "^0.18.0"
   }
 }

@@ -63,8 +63,8 @@
   },
   "peerDependencies": {
     "@opentelemetry/api": "^0.18.0",
-    "@opentelemetry/core": "^0.17.0",
-    "@opentelemetry/resources": "^0.17.0",
-    "@opentelemetry/tracing": "^0.17.0"
+    "@opentelemetry/core": "^0.18.0",
+    "@opentelemetry/resources": "^0.18.0",
+    "@opentelemetry/tracing": "^0.18.0"
   }
 }
