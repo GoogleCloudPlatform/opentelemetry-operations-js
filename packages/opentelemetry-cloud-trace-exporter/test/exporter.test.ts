@@ -95,9 +95,6 @@ describe('Google Cloud Trace Exporter', () => {
     let createSsl: sinon.SinonStub;
     let createFromGoogleCreds: sinon.SinonStub;
     let combineChannelCreds: sinon.SinonStub;
-    let debug: sinon.SinonSpy;
-    let info: sinon.SinonSpy;
-    let warn: sinon.SinonSpy;
     let error: sinon.SinonSpy;
     let getClientShouldFail: boolean;
     let batchWriteShouldFail: boolean;
@@ -165,13 +162,7 @@ describe('Google Cloud Trace Exporter', () => {
           return def;
         }
       );
-      debug = sinon.spy();
-      info = sinon.spy();
-      warn = sinon.spy();
       error = sinon.spy();
-      sinon.replace(diag, 'debug', debug);
-      sinon.replace(diag, 'info', info);
-      sinon.replace(diag, 'warn', warn);
       sinon.replace(diag, 'error', error);
     });
 

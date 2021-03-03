@@ -21,7 +21,6 @@ import {MetricExporter} from '../src';
 import {ExportResult, ExportResultCode} from '@opentelemetry/core';
 import {MeterProvider} from '@opentelemetry/metrics';
 import {Labels} from '@opentelemetry/api-metrics';
-import {diag} from '@opentelemetry/api';
 
 import type {monitoring_v3} from 'googleapis';
 
@@ -67,10 +66,6 @@ describe('MetricExporter', () => {
       [monitoring_v3.Params$Resource$Projects$Timeseries$Create, any, any],
       any
     >;
-    let debug: sinon.SinonSpy;
-    let info: sinon.SinonSpy;
-    let warn: sinon.SinonSpy;
-    let error: sinon.SinonSpy;
     let getClientShouldFail: boolean;
     let createTimeSeriesShouldFail: boolean;
 
@@ -120,15 +115,6 @@ describe('MetricExporter', () => {
         }
         return {} as any;
       });
-
-      debug = sinon.spy();
-      info = sinon.spy();
-      warn = sinon.spy();
-      error = sinon.spy();
-      sinon.replace(diag, 'debug', debug);
-      sinon.replace(diag, 'info', info);
-      sinon.replace(diag, 'warn', warn);
-      sinon.replace(diag, 'error', error);
     });
 
     afterEach(() => {
