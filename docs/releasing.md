@@ -31,6 +31,10 @@ Bump the package versions with:
 lerna publish --skip-npm --skip-git
 ```
 
+Then, bump any `version.ts` files (find them by running `git ls-files
+"**version.ts"`) to match the new version in that package's `package.json`.
+TODO: automate or removate tedious step.
+
 Ensure that the version being bumped to is `x.y.z`. This should create some unstaged changes.
 
 ## Create a new commit
