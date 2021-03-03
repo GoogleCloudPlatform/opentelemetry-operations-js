@@ -18,13 +18,13 @@ import {
   MetricDescriptor as OTMetricDescriptor,
 } from '@opentelemetry/metrics';
 import {ExportResult, ExportResultCode, VERSION} from '@opentelemetry/core';
-import {Logger, NoopLogger} from '@opentelemetry/api';
 import {ExporterOptions} from './external-types';
 import {GoogleAuth, JWT} from 'google-auth-library';
 import {google} from 'googleapis';
 import {transformMetricDescriptor, createTimeSeries} from './transform';
 import {TimeSeries} from './types';
 import {partitionList} from './utils';
+import {diag} from '@opentelemetry/api';
 
 // Stackdriver Monitoring v3 only accepts up to 200 TimeSeries per
 // CreateTimeSeries call.
@@ -46,7 +46,6 @@ export class MetricExporter implements IMetricExporter {
   private _projectId: string | void | Promise<string | void>;
   private readonly _metricPrefix: string;
   private readonly _displayNamePrefix: string;
-  private readonly _logger: Logger;
   private readonly _auth: GoogleAuth;
   private readonly _startTime = new Date().toISOString();
 
@@ -62,7 +61,6 @@ export class MetricExporter implements IMetricExporter {
   private static readonly _monitoring = google.monitoring('v3');
 
   constructor(options: ExporterOptions = {}) {
-    this._logger = options.logger || new NoopLogger();
     this._metricPrefix =
       options.prefix || MetricExporter.CUSTOM_OPENTELEMETRY_DOMAIN;
     this._displayNamePrefix =
@@ -79,7 +77,7 @@ export class MetricExporter implements IMetricExporter {
     // Start this async process as early as possible. It will be
     // awaited on the first export because constructors are synchronous
     this._projectId = this._auth.getProjectId().catch(err => {
-      this._logger.error(err);
+      diag.error(err);
     });
   }
 
@@ -100,11 +98,11 @@ export class MetricExporter implements IMetricExporter {
 
     if (!this._projectId) {
       const error = new Error('expecting a non-blank ProjectID');
-      this._logger.error(error.message);
+      diag.error(error.message);
       return cb({code: ExportResultCode.FAILED, error});
     }
 
-    this._logger.debug('Google Cloud Monitoring export');
+    diag.debug('Google Cloud Monitoring export');
     const timeSeries: TimeSeries[] = [];
     for (const metric of metrics) {
       const isRegistered = await this._registerMetricDescriptor(
@@ -134,7 +132,7 @@ export class MetricExporter implements IMetricExporter {
       } catch (err) {
         err.message = `Send TimeSeries failed: ${err.message}`;
         failure = {sendFailed: true, error: err};
-        this._logger.error(err.message);
+        diag.error(err.message);
       }
     }
     if (failure.sendFailed) {
@@ -163,7 +161,7 @@ export class MetricExporter implements IMetricExporter {
         // Ignore metricDescriptor that are already registered.
         return true;
       } else {
-        this._logger.warn(
+        diag.warn(
           `A different metric with the same name is already registered: ${existingMetricDescriptor}`
         );
         return false;
@@ -178,7 +176,7 @@ export class MetricExporter implements IMetricExporter {
         return true;
       })
       .catch(err => {
-        this._logger.error(err);
+        diag.error(err);
         return false;
       });
     return isRegistered;
@@ -205,15 +203,13 @@ export class MetricExporter implements IMetricExporter {
           },
           {headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT]},
           (err: Error | null) => {
-            this._logger.debug('sent metric descriptor', descriptor);
+            diag.debug('sent metric descriptor', descriptor);
             err ? reject(err) : resolve();
           }
         );
       });
     } catch (err) {
-      this._logger.error(
-        `MetricExporter: Failed to write data: ${err.message}`
-      );
+      diag.error(`MetricExporter: Failed to write data: ${err.message}`);
     }
   }
 
@@ -232,7 +228,7 @@ export class MetricExporter implements IMetricExporter {
           },
           {headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT]},
           (err: Error | null) => {
-            this._logger.debug('sent time series', timeSeries);
+            diag.debug('sent time series', timeSeries);
             err ? reject(err) : resolve();
           }
         );

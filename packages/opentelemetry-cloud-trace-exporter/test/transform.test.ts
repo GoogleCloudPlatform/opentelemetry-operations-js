@@ -46,7 +46,7 @@ describe('transform', () => {
       links: [],
       name: 'my-span',
       spanContext,
-      status: {code: api.StatusCode.OK},
+      status: {code: api.SpanStatusCode.OK},
       resource: new Resource({
         service: 'ui',
         version: 1,
@@ -285,13 +285,13 @@ describe('transform', () => {
   it('should transform statuses', () => {
     const unsetResult = transformer({
       ...readableSpan,
-      status: {code: api.StatusCode.UNSET},
+      status: {code: api.SpanStatusCode.UNSET},
     });
     assert.strictEqual(unsetResult.status, undefined);
 
     const okResult = transformer({
       ...readableSpan,
-      status: {code: api.StatusCode.OK},
+      status: {code: api.SpanStatusCode.OK},
     });
     assert.deepStrictEqual<Status>(okResult.status, {
       code: Code.OK,
@@ -300,7 +300,7 @@ describe('transform', () => {
     const errorMesssage = 'error occurred';
     const errorResult = transformer({
       ...readableSpan,
-      status: {code: api.StatusCode.ERROR, message: errorMesssage},
+      status: {code: api.SpanStatusCode.ERROR, message: errorMesssage},
     });
     assert.deepStrictEqual<Status>(errorResult.status, {
       code: Code.UNKNOWN,

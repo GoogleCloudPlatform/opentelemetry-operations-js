@@ -18,12 +18,7 @@ import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import {MetricExporter} from '../src';
-import {
-  ConsoleLogger,
-  ExportResult,
-  ExportResultCode,
-  LogLevel,
-} from '@opentelemetry/core';
+import {ExportResult, ExportResultCode} from '@opentelemetry/core';
 import {MeterProvider} from '@opentelemetry/metrics';
 import {Labels} from '@opentelemetry/api-metrics';
 
@@ -59,7 +54,6 @@ describe('MetricExporter', () => {
 
   describe('export', () => {
     let exporter: MetricExporter;
-    let logger: ConsoleLogger;
     let metricDescriptors: sinon.SinonSpy<
       [
         monitoring_v3.Params$Resource$Projects$Metricdescriptors$Create,
@@ -72,20 +66,13 @@ describe('MetricExporter', () => {
       [monitoring_v3.Params$Resource$Projects$Timeseries$Create, any, any],
       any
     >;
-    let debug: sinon.SinonSpy;
-    let info: sinon.SinonSpy;
-    let warn: sinon.SinonSpy;
-    let error: sinon.SinonSpy;
     let getClientShouldFail: boolean;
     let createTimeSeriesShouldFail: boolean;
 
     beforeEach(() => {
       getClientShouldFail = false;
       createTimeSeriesShouldFail = false;
-      logger = new ConsoleLogger(LogLevel.ERROR);
-      exporter = new MetricExporter({
-        logger,
-      });
+      exporter = new MetricExporter({});
 
       metricDescriptors = sinon.spy(
         (
@@ -128,15 +115,6 @@ describe('MetricExporter', () => {
         }
         return {} as any;
       });
-
-      debug = sinon.spy();
-      info = sinon.spy();
-      warn = sinon.spy();
-      error = sinon.spy();
-      sinon.replace(logger, 'debug', debug);
-      sinon.replace(logger, 'info', info);
-      sinon.replace(logger, 'warn', warn);
-      sinon.replace(logger, 'error', error);
     });
 
     afterEach(() => {
