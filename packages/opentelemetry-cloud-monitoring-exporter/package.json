@@ -59,7 +59,7 @@
   },
   "dependencies": {
     "google-auth-library": "^7.0.0",
-    "googleapis": "^67.1.0"
+    "googleapis": "^68.0.0"
   },
   "peerDependencies": {
     "@opentelemetry/api": "^0.18.0",
