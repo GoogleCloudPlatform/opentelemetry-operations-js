@@ -23,7 +23,6 @@ import {MeterProvider} from '@opentelemetry/metrics';
 import {Labels} from '@opentelemetry/api-metrics';
 
 import type {monitoring_v3} from 'googleapis';
-import {expectation} from 'sinon';
 
 describe('MetricExporter', () => {
   beforeEach(() => {
