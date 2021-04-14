@@ -93,7 +93,13 @@ export class MetricExporter implements IMetricExporter {
     cb: (result: ExportResult) => void
   ): Promise<void> {
     if (this._projectId instanceof Promise) {
-      this._projectId = await this._projectId;
+      try {
+        this._projectId = await this._projectId;
+      } catch (err) {
+        err.message = `Await projectId failed: ${err.message}`;
+        diag.error(err.message);
+        return cb({code: ExportResultCode.FAILED, error: err});
+      }
     }
 
     if (!this._projectId) {

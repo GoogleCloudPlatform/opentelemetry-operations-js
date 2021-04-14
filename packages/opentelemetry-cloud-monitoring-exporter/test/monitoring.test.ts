@@ -135,6 +135,26 @@ describe('MetricExporter', () => {
       assert.strictEqual(result.code, ExportResultCode.FAILED);
     });
 
+    it('should return FAILED if project id promise is rejected', async () => {
+      await exporter['_projectId'];
+      exporter['_projectId'] = Promise.reject({
+        message: 'Failed to resolve projectId',
+      });
+
+      const result = await new Promise<ExportResult>(resolve => {
+        exporter.export([], result => {
+          resolve(result);
+        });
+      });
+
+      assert.deepStrictEqual(result, {
+        code: ExportResultCode.FAILED,
+        error: {
+          message: 'Await projectId failed: Failed to resolve projectId',
+        },
+      });
+    });
+
     it('should export metrics', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
       const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
