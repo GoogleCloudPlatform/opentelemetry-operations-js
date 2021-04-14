@@ -23,6 +23,7 @@ import {MeterProvider} from '@opentelemetry/metrics';
 import {Labels} from '@opentelemetry/api-metrics';
 
 import type {monitoring_v3} from 'googleapis';
+import {expectation} from 'sinon';
 
 describe('MetricExporter', () => {
   beforeEach(() => {
@@ -153,6 +154,28 @@ describe('MetricExporter', () => {
           message: 'Await projectId failed: Failed to resolve projectId',
         },
       });
+    });
+
+    it('MetricsExporter#export should not raise an UnhandledPromiseRejectionEvent', async () => {
+      const meter = new MeterProvider().getMeter('test-meter');
+      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
+      const counter = meter.createCounter('name');
+      counter.add(10, labels);
+      await meter.collect();
+      const records = meter.getProcessor().checkPointSet();
+
+      let unhandledPromiseRejectionEvent = false;
+      process.on('unhandledRejection', error => {
+        unhandledPromiseRejectionEvent = true;
+      });
+
+      const result = await new Promise<ExportResult>(resolve => {
+        exporter.export(records, result => {
+          resolve(result);
+        });
+      });
+
+      assert.strictEqual(unhandledPromiseRejectionEvent, false);
     });
 
     it('should export metrics', async () => {
