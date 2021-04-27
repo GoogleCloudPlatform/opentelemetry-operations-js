@@ -155,13 +155,18 @@ describe('MetricExporter', () => {
       });
     });
 
-    it('MetricsExporter#export should not raise an UnhandledPromiseRejectionEvent', async () => {
+    it('MetricsExporter#export should not raise an UnhandledPromiseRejectionEvent if projectId rejects', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
       const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter('name');
       counter.add(10, labels);
       await meter.collect();
       const records = meter.getProcessor().checkPointSet();
+
+      await exporter['_projectId'];
+      exporter['_projectId'] = Promise.reject({
+        message: 'Failed to resolve projectId',
+      });
 
       let unhandledPromiseRejectionEvent = false;
       process.on('unhandledRejection', error => {
