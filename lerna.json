@@ -1,7 +1,8 @@
 {
   "packages": [
     "packages/*",
-    "samples/*"
+    "samples/*",
+    "e2e-test-server"
   ],
   "version": "0.9.0"
 }
