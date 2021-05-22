@@ -62,7 +62,6 @@ describe('transform', () => {
     assert.deepStrictEqual(result, {
       attributes: {
         attributeMap: {
-          project_id: {stringValue: {value: 'project-id'}},
           'g.co/agent': {
             stringValue: {
               value: `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`,
@@ -156,7 +155,7 @@ describe('transform', () => {
     assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 1);
     assert.deepStrictEqual(
       Object.keys(result.attributes!.attributeMap!).length,
-      5
+      4
     );
   });
 

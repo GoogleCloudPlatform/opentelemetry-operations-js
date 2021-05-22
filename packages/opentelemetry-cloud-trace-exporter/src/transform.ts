@@ -39,10 +39,7 @@ export function getReadableSpanTransformer(
   return span => {
     const attributes = transformAttributes(
       span.attributes,
-      {
-        project_id: projectId,
-        [AGENT_LABEL_KEY]: AGENT_LABEL_VALUE,
-      },
+      {[AGENT_LABEL_KEY]: AGENT_LABEL_VALUE},
       span.resource
     );
 
