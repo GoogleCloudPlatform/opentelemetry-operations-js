@@ -146,16 +146,15 @@ describe('MetricExporter', () => {
           resolve(result);
         });
       });
-
       assert.deepStrictEqual(result, {
         code: ExportResultCode.FAILED,
         error: {
-          message: 'Await projectId failed: Failed to resolve projectId',
+          message: 'Failed to resolve projectId',
         },
       });
     });
 
-    it('MetricsExporter#export should not raise an UnhandledPromiseRejectionEvent if projectId rejects', async () => {
+    it('should not raise an UnhandledPromiseRejectionEvent if projectId rejects', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
       const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter('name');
@@ -173,11 +172,7 @@ describe('MetricExporter', () => {
         unhandledPromiseRejectionEvent = true;
       });
 
-      const result = await new Promise<ExportResult>(resolve => {
-        exporter.export(records, result => {
-          resolve(result);
-        });
-      });
+      const result = await exporter.export(records, () => {});
 
       assert.strictEqual(unhandledPromiseRejectionEvent, false);
     });
@@ -274,7 +269,11 @@ describe('MetricExporter', () => {
       await meter.collect();
       const records1 = meter.getProcessor().checkPointSet();
 
-      await exporter.export(records1, () => {});
+      const result = await new Promise<ExportResult>(resolve => {
+        exporter.export(records1, result => {
+          resolve(result);
+        });
+      });
 
       assert(timeSeries.calledOnce);
       const calledWithSeries1 = timeSeries.firstCall.args[0].requestBody!
@@ -290,7 +289,11 @@ describe('MetricExporter', () => {
       await meter.collect();
       const records2 = meter.getProcessor().checkPointSet();
 
-      await exporter.export(records2, () => {});
+      const result2 = await new Promise<ExportResult>(resolve => {
+        exporter.export(records2, result => {
+          resolve(result);
+        });
+      });
 
       assert(timeSeries.calledTwice);
       const calledWithSeries2 = timeSeries.secondCall.args[0].requestBody!

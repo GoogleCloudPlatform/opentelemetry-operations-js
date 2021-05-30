@@ -89,11 +89,8 @@ export class MetricExporter implements IMetricExporter {
    * @param metrics Metrics to be sent to the Google Cloud Monitoring backend
    * @param cb result callback to be called on finish
    */
-  async export(
-    metrics: MetricRecord[],
-    cb: (result: ExportResult) => void
-  ): Promise<void> {
-    return this._exportAsync(metrics)
+  export(metrics: MetricRecord[], cb: (result: ExportResult) => void): void {
+    this._exportAsync(metrics)
       .then(cb)
       .catch(err => {
         diag.error(err.message);
@@ -105,20 +102,14 @@ export class MetricExporter implements IMetricExporter {
 
   /**
    * Asnyc wrapper for the {@link export} implementation.
-   * Saves the current values of all exported {@link MetricRecord}s so that
-   * they can be pulled by the Google Cloud Monitoring backend.
+   * Writes the current values of all exported {@link MetricRecord}s
+   * to the Google Cloud Monitoring backend.
    *
    * @param metrics Metrics to be sent to the Google Cloud Monitoring backend
    */
   private async _exportAsync(metrics: MetricRecord[]): Promise<ExportResult> {
     if (this._projectId instanceof Promise) {
-      try {
-        this._projectId = await this._projectId;
-      } catch (err) {
-        err.message = `Await projectId failed: ${err.message}`;
-        diag.error(err.message);
-        return {code: ExportResultCode.FAILED, error: err};
-      }
+      this._projectId = await this._projectId;
     }
 
     if (!this._projectId) {
