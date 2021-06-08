@@ -16,8 +16,7 @@ import {
   TextMapPropagator,
   Context,
   TraceFlags,
-  setSpanContext,
-  getSpanContext,
+  trace,
   TextMapSetter,
   TextMapGetter,
 } from '@opentelemetry/api';
@@ -49,7 +48,7 @@ export class CloudPropagator implements TextMapPropagator {
     carrier: unknown,
     setter: TextMapSetter<unknown>
   ): void {
-    const spanContext = getSpanContext(context);
+    const spanContext = trace.getSpanContext(context);
     if (!spanContext) return;
 
     const header = `${spanContext.traceId}/${hexToDec(spanContext.spanId)};o=${
@@ -93,7 +92,7 @@ export class CloudPropagator implements TextMapPropagator {
       isRemote: true,
     };
 
-    return setSpanContext(context, spanContext);
+    return trace.setSpanContext(context, spanContext);
   }
 
   fields(): string[] {

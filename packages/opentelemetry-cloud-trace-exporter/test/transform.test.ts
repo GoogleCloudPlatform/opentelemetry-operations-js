@@ -45,7 +45,7 @@ describe('transform', () => {
       kind: api.SpanKind.CLIENT,
       links: [],
       name: 'my-span',
-      spanContext,
+      spanContext: () => spanContext,
       status: {code: api.SpanStatusCode.OK},
       resource: new Resource({
         service: 'ui',
@@ -103,7 +103,7 @@ describe('transform', () => {
   });
 
   it('should transform local spans', () => {
-    readableSpan.spanContext.isRemote = false;
+    readableSpan.spanContext().isRemote = false;
     const local = transformer(readableSpan);
     assert.deepStrictEqual(local.sameProcessAsParentSpan, {value: true});
   });
@@ -164,6 +164,7 @@ describe('transform', () => {
       context: {
         traceId: 'a4cda95b652f4a1592b449d5929fda1b',
         spanId: '3e0c63257de34c92',
+        traceFlags: api.TraceFlags.SAMPLED,
       },
     });
 
@@ -189,6 +190,7 @@ describe('transform', () => {
       context: {
         traceId: 'a4cda95b652f4a1592b449d5929fda1b',
         spanId: '3e0c63257de34c92',
+        traceFlags: api.TraceFlags.SAMPLED,
       },
       attributes: {
         testAttr: 'value',
