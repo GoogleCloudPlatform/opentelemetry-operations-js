@@ -42,7 +42,7 @@ export interface AttributeMap {
 }
 
 export interface Attributes {
-  attributeMap?: AttributeMap;
+  attributeMap: AttributeMap;
   droppedAttributesCount?: number;
 }
 

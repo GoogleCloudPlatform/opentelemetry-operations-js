@@ -67,9 +67,6 @@ describe('transform', () => {
               value: `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`,
             },
           },
-          cost: {intValue: '112'},
-          service: {stringValue: {value: 'ui'}},
-          version: {intValue: '1'},
         },
         droppedAttributesCount: 0,
       },
@@ -152,11 +149,9 @@ describe('transform', () => {
     // @ts-expect-error testing behavior with unsupported type
     readableSpan.attributes.testUnknownType = {message: 'dropped'};
     const result = transformer(readableSpan);
+    // count of 1 for just the g.co/agent attribute
     assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 1);
-    assert.deepStrictEqual(
-      Object.keys(result.attributes!.attributeMap!).length,
-      4
-    );
+    assert.strictEqual(Object.keys(result.attributes!.attributeMap!).length, 1);
   });
 
   it('should transform links', () => {

@@ -28,6 +28,7 @@ import {
   TruncatableString,
   Status,
 } from './types';
+import {mapOtelResourceToMonitoredResource} from '@google-cloud/opentelemetry-resource-util';
 import {VERSION} from './version';
 
 const AGENT_LABEL_KEY = 'g.co/agent';
@@ -37,10 +38,14 @@ export function getReadableSpanTransformer(
   projectId: string
 ): (span: ReadableSpan) => Span {
   return span => {
-    const attributes = transformAttributes(
-      span.attributes,
-      {[AGENT_LABEL_KEY]: AGENT_LABEL_VALUE},
-      span.resource
+    // @todo get dropped attribute count from sdk ReadableSpan
+    const attributes = mergeAttributes(
+      transformAttributes({
+        ...span.attributes,
+        [AGENT_LABEL_KEY]: AGENT_LABEL_VALUE,
+      }),
+      // Add in special g.co/r resource labels
+      transformResourceToAttributes(span.resource, projectId)
     );
 
     const out: Span = {
@@ -61,7 +66,7 @@ export function getReadableSpanTransformer(
         timeEvent: span.events.map(e => ({
           time: transformTime(e.time),
           annotation: {
-            attributes: transformAttributes(e.attributes),
+            attributes: transformAttributes(e.attributes ?? {}),
             description: stringToTruncatableString(e.name),
           },
         })),
@@ -108,32 +113,60 @@ function transformTime(time: ot.HrTime): Timestamp {
 
 function transformLink(link: ot.Link): Link {
   return {
-    attributes: transformAttributes(link.attributes),
+    attributes: transformAttributes(link.attributes ?? {}),
     spanId: link.context.spanId,
     traceId: link.context.traceId,
     type: LinkType.UNSPECIFIED,
   };
 }
 
-function transformAttributes(
-  requestAttributes: ot.SpanAttributes = {},
-  serviceAttributes: ot.SpanAttributes = {},
-  resource: Resource = Resource.empty()
-): Attributes {
-  const attributes = Object.assign(
-    {},
-    requestAttributes,
-    serviceAttributes,
-    resource.attributes
-  );
+function transformAttributes(attributes: ot.SpanAttributes): Attributes {
   const changedAttributes = transformAttributeNames(attributes);
-  const attributeMap = transformAttributeValues(changedAttributes);
+  return spanAttributesToGCTAttributes(changedAttributes);
+}
+
+function spanAttributesToGCTAttributes(
+  attributes: ot.SpanAttributes
+): Attributes {
+  const attributeMap = transformAttributeValues(attributes);
   return {
     attributeMap,
-    // @todo get dropped attribute count from sdk ReadableSpan
     droppedAttributesCount:
       Object.keys(attributes).length - Object.keys(attributeMap).length,
   };
+}
+
+function mergeAttributes(...attributeList: Attributes[]): Attributes {
+  const attributesOut = {
+    attributeMap: {},
+    droppedAttributesCount: 0,
+  };
+  attributeList.forEach(attributes => {
+    Object.assign(attributesOut.attributeMap, attributes.attributeMap);
+    attributesOut.droppedAttributesCount +=
+      attributes.droppedAttributesCount ?? 0;
+  });
+  return attributesOut;
+}
+
+function transformResourceToAttributes(
+  resource: Resource,
+  projectId: string
+): Attributes {
+  const monitoredResource = mapOtelResourceToMonitoredResource(
+    resource,
+    projectId
+  );
+  const attributes: ot.SpanAttributes = {};
+
+  // global is the "default" so just skip
+  if (monitoredResource.type !== 'global') {
+    Object.keys(monitoredResource.labels).forEach(labelKey => {
+      const key = `g.co/r/${monitoredResource.type}/${labelKey}`;
+      attributes[key] = monitoredResource.labels[labelKey];
+    });
+  }
+  return spanAttributesToGCTAttributes(attributes);
 }
 
 function transformAttributeValues(attributes: ot.SpanAttributes): AttributeMap {
