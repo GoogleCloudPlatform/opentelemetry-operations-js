@@ -39,10 +39,7 @@ export function getReadableSpanTransformer(
   return span => {
     const attributes = transformAttributes(
       span.attributes,
-      {
-        project_id: projectId,
-        [AGENT_LABEL_KEY]: AGENT_LABEL_VALUE,
-      },
+      {[AGENT_LABEL_KEY]: AGENT_LABEL_VALUE},
       span.resource
     );
 
@@ -54,9 +51,11 @@ export function getReadableSpanTransformer(
       },
       endTime: transformTime(span.endTime),
       startTime: transformTime(span.startTime),
-      name: `projects/${projectId}/traces/${span.spanContext.traceId}/spans/${span.spanContext.spanId}`,
-      spanId: span.spanContext.spanId,
-      sameProcessAsParentSpan: {value: !span.spanContext.isRemote},
+      name: `projects/${projectId}/traces/${span.spanContext().traceId}/spans/${
+        span.spanContext().spanId
+      }`,
+      spanId: span.spanContext().spanId,
+      sameProcessAsParentSpan: {value: !span.spanContext().isRemote},
       status: transformStatus(span.status),
       timeEvents: {
         timeEvent: span.events.map(e => ({

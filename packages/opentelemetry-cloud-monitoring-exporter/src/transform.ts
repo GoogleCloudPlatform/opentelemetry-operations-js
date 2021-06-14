@@ -21,11 +21,8 @@ import {
   PointValueType,
 } from '@opentelemetry/metrics';
 import {ValueType as OTValueType} from '@opentelemetry/api-metrics';
-import {
-  Resource,
-  CLOUD_RESOURCE,
-  HOST_RESOURCE,
-} from '@opentelemetry/resources';
+import {Resource} from '@opentelemetry/resources';
+import {ResourceAttributes} from '@opentelemetry/semantic-conventions';
 import {
   MetricDescriptor,
   MetricKind,
@@ -147,7 +144,7 @@ function transformResource(
     }
     if (
       type === AWS_EC2_INSTANCE &&
-      templateResource.labels[key] === CLOUD_RESOURCE.REGION
+      templateResource.labels[key] === ResourceAttributes.CLOUD_REGION
     ) {
       labels[key] = `${AWS_REGION_VALUE_PREFIX}${resourceValue}`;
     } else {
@@ -163,22 +160,24 @@ function transformResource(
  * @param resource
  */
 function getTypeAndMappings(resource: Resource): MonitoredResource {
-  const cloudProvider = `${resource.attributes[CLOUD_RESOURCE.PROVIDER]}`;
+  const cloudProvider = `${
+    resource.attributes[ResourceAttributes.CLOUD_PROVIDER]
+  }`;
   if (cloudProvider === 'gcp') {
     return {
       type: GCP_GCE_INSTANCE,
       labels: {
-        instance_id: HOST_RESOURCE.ID,
-        zone: CLOUD_RESOURCE.ZONE,
+        instance_id: ResourceAttributes.HOST_ID,
+        zone: ResourceAttributes.CLOUD_AVAILABILITY_ZONE,
       },
     };
   } else if (cloudProvider === 'aws') {
     return {
       type: AWS_EC2_INSTANCE,
       labels: {
-        instance_id: HOST_RESOURCE.ID,
-        region: CLOUD_RESOURCE.REGION,
-        aws_account: CLOUD_RESOURCE.ACCOUNT_ID,
+        instance_id: ResourceAttributes.HOST_ID,
+        region: ResourceAttributes.CLOUD_REGION,
+        aws_account: ResourceAttributes.CLOUD_ACCOUNT_ID,
       },
     };
   }
