@@ -51,9 +51,11 @@ export function getReadableSpanTransformer(
       },
       endTime: transformTime(span.endTime),
       startTime: transformTime(span.startTime),
-      name: `projects/${projectId}/traces/${span.spanContext.traceId}/spans/${span.spanContext.spanId}`,
-      spanId: span.spanContext.spanId,
-      sameProcessAsParentSpan: {value: !span.spanContext.isRemote},
+      name: `projects/${projectId}/traces/${span.spanContext().traceId}/spans/${
+        span.spanContext().spanId
+      }`,
+      spanId: span.spanContext().spanId,
+      sameProcessAsParentSpan: {value: !span.spanContext().isRemote},
       status: transformStatus(span.status),
       timeEvents: {
         timeEvent: span.events.map(e => ({

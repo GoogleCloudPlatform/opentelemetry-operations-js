@@ -182,12 +182,12 @@ describe('Google Cloud Trace Exporter', () => {
         kind: types.SpanKind.CLIENT,
         links: [],
         name: 'my-span',
-        spanContext: {
+        spanContext: () => ({
           traceId: 'd4cda95b652f4a1592b449d5929fda1b',
           spanId: '6e0c63257de34c92',
           traceFlags: TraceFlags.NONE,
           isRemote: true,
-        },
+        }),
         status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
@@ -232,12 +232,12 @@ describe('Google Cloud Trace Exporter', () => {
         kind: types.SpanKind.CLIENT,
         links: [],
         name: 'my-span',
-        spanContext: {
+        spanContext: () => ({
           traceId: 'd4cda95b652f4a1592b449d5929fda1b',
           spanId: '6e0c63257de34c92',
           traceFlags: TraceFlags.NONE,
           isRemote: true,
-        },
+        }),
         status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
@@ -272,12 +272,12 @@ describe('Google Cloud Trace Exporter', () => {
         kind: types.SpanKind.CLIENT,
         links: [],
         name: 'my-span',
-        spanContext: {
+        spanContext: () => ({
           traceId: 'd4cda95b652f4a1592b449d5929fda1b',
           spanId: '6e0c63257de34c92',
           traceFlags: TraceFlags.NONE,
           isRemote: true,
-        },
+        }),
         status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
@@ -306,12 +306,12 @@ describe('Google Cloud Trace Exporter', () => {
         kind: types.SpanKind.CLIENT,
         links: [],
         name: 'my-span',
-        spanContext: {
+        spanContext: () => ({
           traceId: 'd4cda95b652f4a1592b449d5929fda1b',
           spanId: '6e0c63257de34c92',
           traceFlags: TraceFlags.NONE,
           isRemote: true,
-        },
+        }),
         status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
@@ -338,12 +338,12 @@ describe('Google Cloud Trace Exporter', () => {
         kind: types.SpanKind.CLIENT,
         links: [],
         name: 'my-span',
-        spanContext: {
+        spanContext: () => ({
           traceId: 'd4cda95b652f4a1592b449d5929fda1b',
           spanId: '6e0c63257de34c92',
           traceFlags: TraceFlags.NONE,
           isRemote: true,
-        },
+        }),
         status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},

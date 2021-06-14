@@ -26,6 +26,7 @@ import {
   MeterProvider,
   Histogram,
 } from '@opentelemetry/metrics';
+import {ResourceAttributes} from '@opentelemetry/semantic-conventions';
 import {ValueType as OTValueType, Labels} from '@opentelemetry/api-metrics';
 import {MetricKind, ValueType, MetricDescriptor} from '../src/types';
 import {Resource} from '@opentelemetry/resources';
@@ -149,10 +150,10 @@ describe('transform', () => {
 
   describe('TimeSeries', () => {
     const mockAwsResource = {
-      'cloud.provider': 'aws',
-      'host.id': 'host_id',
-      'cloud.region': 'my-region',
-      'cloud.account.id': '12345',
+      [ResourceAttributes.CLOUD_PROVIDER]: 'aws',
+      [ResourceAttributes.HOST_ID]: 'host_id',
+      [ResourceAttributes.CLOUD_REGION]: 'my-region',
+      [ResourceAttributes.CLOUD_ACCOUNT_ID]: '12345',
     };
     const mockAwsMonitoredResource = {
       type: 'aws_ec2_instance',
@@ -164,9 +165,9 @@ describe('transform', () => {
       },
     };
     const mockGCResource = {
-      'cloud.provider': 'gcp',
-      'host.id': 'host_id',
-      'cloud.zone': 'my-zone',
+      [ResourceAttributes.CLOUD_PROVIDER]: 'gcp',
+      [ResourceAttributes.HOST_ID]: 'host_id',
+      [ResourceAttributes.CLOUD_AVAILABILITY_ZONE]: 'my-zone',
     };
     const mockGCMonitoredResource = {
       type: 'gce_instance',
