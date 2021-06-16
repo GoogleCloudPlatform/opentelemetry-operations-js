@@ -47,6 +47,7 @@ async function pubSubPull(): Promise<void> {
       // don't even know how to write back to the publisher that the message is
       // invalid, so nack()
       message.nack();
+      return;
     }
 
     const scenario = message.attributes?.[constants.SCENARIO];
@@ -57,6 +58,7 @@ async function pubSubPull(): Promise<void> {
           `Expected attribute ${constants.SCENARIO} is missing`
         ),
       });
+      return;
     }
 
     const handler = scenarios.getScenarioHandler(scenario);
