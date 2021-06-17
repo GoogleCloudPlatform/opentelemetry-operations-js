@@ -37,6 +37,11 @@ describe('MetricExporter', () => {
       assert.ok(typeof exporter.shutdown === 'function');
     });
 
+    it('should be able to shutdown', async () => {
+      const exporter = new MetricExporter();
+      await assert.doesNotReject(exporter.shutdown());
+    });
+
     it('should construct an exporter', async () => {
       const exporter = new MetricExporter({
         credentials: {
@@ -168,11 +173,11 @@ describe('MetricExporter', () => {
       });
 
       let unhandledPromiseRejectionEvent = false;
-      process.on('unhandledRejection', error => {
+      process.on('unhandledRejection', () => {
         unhandledPromiseRejectionEvent = true;
       });
 
-      const result = await exporter.export(records, () => {});
+      await exporter.export(records, () => {});
 
       assert.strictEqual(unhandledPromiseRejectionEvent, false);
     });
@@ -269,7 +274,7 @@ describe('MetricExporter', () => {
       await meter.collect();
       const records1 = meter.getProcessor().checkPointSet();
 
-      const result = await new Promise<ExportResult>(resolve => {
+      await new Promise<ExportResult>(resolve => {
         exporter.export(records1, result => {
           resolve(result);
         });
@@ -289,7 +294,7 @@ describe('MetricExporter', () => {
       await meter.collect();
       const records2 = meter.getProcessor().checkPointSet();
 
-      const result2 = await new Promise<ExportResult>(resolve => {
+      await new Promise<ExportResult>(resolve => {
         exporter.export(records2, result => {
           resolve(result);
         });
