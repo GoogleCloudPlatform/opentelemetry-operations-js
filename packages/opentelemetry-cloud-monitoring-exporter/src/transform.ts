@@ -21,15 +21,13 @@ import {
   PointValueType,
 } from '@opentelemetry/metrics';
 import {ValueType as OTValueType} from '@opentelemetry/api-metrics';
-import {Resource} from '@opentelemetry/resources';
-import {ResourceAttributes} from '@opentelemetry/semantic-conventions';
+import {mapOtelResourceToMonitoredResource} from '@google-cloud/opentelemetry-resource-util';
 import {
   MetricDescriptor,
   MetricKind,
   ValueType,
   TimeSeries,
   Point,
-  MonitoredResource,
 } from './types';
 import * as path from 'path';
 import * as os from 'os';
@@ -37,9 +35,6 @@ import type {monitoring_v3} from 'googleapis';
 
 const OPENTELEMETRY_TASK = 'opentelemetry_task';
 const OPENTELEMETRY_TASK_DESCRIPTION = 'OpenTelemetry task identifier';
-const AWS_REGION_VALUE_PREFIX = 'aws:';
-const GCP_GCE_INSTANCE = 'gce_instance';
-const AWS_EC2_INSTANCE = 'aws_ec2_instance';
 export const OPENTELEMETRY_TASK_VALUE_DEFAULT = generateDefaultTaskValue();
 
 export function transformMetricDescriptor(
@@ -113,75 +108,13 @@ export function createTimeSeries(
 ): TimeSeries {
   return {
     metric: transformMetric(metric, metricPrefix),
-    resource: transformResource(metric.resource, projectId),
+    resource: mapOtelResourceToMonitoredResource(metric.resource, projectId),
     metricKind: transformMetricKind(metric.descriptor.metricKind),
     valueType: transformValueType(metric.descriptor.valueType),
     points: [
       transformPoint(metric.aggregator.toPoint(), metric.descriptor, startTime),
     ],
   };
-}
-
-/**
- * Given a resource, return a MonitoredResource
- * If any field is missing, return the default resource
- * @param resource
- * @param projectId
- */
-function transformResource(
-  resource: Resource,
-  projectId: string
-): MonitoredResource {
-  const templateResource = getTypeAndMappings(resource);
-  const type = templateResource.type;
-  const labels: {[key: string]: string} = {project_id: projectId};
-
-  for (const key of Object.keys(templateResource.labels)) {
-    // Checks the resource's value for a required key
-    const resourceValue = resource.attributes[templateResource.labels[key]];
-    if (!resourceValue) {
-      return {type: 'global', labels: {project_id: projectId}};
-    }
-    if (
-      type === AWS_EC2_INSTANCE &&
-      templateResource.labels[key] === ResourceAttributes.CLOUD_REGION
-    ) {
-      labels[key] = `${AWS_REGION_VALUE_PREFIX}${resourceValue}`;
-    } else {
-      labels[key] = `${resourceValue}`;
-    }
-  }
-  return {type, labels};
-}
-
-/**
- * Returns the type and mappings of a resource for a given cloud provider
- * The only currently supported cloud providers are GCP and AWS
- * @param resource
- */
-function getTypeAndMappings(resource: Resource): MonitoredResource {
-  const cloudProvider = `${
-    resource.attributes[ResourceAttributes.CLOUD_PROVIDER]
-  }`;
-  if (cloudProvider === 'gcp') {
-    return {
-      type: GCP_GCE_INSTANCE,
-      labels: {
-        instance_id: ResourceAttributes.HOST_ID,
-        zone: ResourceAttributes.CLOUD_AVAILABILITY_ZONE,
-      },
-    };
-  } else if (cloudProvider === 'aws') {
-    return {
-      type: AWS_EC2_INSTANCE,
-      labels: {
-        instance_id: ResourceAttributes.HOST_ID,
-        region: ResourceAttributes.CLOUD_REGION,
-        aws_account: ResourceAttributes.CLOUD_ACCOUNT_ID,
-      },
-    };
-  }
-  return {type: 'global', labels: {}};
 }
 
 function transformMetric(
