@@ -46,9 +46,7 @@ export function mapOtelResourceToMonitoredResource(
   resource: Resource,
   projectId: string
 ): MonitoredResource {
-  const cloudProvider = `${
-    resource.attributes[ResourceAttributes.CLOUD_PROVIDER]
-  }`;
+  const cloudProvider = resource.attributes[ResourceAttributes.CLOUD_PROVIDER];
   const commonLabels = {project_id: projectId};
   let monitoredResource: MonitoredResource | undefined;
   if (cloudProvider === 'gcp') {
