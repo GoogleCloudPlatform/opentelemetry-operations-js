@@ -313,4 +313,40 @@ describe('transform', () => {
       message: undefined,
     });
   });
+
+  it('should transform gce_instance resource to g.co/r/gce_instance/* labels', () => {
+    const result = transformer({
+      ...readableSpan,
+      resource: new Resource({
+        'cloud.provider': 'gcp',
+        'host.id': 'foobar.com',
+        'cloud.availability_zone': 'us-west1-a',
+      }),
+    });
+    assert.deepStrictEqual(result.attributes, {
+      attributeMap: {
+        'g.co/agent': {
+          stringValue: {
+            value: `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`,
+          },
+        },
+        'g.co/r/gce_instance/instance_id': {
+          stringValue: {
+            value: 'foobar.com',
+          },
+        },
+        'g.co/r/gce_instance/project_id': {
+          stringValue: {
+            value: 'project-id',
+          },
+        },
+        'g.co/r/gce_instance/zone': {
+          stringValue: {
+            value: 'us-west1-a',
+          },
+        },
+      },
+      droppedAttributesCount: 0,
+    });
+  });
 });
