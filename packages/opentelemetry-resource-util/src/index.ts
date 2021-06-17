@@ -15,13 +15,25 @@
 import {Resource} from '@opentelemetry/resources';
 import {ResourceAttributes} from '@opentelemetry/semantic-conventions';
 
-const GCP_GCE_INSTANCE = 'gce_instance';
-const AWS_EC2_INSTANCE = 'aws_ec2_instance';
-
+type Labels = {[key: string]: string};
 export interface MonitoredResource {
   type: string;
-  labels: {[key: string]: string};
+  labels: Labels;
 }
+type LabelMapping = {[key: string]: string};
+
+const GCE_INSTANCE = 'gce_instance';
+const AWS_EC2_INSTANCE = 'aws_ec2_instance';
+
+const GCE_INSTANCE_LABEL_MAPPING: LabelMapping = {
+  instance_id: ResourceAttributes.HOST_ID,
+  zone: ResourceAttributes.CLOUD_AVAILABILITY_ZONE,
+};
+const AWS_EC2_INSTANCE_LABEL_MAPPING: LabelMapping = {
+  instance_id: ResourceAttributes.HOST_ID,
+  region: ResourceAttributes.CLOUD_REGION,
+  aws_account: ResourceAttributes.CLOUD_ACCOUNT_ID,
+};
 
 /**
  * Given an OTel resource, return a MonitoredResource. If any field is missing,
@@ -40,41 +52,60 @@ export function mapOtelResourceToMonitoredResource(
   const commonLabels = {project_id: projectId};
   let monitoredResource: MonitoredResource | undefined;
   if (cloudProvider === 'gcp') {
-    monitoredResource = {
-      type: GCP_GCE_INSTANCE,
-      labels: {
-        ...commonLabels,
-        instance_id: resource.attributes[ResourceAttributes.HOST_ID] as string,
-        zone: resource.attributes[
-          ResourceAttributes.CLOUD_AVAILABILITY_ZONE
-        ] as string,
-      },
-    };
+    const labels = mapResourceAttributes(resource, GCE_INSTANCE_LABEL_MAPPING);
+    if (labels !== undefined) {
+      monitoredResource = {
+        type: GCE_INSTANCE,
+        labels: {
+          ...commonLabels,
+          ...labels,
+        },
+      };
+    }
   } else if (cloudProvider === 'aws') {
-    monitoredResource = {
-      type: AWS_EC2_INSTANCE,
-      labels: {
-        ...commonLabels,
-        instance_id: resource.attributes[ResourceAttributes.HOST_ID] as string,
-        region: `aws:${resource.attributes[ResourceAttributes.CLOUD_REGION]}`,
-        aws_account: resource.attributes[
-          ResourceAttributes.CLOUD_ACCOUNT_ID
-        ] as string,
-      },
-    };
+    const labels = mapResourceAttributes(
+      resource,
+      AWS_EC2_INSTANCE_LABEL_MAPPING
+    );
+    if (labels !== undefined) {
+      monitoredResource = {
+        type: AWS_EC2_INSTANCE,
+        labels: {
+          ...commonLabels,
+          ...labels,
+          region: `aws:${labels.region}`,
+        },
+      };
+    }
   }
 
-  // fallback or if the resource is missing label values
-  if (
-    monitoredResource === undefined ||
-    hasUndefinedValue(monitoredResource.labels)
-  ) {
+  // fallback
+  if (monitoredResource === undefined) {
     monitoredResource = {type: 'global', labels: {...commonLabels}};
   }
 
   return monitoredResource;
 }
 
-function hasUndefinedValue<T>(o: {[k: string]: T | undefined}): boolean {
-  return Object.values(o).some(v => v === undefined);
+/**
+ * Given a LabelMapping, maps the resource into labels. If any resource
+ * attribute is missing, returns undefined.
+ *
+ * @param resource
+ * @param labelMapping
+ * @returns
+ */
+function mapResourceAttributes(
+  resource: Resource,
+  labelMapping: LabelMapping
+): Labels | undefined {
+  const labels: Labels = {};
+  for (const [labelKey, labelSource] of Object.entries(labelMapping)) {
+    const labelValue = resource.attributes[labelSource];
+    if (typeof labelValue !== 'string') {
+      return undefined;
+    }
+    labels[labelKey] = labelValue;
+  }
+  return labels;
 }
