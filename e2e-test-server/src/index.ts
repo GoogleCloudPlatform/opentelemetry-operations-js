@@ -70,6 +70,11 @@ async function pubSubPull(): Promise<void> {
         testId,
       });
     } catch (e) {
+      logger.error(
+        'caught error from handler for scenario %s: %s',
+        scenario,
+        e
+      );
       res = {
         statusCode: Status.INTERNAL,
         data: Buffer.from(e?.stack ?? String(e)),
