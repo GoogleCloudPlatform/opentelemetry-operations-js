@@ -13,6 +13,15 @@
 // limitations under the License.
 
 import {status as Status} from '@grpc/grpc-js';
+import {
+  Tracer,
+  BasicTracerProvider,
+  BatchSpanProcessor,
+} from '@opentelemetry/tracing';
+import {AlwaysOnSampler} from '@opentelemetry/core';
+import {Resource} from '@opentelemetry/resources';
+import {TraceExporter} from '@google-cloud/opentelemetry-cloud-trace-exporter';
+import * as constants from './constants';
 
 export interface Request {
   testId: string;
@@ -25,8 +34,35 @@ export interface Response {
   data?: Buffer;
 }
 
+async function withTracer<R>(f: (tracer: Tracer) => R): Promise<R> {
+  const tracerProvider = new BasicTracerProvider({
+    sampler: new AlwaysOnSampler(),
+    resource: Resource.EMPTY,
+  });
+  tracerProvider.addSpanProcessor(
+    new BatchSpanProcessor(new TraceExporter({projectId: constants.PROJECT_ID}))
+  );
+
+  try {
+    return f(tracerProvider.getTracer(constants.INSTRUMENTING_MODULE_NAME));
+  } finally {
+    await tracerProvider.shutdown();
+  }
+}
+
 async function health(): Promise<Response> {
   return {statusCode: Status.OK};
+}
+
+async function basicTrace(request: Request): Promise<Response> {
+  return await withTracer(async (tracer: Tracer): Promise<Response> => {
+    tracer
+      .startSpan('basicTrace', {
+        attributes: {[constants.TEST_ID]: request.testId},
+      })
+      .end();
+    return {statusCode: Status.OK};
+  });
 }
 
 async function notImplementedHandler(): Promise<Response> {
@@ -37,6 +73,7 @@ export type ScenarioHandler = (request: Request) => Promise<Response>;
 
 const SCENARIO_TO_HANDLER: {[scenario: string]: ScenarioHandler} = {
   '/health': health,
+  '/basicTrace': basicTrace,
 } as const;
 
 export function getScenarioHandler(scenario: string): ScenarioHandler {
