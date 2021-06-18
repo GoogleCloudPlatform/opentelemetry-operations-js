@@ -82,16 +82,32 @@ export class MetricExporter implements IMetricExporter {
   }
 
   /**
-   * Saves the current values of all exported {@link MetricRecord}s so that
-   * they can be pulled by the Google Cloud Monitoring backend.
+   * Implementation for {@link IMetricExporter.export}.
+   * Calls the async wrapper method {@link _exportAsync} and
+   * assures no rejected promises bubble up to the caller.
    *
    * @param metrics Metrics to be sent to the Google Cloud Monitoring backend
    * @param cb result callback to be called on finish
    */
-  async export(
-    metrics: MetricRecord[],
-    cb: (result: ExportResult) => void
-  ): Promise<void> {
+  export(metrics: MetricRecord[], cb: (result: ExportResult) => void): void {
+    this._exportAsync(metrics)
+      .then(cb)
+      .catch(err => {
+        diag.error(err.message);
+        return cb({code: ExportResultCode.FAILED, error: err});
+      });
+  }
+
+  async shutdown(): Promise<void> {}
+
+  /**
+   * Asnyc wrapper for the {@link export} implementation.
+   * Writes the current values of all exported {@link MetricRecord}s
+   * to the Google Cloud Monitoring backend.
+   *
+   * @param metrics Metrics to be sent to the Google Cloud Monitoring backend
+   */
+  private async _exportAsync(metrics: MetricRecord[]): Promise<ExportResult> {
     if (this._projectId instanceof Promise) {
       this._projectId = await this._projectId;
     }
@@ -99,7 +115,7 @@ export class MetricExporter implements IMetricExporter {
     if (!this._projectId) {
       const error = new Error('expecting a non-blank ProjectID');
       diag.error(error.message);
-      return cb({code: ExportResultCode.FAILED, error});
+      return {code: ExportResultCode.FAILED, error};
     }
 
     diag.debug('Google Cloud Monitoring export');
@@ -136,12 +152,10 @@ export class MetricExporter implements IMetricExporter {
       }
     }
     if (failure.sendFailed) {
-      return cb({code: ExportResultCode.FAILED, error: failure.error});
+      return {code: ExportResultCode.FAILED, error: failure.error};
     }
-    cb({code: ExportResultCode.SUCCESS});
+    return {code: ExportResultCode.SUCCESS};
   }
-
-  async shutdown(): Promise<void> {}
 
   /**
    * Returns true if the given metricDescriptor is successfully registered to
