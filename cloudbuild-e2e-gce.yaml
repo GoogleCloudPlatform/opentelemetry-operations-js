@@ -17,7 +17,7 @@ steps:
   - name: "docker"
     id: wait-for-image
     entrypoint: "sh"
-    timeout: 15m
+    timeout: 10m
     env: ["_TEST_SERVER_IMAGE=${_TEST_SERVER_IMAGE}"]
     args:
       - e2e-test-server/wait-for-image.sh
