@@ -1,6 +1,6 @@
 {
   "name": "@google-cloud/e2e-test-server",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Instrumented test server used only for e2e testing (private).",
   "private": true,
   "main": "build/src/index.js",
@@ -31,7 +31,7 @@
     "typescript": "4.3.4"
   },
   "dependencies": {
-    "@google-cloud/opentelemetry-cloud-trace-exporter": "^0.9.0",
+    "@google-cloud/opentelemetry-cloud-trace-exporter": "^0.10.0",
     "@google-cloud/pubsub": "^2.12.0",
     "@grpc/grpc-js": "^1.3.2",
     "@opentelemetry/api": "^1.0.0",
