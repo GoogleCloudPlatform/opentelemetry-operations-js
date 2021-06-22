@@ -22,6 +22,8 @@ import {AlwaysOnSampler} from '@opentelemetry/core';
 import {Resource} from '@opentelemetry/resources';
 import {TraceExporter} from '@google-cloud/opentelemetry-cloud-trace-exporter';
 import * as constants from './constants';
+import {context, SpanKind} from '@opentelemetry/api';
+import {AsyncHooksContextManager} from '@opentelemetry/context-async-hooks';
 
 export interface Request {
   testId: string;
@@ -33,6 +35,8 @@ export interface Response {
   statusCode: Status;
   data?: Buffer;
 }
+
+context.setGlobalContextManager(new AsyncHooksContextManager());
 
 async function withTracer<R>(f: (tracer: Tracer) => R): Promise<R> {
   const tracerProvider = new BasicTracerProvider({
@@ -64,6 +68,29 @@ async function basicTrace(request: Request): Promise<Response> {
     return {statusCode: Status.OK};
   });
 }
+async function complexTrace(request: Request): Promise<Response> {
+  const attributes = {[constants.TEST_ID]: request.testId};
+  return await withTracer(async (tracer: Tracer): Promise<Response> => {
+    tracer.startActiveSpan('complexTrace/root', {attributes}, span => {
+      tracer.startActiveSpan(
+        'complexTrace/child1',
+        {attributes, kind: SpanKind.SERVER},
+        span => {
+          tracer
+            .startSpan('complexTrace/child2', {
+              attributes,
+              kind: SpanKind.CLIENT,
+            })
+            .end();
+          span.end();
+        }
+      );
+      tracer.startSpan('complexTrace/child3', {attributes}).end();
+      span.end();
+    });
+    return {statusCode: Status.OK};
+  });
+}
 
 async function notImplementedHandler(): Promise<Response> {
   return {statusCode: Status.UNIMPLEMENTED};
@@ -74,6 +101,7 @@ export type ScenarioHandler = (request: Request) => Promise<Response>;
 const SCENARIO_TO_HANDLER: {[scenario: string]: ScenarioHandler} = {
   '/health': health,
   '/basicTrace': basicTrace,
+  '/complexTrace': complexTrace,
 } as const;
 
 export function getScenarioHandler(scenario: string): ScenarioHandler {
