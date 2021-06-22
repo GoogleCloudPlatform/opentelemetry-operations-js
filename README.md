@@ -1,6 +1,6 @@
 # OpenTelemetry Operations Exporters for JavaScript
 
-The packages in this repository support all [officially supported Node.js versions](https://nodejs.org/en/about/releases/) (10, 12, 14, 15).
+The packages in this repository support all [officially supported Node.js versions](https://nodejs.org/en/about/releases/) (10, 12, 14, 16).
 
 ## OpenTelemetry Google Cloud Trace Exporter
 
