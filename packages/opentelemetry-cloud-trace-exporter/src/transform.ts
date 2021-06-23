@@ -24,9 +24,10 @@ import {
   Link,
   LinkType,
   Span,
+  SpanKind,
+  Status,
   Timestamp,
   TruncatableString,
-  Status,
 } from './types';
 import {mapOtelResourceToMonitoredResource} from '@google-cloud/opentelemetry-resource-util';
 import {VERSION} from './version';
@@ -59,6 +60,7 @@ export function getReadableSpanTransformer(
       name: `projects/${projectId}/traces/${span.spanContext().traceId}/spans/${
         span.spanContext().spanId
       }`,
+      spanKind: transformKind(span.kind),
       spanId: span.spanContext().spanId,
       sameProcessAsParentSpan: {value: !span.spanContext().isRemote},
       status: transformStatus(span.status),
@@ -93,6 +95,26 @@ function transformStatus(status: ot.SpanStatus): Status | undefined {
       exhaust(status.code);
       // TODO: log failed mapping
       return {code: Code.UNKNOWN, message: status.message};
+    }
+  }
+}
+
+function transformKind(kind: ot.SpanKind): SpanKind | undefined {
+  switch (kind) {
+    case ot.SpanKind.INTERNAL:
+      return SpanKind.INTERNAL;
+    case ot.SpanKind.SERVER:
+      return SpanKind.SERVER;
+    case ot.SpanKind.CLIENT:
+      return SpanKind.CLIENT;
+    case ot.SpanKind.PRODUCER:
+      return SpanKind.PRODUCER;
+    case ot.SpanKind.CONSUMER:
+      return SpanKind.CONSUMER;
+    default: {
+      exhaust(kind);
+      // TODO: log failed mapping
+      return SpanKind.SPAN_KIND_UNSPECIFIED;
     }
   }
 }

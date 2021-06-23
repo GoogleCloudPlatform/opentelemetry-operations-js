@@ -14,6 +14,8 @@
 
 import {Metadata} from '@grpc/grpc-js';
 
+// extends cloudtrace_v2.Schema$Span
+
 export interface Span {
   name?: string;
   spanId?: string;
@@ -30,6 +32,7 @@ export interface Span {
   status?: Status;
   sameProcessAsParentSpan?: BoolValue;
   childSpanCount?: number;
+  spanKind?: SpanKind;
 }
 
 export interface Timestamp {
@@ -165,4 +168,36 @@ export enum Code {
   // These are the only two we care about mapping to
   OK = 0,
   UNKNOWN = 2,
+}
+
+/**
+ * See https://github.com/googleapis/googleapis/blob/master/google/devtools/cloudtrace/v2/trace.proto#L182
+ */
+export enum SpanKind {
+  // Unspecified. Do NOT use as default.
+  // Implementations MAY assume SpanKind.INTERNAL to be default.
+  SPAN_KIND_UNSPECIFIED = 0,
+
+  // Indicates that the span is used internally. Default value.
+  INTERNAL = 1,
+
+  // Indicates that the span covers server-side handling of an RPC or other
+  // remote network request.
+  SERVER = 2,
+
+  // Indicates that the span covers the client-side wrapper around an RPC or
+  // other remote request.
+  CLIENT = 3,
+
+  // Indicates that the span describes producer sending a message to a broker.
+  // Unlike client and  server, there is no direct critical path latency
+  // relationship between producer and consumer spans (e.g. publishing a
+  // message to a pubsub service).
+  PRODUCER = 4,
+
+  // Indicates that the span describes consumer receiving a message from a
+  // broker. Unlike client and  server, there is no direct critical path
+  // latency relationship between producer and consumer spans (e.g. receiving
+  // a message from a pubsub service subscription).
+  CONSUMER = 5,
 }
