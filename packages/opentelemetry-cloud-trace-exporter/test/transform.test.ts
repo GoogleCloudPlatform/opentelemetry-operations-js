@@ -17,7 +17,7 @@ import {Resource} from '@opentelemetry/resources';
 import type {ReadableSpan} from '@opentelemetry/tracing';
 import * as assert from 'assert';
 import {getReadableSpanTransformer} from '../src/transform';
-import {LinkType, Span, Code, Status} from '../src/types';
+import {LinkType, Span, Code, Status, SpanKind} from '../src/types';
 import {VERSION} from '../src/version';
 
 describe('transform', () => {
@@ -77,6 +77,7 @@ describe('transform', () => {
       name:
         'projects/project-id/traces/d4cda95b652f4a1592b449d5929fda1b/spans/6e0c63257de34c92',
       spanId: '6e0c63257de34c92',
+      spanKind: SpanKind.CLIENT,
       status: {code: Code.OK},
       timeEvents: {timeEvent: []},
       sameProcessAsParentSpan: {value: false},
@@ -348,5 +349,53 @@ describe('transform', () => {
       },
       droppedAttributesCount: 0,
     });
+  });
+
+  it('should transform span kinds', () => {
+    assert.strictEqual(
+      transformer({
+        ...readableSpan,
+        kind: api.SpanKind.INTERNAL,
+      }).spanKind,
+      SpanKind.INTERNAL
+    );
+    assert.strictEqual(
+      transformer({
+        ...readableSpan,
+        kind: api.SpanKind.SERVER,
+      }).spanKind,
+      SpanKind.SERVER
+    );
+    assert.strictEqual(
+      transformer({
+        ...readableSpan,
+        kind: api.SpanKind.CLIENT,
+      }).spanKind,
+      SpanKind.CLIENT
+    );
+    assert.strictEqual(
+      transformer({
+        ...readableSpan,
+        kind: api.SpanKind.PRODUCER,
+      }).spanKind,
+      SpanKind.PRODUCER
+    );
+    assert.strictEqual(
+      transformer({
+        ...readableSpan,
+        kind: api.SpanKind.CONSUMER,
+      }).spanKind,
+      SpanKind.CONSUMER
+    );
+  });
+
+  it('should transform span kind of unknown future value', () => {
+    assert.strictEqual(
+      transformer({
+        ...readableSpan,
+        kind: 16,
+      }).spanKind,
+      SpanKind.SPAN_KIND_UNSPECIFIED
+    );
   });
 });
