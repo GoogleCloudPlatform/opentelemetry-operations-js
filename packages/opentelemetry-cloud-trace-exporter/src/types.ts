@@ -14,8 +14,6 @@
 
 import {Metadata} from '@grpc/grpc-js';
 
-// extends cloudtrace_v2.Schema$Span
-
 export interface Span {
   name?: string;
   spanId?: string;
@@ -171,7 +169,7 @@ export enum Code {
 }
 
 /**
- * See https://github.com/googleapis/googleapis/blob/master/google/devtools/cloudtrace/v2/trace.proto#L182
+ * See https://github.com/googleapis/googleapis/blob/8cd4d12c0a02872469176659603451d84c0fbee7/google/devtools/cloudtrace/v2/trace.proto#L182
  */
 export enum SpanKind {
   // Unspecified. Do NOT use as default.
