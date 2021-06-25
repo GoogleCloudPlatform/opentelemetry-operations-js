@@ -36,8 +36,8 @@ provider.addSpanProcessor(new BatchSpanProcessor(exporter));
 
 You can use built-in `SimpleSpanProcessor` or `BatchSpanProcessor` or write your own.
 
-- [SimpleSpanProcessor](https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/sdk-tracing.md#simple-processor): The implementation of `SpanProcessor` that passes ended span directly to the configured `SpanExporter`.
-- [BatchSpanProcessor](https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/sdk-tracing.md#batching-processor): The implementation of the `SpanProcessor` that batches ended spans and pushes them to the configured `SpanExporter`. It is recommended to use this `SpanProcessor` for better performance and optimization.
+- [SimpleSpanProcessor](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/sdk-tracing.md#simple-processor): The implementation of `SpanProcessor` that passes ended span directly to the configured `SpanExporter`.
+- [BatchSpanProcessor](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/sdk-tracing.md#batching-processor): The implementation of the `SpanProcessor` that batches ended spans and pushes them to the configured `SpanExporter`. It is recommended to use this `SpanProcessor` for better performance and optimization.
 
 ## Authentication
 
@@ -71,5 +71,5 @@ const exporter = new TraceExporter({
 
 [npm-url]: https://www.npmjs.com/package/@google-cloud/opentelemetry-cloud-trace-exporter
 [npm-img]: https://badge.fury.io/js/%40google-cloud%2Fopentelemetry-cloud-trace-exporter.svg
-[license-url]: https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/master/LICENSE
+[license-url]: https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/LICENSE
 [license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat

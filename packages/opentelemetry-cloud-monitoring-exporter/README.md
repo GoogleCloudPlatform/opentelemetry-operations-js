@@ -43,7 +43,7 @@ With the above you should now be able to navigate to the Google Cloud Monitoring
 - For more about OpenTelemetry JavaScript: <https://github.com/open-telemetry/opentelemetry-js>
 - Learn more about Google Cloud Monitoring at https://cloud.google.com/monitoring
 
-[license-url]: https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/master/LICENSE
+[license-url]: https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/LICENSE
 [npm-url]: https://www.npmjs.com/package/@google-cloud/opentelemetry-cloud-monitoring-exporter
 [npm-img]: https://badge.fury.io/js/%40google-cloud%2Fopentelemetry-cloud-monitoring-exporter.svg
 [license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat

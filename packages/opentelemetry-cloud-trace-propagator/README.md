@@ -39,5 +39,5 @@ provider.register({
 
 [npm-url]: https://www.npmjs.com/package/@google-cloud/opentelemetry-cloud-trace-propagator
 [npm-img]: https://badge.fury.io/js/%40google-cloud%2Fopentelemetry-cloud-trace-propagator.svg
-[license-url]: https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/master/LICENSE
+[license-url]: https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/LICENSE
 [license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat

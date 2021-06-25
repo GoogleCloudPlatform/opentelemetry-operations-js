@@ -9,7 +9,7 @@ version number.
 
 ## Update to latest locally
 
-Use `git fetch` and `git checkout origin/master` to ensure you’re on the latest commit. Make sure
+Use `git fetch` and `git checkout origin/main` to ensure you’re on the latest commit. Make sure
 you have no unstaged changes. Ideally, also use `git clean -dfx` to remove all ignored and
 untracked files.
 
@@ -53,7 +53,7 @@ git log --oneline --no-decorate <previous release tag>..HEAD~
 ```
 
 Save it as a draft, don’t publish it. Don’t forget the tag -- call it `vx.y.z`
-and leave it pointing at `master` for now (this can be changed as long as the
+and leave it pointing at `main` for now (this can be changed as long as the
 GitHub release isn’t published).
 
 ## Create a new PR
@@ -94,4 +94,4 @@ commit corresponding to release proposal `x.y.z`.
 * (TODO: create changelog) In addition, update the CHANGELOG.md and start new
   Unreleased label.
 * Create a new commit with the exact title: `Post Release: update CHANGELOG, Examples and ReadMe`.
-* Go through PR review and merge it to GitHub master branch.
+* Go through PR review and merge it to GitHub main branch.
