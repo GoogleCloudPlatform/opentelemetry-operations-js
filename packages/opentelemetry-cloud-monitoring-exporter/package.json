@@ -43,7 +43,7 @@
     "@opentelemetry/core": "0.23.0",
     "@opentelemetry/metrics": "0.23.0",
     "@opentelemetry/resources": "0.23.0",
-    "@types/mocha": "7.0.2",
+    "@types/mocha": "8.2.3",
     "@types/nock": "11.1.0",
     "@types/node": "14.17.5",
     "@types/sinon": "10.0.2",
