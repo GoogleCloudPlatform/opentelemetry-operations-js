@@ -28,14 +28,16 @@ async function pubSubPull(): Promise<void> {
     testId: string,
     res: scenarios.Response
   ): Promise<void> {
-    const {data = Buffer.alloc(0), statusCode} = res;
+    const {data = Buffer.alloc(0), headers = {}, statusCode} = res;
     logger.info(
-      'Sending response on topic %s, status %s, data %s',
+      'Sending response on topic %s, status %s, data %s, headers %s',
       constants.RESPONSE_TOPIC_NAME,
       statusCode,
-      data
+      data,
+      headers
     );
     responseTopic.publish(data, {
+      ...headers,
       [constants.TEST_ID]: testId,
       [constants.STATUS_CODE]: statusCode.toString(),
     });

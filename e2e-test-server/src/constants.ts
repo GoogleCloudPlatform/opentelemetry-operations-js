@@ -31,6 +31,7 @@ export const INSTRUMENTING_MODULE_NAME = 'opentelemetry-ops-e2e-test-server';
 export const SCENARIO = 'scenario';
 export const STATUS_CODE = 'status_code';
 export const TEST_ID = 'test_id';
+export const TRACE_ID = 'trace_id';
 
 let subscriptionMode;
 switch (envOrThrow('SUBSCRIPTION_MODE')) {
