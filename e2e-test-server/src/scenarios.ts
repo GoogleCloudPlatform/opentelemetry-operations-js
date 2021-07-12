@@ -26,14 +26,15 @@ import {context, SpanKind} from '@opentelemetry/api';
 import {AsyncHooksContextManager} from '@opentelemetry/context-async-hooks';
 
 export interface Request {
-  testId: string;
-  headers: {[key: string]: string};
   data: Buffer;
+  headers: {[key: string]: string};
+  testId: string;
 }
 
 export interface Response {
-  statusCode: Status;
   data?: Buffer;
+  headers?: {[key: string]: string};
+  statusCode: Status;
 }
 
 context.setGlobalContextManager(new AsyncHooksContextManager());
@@ -60,35 +61,41 @@ async function health(): Promise<Response> {
 
 async function basicTrace(request: Request): Promise<Response> {
   return await withTracer(async (tracer: Tracer): Promise<Response> => {
-    tracer
-      .startSpan('basicTrace', {
-        attributes: {[constants.TEST_ID]: request.testId},
-      })
-      .end();
-    return {statusCode: Status.OK};
+    const span = tracer.startSpan('basicTrace', {
+      attributes: {[constants.TEST_ID]: request.testId},
+    });
+    const traceId = span.spanContext().traceId;
+    span.end();
+    return {statusCode: Status.OK, headers: {[constants.TRACE_ID]: traceId}};
   });
 }
+
 async function complexTrace(request: Request): Promise<Response> {
   const attributes = {[constants.TEST_ID]: request.testId};
   return await withTracer(async (tracer: Tracer): Promise<Response> => {
-    tracer.startActiveSpan('complexTrace/root', {attributes}, span => {
-      tracer.startActiveSpan(
-        'complexTrace/child1',
-        {attributes, kind: SpanKind.SERVER},
-        span => {
-          tracer
-            .startSpan('complexTrace/child2', {
-              attributes,
-              kind: SpanKind.CLIENT,
-            })
-            .end();
-          span.end();
-        }
-      );
-      tracer.startSpan('complexTrace/child3', {attributes}).end();
-      span.end();
-    });
-    return {statusCode: Status.OK};
+    const traceId = tracer.startActiveSpan(
+      'complexTrace/root',
+      {attributes},
+      span => {
+        tracer.startActiveSpan(
+          'complexTrace/child1',
+          {attributes, kind: SpanKind.SERVER},
+          span => {
+            tracer
+              .startSpan('complexTrace/child2', {
+                attributes,
+                kind: SpanKind.CLIENT,
+              })
+              .end();
+            span.end();
+          }
+        );
+        tracer.startSpan('complexTrace/child3', {attributes}).end();
+        span.end();
+        return span.spanContext().traceId;
+      }
+    );
+    return {statusCode: Status.OK, headers: {[constants.TRACE_ID]: traceId}};
   });
 }
 
