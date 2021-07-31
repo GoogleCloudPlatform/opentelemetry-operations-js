@@ -15,17 +15,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import * as assert from 'assert';
-import {ResourceAttributes} from '@opentelemetry/semantic-conventions';
+import {SemanticResourceAttributes} from '@opentelemetry/semantic-conventions';
 import {mapOtelResourceToMonitoredResource} from '../src';
 import {Resource} from '@opentelemetry/resources';
 
 describe('Monitored resource util', () => {
   const projectId = 'project_id';
   const mockAwsResource = {
-    [ResourceAttributes.CLOUD_PROVIDER]: 'aws',
-    [ResourceAttributes.HOST_ID]: 'host_id',
-    [ResourceAttributes.CLOUD_REGION]: 'my-region',
-    [ResourceAttributes.CLOUD_ACCOUNT_ID]: '12345',
+    [SemanticResourceAttributes.CLOUD_PROVIDER]: 'aws',
+    [SemanticResourceAttributes.HOST_ID]: 'host_id',
+    [SemanticResourceAttributes.CLOUD_REGION]: 'my-region',
+    [SemanticResourceAttributes.CLOUD_ACCOUNT_ID]: '12345',
   };
   const mockAwsMonitoredResource = {
     type: 'aws_ec2_instance',
@@ -37,9 +37,9 @@ describe('Monitored resource util', () => {
     },
   };
   const mockGCResource = {
-    [ResourceAttributes.CLOUD_PROVIDER]: 'gcp',
-    [ResourceAttributes.HOST_ID]: 'host_id',
-    [ResourceAttributes.CLOUD_AVAILABILITY_ZONE]: 'my-zone',
+    [SemanticResourceAttributes.CLOUD_PROVIDER]: 'gcp',
+    [SemanticResourceAttributes.HOST_ID]: 'host_id',
+    [SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE]: 'my-zone',
   };
   const mockGCMonitoredResource = {
     type: 'gce_instance',

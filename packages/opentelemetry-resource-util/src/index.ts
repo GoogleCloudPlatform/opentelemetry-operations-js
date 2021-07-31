@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {Resource} from '@opentelemetry/resources';
-import {ResourceAttributes} from '@opentelemetry/semantic-conventions';
+import {SemanticResourceAttributes} from '@opentelemetry/semantic-conventions';
 
 type Labels = {[key: string]: string};
 export interface MonitoredResource {
@@ -26,13 +26,13 @@ const GCE_INSTANCE = 'gce_instance';
 const AWS_EC2_INSTANCE = 'aws_ec2_instance';
 
 const GCE_INSTANCE_LABEL_MAPPING: LabelMapping = {
-  instance_id: ResourceAttributes.HOST_ID,
-  zone: ResourceAttributes.CLOUD_AVAILABILITY_ZONE,
+  instance_id: SemanticResourceAttributes.HOST_ID,
+  zone: SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
 };
 const AWS_EC2_INSTANCE_LABEL_MAPPING: LabelMapping = {
-  instance_id: ResourceAttributes.HOST_ID,
-  region: ResourceAttributes.CLOUD_REGION,
-  aws_account: ResourceAttributes.CLOUD_ACCOUNT_ID,
+  instance_id: SemanticResourceAttributes.HOST_ID,
+  region: SemanticResourceAttributes.CLOUD_REGION,
+  aws_account: SemanticResourceAttributes.CLOUD_ACCOUNT_ID,
 };
 
 /**
@@ -46,7 +46,8 @@ export function mapOtelResourceToMonitoredResource(
   resource: Resource,
   projectId: string
 ): MonitoredResource {
-  const cloudProvider = resource.attributes[ResourceAttributes.CLOUD_PROVIDER];
+  const cloudProvider =
+    resource.attributes[SemanticResourceAttributes.CLOUD_PROVIDER];
   const commonLabels = {project_id: projectId};
   let monitoredResource: MonitoredResource | undefined;
   if (cloudProvider === 'gcp') {
