@@ -1,17 +1,8 @@
 {
-  "extends": [
-    "config:base",
-    ":pinOnlyDevDependencies"
-  ],
-  "packageRules": [
-    {
-      "groupName": "all non-major dependencies",
-      "updateTypes": ["patch", "minor"],
-      "groupSlug": "all-minor-patch"
-    }
-  ],
-  "schedule": [
-    "before 3am on Friday"
-  ],
+  "extends": ["config:js-lib", "group:allNonMajor"],
+  "dependencyDashboard": true,
+  "lockFileMaintenance": {
+    "enabled": true
+  },
   "labels": ["dependencies"]
 }
