@@ -61,7 +61,7 @@
     "@google-cloud/opentelemetry-resource-util": "^0.11.0",
     "@opentelemetry/semantic-conventions": "^0.24.0",
     "google-auth-library": "^7.0.0",
-    "googleapis": "^83.0.0"
+    "googleapis": "^84.0.0"
   },
   "peerDependencies": {
     "@opentelemetry/api": "^1.0.0",
