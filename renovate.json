@@ -4,5 +4,11 @@
   "lockFileMaintenance": {
     "enabled": true
   },
-  "labels": ["dependencies"]
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["typescript"],
+      "groupName": "typescript"
+    }
+  ]
 }
