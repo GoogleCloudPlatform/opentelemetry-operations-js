@@ -60,12 +60,12 @@ export function transformMetricDescriptor(
 
 /** Transforms Metric type. */
 function transformMetricType(metricPrefix: string, name: string): string {
-  return path.join(metricPrefix, name);
+  return path.posix.join(metricPrefix, name);
 }
 
 /** Transforms Metric display name. */
 function transformDisplayName(displayNamePrefix: string, name: string): string {
-  return path.join(displayNamePrefix, name);
+  return path.posix.join(displayNamePrefix, name);
 }
 
 /** Transforms a OpenTelemetry Type to a StackDriver MetricKind. */
