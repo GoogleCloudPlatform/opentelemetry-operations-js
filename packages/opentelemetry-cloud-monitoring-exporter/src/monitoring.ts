@@ -145,7 +145,7 @@ export class MetricExporter implements IMetricExporter {
     )) {
       try {
         await this._sendTimeSeries(batchedTimeSeries);
-      } catch (err) {
+      } catch (err: any) {
         err.message = `Send TimeSeries failed: ${err.message}`;
         failure = {sendFailed: true, error: err};
         diag.error(err.message);
@@ -222,7 +222,7 @@ export class MetricExporter implements IMetricExporter {
           }
         );
       });
-    } catch (err) {
+    } catch (err: any) {
       diag.error(`MetricExporter: Failed to write data: ${err.message}`);
     }
   }
