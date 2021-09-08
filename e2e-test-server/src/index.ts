@@ -71,7 +71,7 @@ async function pubSubPull(): Promise<void> {
         headers: message.attributes,
         testId,
       });
-    } catch (e) {
+    } catch (e: any) {
       logger.error(
         'caught error from handler for scenario %s: %s',
         scenario,

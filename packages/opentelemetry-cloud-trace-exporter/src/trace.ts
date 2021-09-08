@@ -91,7 +91,7 @@ export class TraceExporter implements SpanExporter {
     diag.debug('Google Cloud Trace batch writing traces');
     try {
       this._traceServiceClient = await this._getClient();
-    } catch (error) {
+    } catch (error: any) {
       error.message = `failed to create client: ${error.message}`;
       diag.error(error.message);
       return {code: ExportResultCode.FAILED, error};
@@ -106,7 +106,7 @@ export class TraceExporter implements SpanExporter {
       await batchWriteSpans(spans, metadata);
       diag.debug('batchWriteSpans successfully');
       return {code: ExportResultCode.SUCCESS};
-    } catch (error) {
+    } catch (error: any) {
       error.message = `batchWriteSpans error: ${error.message}`;
       diag.error(error.message);
       return {code: ExportResultCode.FAILED, error};
