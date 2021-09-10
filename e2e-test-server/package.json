@@ -28,7 +28,7 @@
   "devDependencies": {
     "@types/node": "14.17.15",
     "gts": "3.1.0",
-    "typescript": "4.4.2"
+    "typescript": "4.4.3"
   },
   "dependencies": {
     "@google-cloud/opentelemetry-cloud-trace-exporter": "^0.11.0",
