@@ -16,7 +16,7 @@ import * as types from '@opentelemetry/api';
 import {diag, TraceFlags} from '@opentelemetry/api';
 import {ExportResult, ExportResultCode} from '@opentelemetry/core';
 import {Resource} from '@opentelemetry/resources';
-import {ReadableSpan} from '@opentelemetry/tracing';
+import {ReadableSpan} from '@opentelemetry/sdk-trace-base';
 import * as assert from 'assert';
 import * as sinon from 'sinon';
 import * as protoloader from '@grpc/proto-loader';

@@ -19,7 +19,7 @@ import * as nock from 'nock';
 import * as sinon from 'sinon';
 import {MetricExporter} from '../src';
 import {ExportResult, ExportResultCode} from '@opentelemetry/core';
-import {MeterProvider} from '@opentelemetry/metrics';
+import {MeterProvider} from '@opentelemetry/sdk-metrics-base';
 import {Labels} from '@opentelemetry/api-metrics';
 
 import type {monitoring_v3} from 'googleapis';

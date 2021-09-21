@@ -25,7 +25,7 @@ import {
   Point as OTPoint,
   MeterProvider,
   Histogram,
-} from '@opentelemetry/metrics';
+} from '@opentelemetry/sdk-metrics-base';
 import {SemanticResourceAttributes} from '@opentelemetry/semantic-conventions';
 import {ValueType as OTValueType, Labels} from '@opentelemetry/api-metrics';
 import {MetricKind, ValueType, MetricDescriptor} from '../src/types';

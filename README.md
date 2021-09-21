@@ -23,8 +23,8 @@ Add the exporter to your existing OpenTelemetry tracer provider (`NodeTracerProv
 
 ```js
 const { TraceExporter } = require('@google-cloud/opentelemetry-cloud-trace-exporter');
-const { NodeTracerProvider } = require('@opentelemetry/node');
-const { BatchSpanProcessor } = require('@opentelemetry/tracing');
+const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
+const { BatchSpanProcessor } = require('@opentelemetry/sdk-trace-base');
 
 
 // Enable OpenTelemetry exporters to export traces to Google Cloud Trace.

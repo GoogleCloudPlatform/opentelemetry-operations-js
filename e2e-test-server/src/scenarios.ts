@@ -17,7 +17,7 @@ import {
   Tracer,
   BasicTracerProvider,
   BatchSpanProcessor,
-} from '@opentelemetry/tracing';
+} from '@opentelemetry/sdk-trace-base';
 import {AlwaysOnSampler} from '@opentelemetry/core';
 import {Resource} from '@opentelemetry/resources';
 import {TraceExporter} from '@google-cloud/opentelemetry-cloud-trace-exporter';

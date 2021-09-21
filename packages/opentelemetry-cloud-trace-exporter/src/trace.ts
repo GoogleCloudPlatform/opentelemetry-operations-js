@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {ExportResult, ExportResultCode} from '@opentelemetry/core';
-import {ReadableSpan, SpanExporter} from '@opentelemetry/tracing';
+import {ReadableSpan, SpanExporter} from '@opentelemetry/sdk-trace-base';
 import {diag} from '@opentelemetry/api';
 import * as protoloader from '@grpc/proto-loader';
 import * as protofiles from 'google-proto-files';
