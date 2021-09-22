@@ -18,25 +18,20 @@ import {ExportResult, ExportResultCode} from '@opentelemetry/core';
 import {Resource} from '@opentelemetry/resources';
 import {ReadableSpan} from '@opentelemetry/tracing';
 import * as assert from 'assert';
-import * as nock from 'nock';
 import * as sinon from 'sinon';
 import * as protoloader from '@grpc/proto-loader';
 import * as grpc from '@grpc/grpc-js';
+import * as googleAuthLibrary from 'google-auth-library';
 import {GoogleAuth, OAuth2Client} from 'google-auth-library';
 import {TraceExporter} from '../src';
 import {TraceService} from '../src/types';
-import {BASE_PATH, HEADER_NAME, HEADER_VALUE, HOST_ADDRESS} from 'gcp-metadata';
-
-const HEADERS: {} = {
-  [HEADER_NAME.toLowerCase()]: HEADER_VALUE,
-};
-
-const PROJECT_ID_PATH: string = BASE_PATH + '/project/project-id';
 
 describe('Google Cloud Trace Exporter', () => {
   beforeEach(() => {
-    process.env.GCLOUD_PROJECT = 'not-real';
-    nock.disableNetConnect();
+    sinon.replace(process, 'env', {GCLOUD_PROJECT: 'not-real'});
+  });
+  afterEach(() => {
+    sinon.restore();
   });
   describe('constructor', () => {
     it('should construct an exporter', async () => {
@@ -47,27 +42,30 @@ describe('Google Cloud Trace Exporter', () => {
         },
       });
 
-      assert(exporter);
-      return (exporter['_projectId'] as Promise<string>).then(id => {
-        assert.deepStrictEqual(id, 'not-real');
-      });
+      assert.ok(exporter);
+      const id = (await exporter['_projectId']) as string;
+      assert.strictEqual(id, 'not-real');
     });
 
     it('should construct exporter in GCE/GCP environment without args', async () => {
-      // This variable is set by the test env and must be undefined to force
-      // a metadata server request.
       delete process.env.GCLOUD_PROJECT;
-      const gcpMock = nock(HOST_ADDRESS)
-        .get(PROJECT_ID_PATH)
-        .reply(200, () => 'not-real', HEADERS);
+      const getProjectIdFake = sinon.fake.resolves('fake-project-id');
+      class FakeGoogleAuth {
+        getProjectId = getProjectIdFake;
+      }
+      sinon.replaceGetter(
+        googleAuthLibrary,
+        'GoogleAuth',
+        // @ts-expect-error sinon fake
+        () => FakeGoogleAuth
+      );
       const exporter = new TraceExporter();
 
-      assert(exporter);
-      return (exporter['_projectId'] as Promise<string>).then(id => {
-        assert.deepStrictEqual(id, 'not-real');
-        gcpMock.done();
-      });
-    }).timeout(10000);
+      assert.ok(exporter);
+      const id = (await exporter['_projectId']) as string;
+      assert.ok(getProjectIdFake.calledOnce);
+      assert.deepStrictEqual(id, 'fake-project-id');
+    });
   });
 
   describe('export', () => {
@@ -166,10 +164,7 @@ describe('Google Cloud Trace Exporter', () => {
       sinon.replace(diag, 'error', error);
     });
 
-    afterEach(() => {
-      nock.restore();
-      sinon.restore();
-    });
+    afterEach(() => {});
 
     it('should export spans', async () => {
       const readableSpan: ReadableSpan = {
