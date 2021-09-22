@@ -145,7 +145,8 @@ export class MetricExporter implements IMetricExporter {
     )) {
       try {
         await this._sendTimeSeries(batchedTimeSeries);
-      } catch (err: any) {
+      } catch (e) {
+        const err = asError(e);
         err.message = `Send TimeSeries failed: ${err.message}`;
         failure = {sendFailed: true, error: err};
         diag.error(err.message);
@@ -222,8 +223,9 @@ export class MetricExporter implements IMetricExporter {
           }
         );
       });
-    } catch (err: any) {
-      diag.error(`MetricExporter: Failed to write data: ${err.message}`);
+    } catch (e) {
+      const err = asError(e);
+      diag.error('MetricExporter: Failed to write data: %s', err.message);
     }
   }
 
@@ -257,4 +259,11 @@ export class MetricExporter implements IMetricExporter {
   private async _authorize(): Promise<JWT> {
     return (await this._auth.getClient()) as JWT;
   }
+}
+
+function asError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error;
+  }
+  return new Error(String(error));
 }
