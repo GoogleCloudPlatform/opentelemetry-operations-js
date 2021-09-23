@@ -64,7 +64,7 @@ describe('Google Cloud Trace Exporter', () => {
       assert.ok(exporter);
       const id = (await exporter['_projectId']) as string;
       assert.ok(getProjectIdFake.calledOnce);
-      assert.deepStrictEqual(id, 'fake-project-id');
+      assert.strictEqual(id, 'fake-project-id');
     });
   });
 
