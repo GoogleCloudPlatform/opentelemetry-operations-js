@@ -71,7 +71,7 @@ async function pubSubPull(): Promise<void> {
         headers: message.attributes,
         testId,
       });
-    } catch (e: any) {
+    } catch (e) {
       logger.error(
         'caught error from handler for scenario %s: %s',
         scenario,
@@ -79,7 +79,7 @@ async function pubSubPull(): Promise<void> {
       );
       res = {
         statusCode: Status.INTERNAL,
-        data: Buffer.from(e?.stack ?? String(e)),
+        data: Buffer.from((e as Error | undefined)?.stack ?? String(e)),
       };
     } finally {
       if (res! === undefined) {

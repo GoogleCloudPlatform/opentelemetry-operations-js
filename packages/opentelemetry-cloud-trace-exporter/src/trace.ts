@@ -91,7 +91,8 @@ export class TraceExporter implements SpanExporter {
     diag.debug('Google Cloud Trace batch writing traces');
     try {
       this._traceServiceClient = await this._getClient();
-    } catch (error: any) {
+    } catch (e) {
+      const error = asError(e);
       error.message = `failed to create client: ${error.message}`;
       diag.error(error.message);
       return {code: ExportResultCode.FAILED, error};
@@ -106,7 +107,8 @@ export class TraceExporter implements SpanExporter {
       await batchWriteSpans(spans, metadata);
       diag.debug('batchWriteSpans successfully');
       return {code: ExportResultCode.SUCCESS};
-    } catch (error: any) {
+    } catch (e) {
+      const error = asError(e);
       error.message = `batchWriteSpans error: ${error.message}`;
       diag.error(error.message);
       return {code: ExportResultCode.FAILED, error};
@@ -145,4 +147,11 @@ export class TraceExporter implements SpanExporter {
       grpc.credentials.combineChannelCredentials(sslCreds, callCreds)
     );
   }
+}
+
+function asError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error;
+  }
+  return new Error(String(error));
 }
