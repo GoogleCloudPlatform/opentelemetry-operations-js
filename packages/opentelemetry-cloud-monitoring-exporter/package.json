@@ -39,10 +39,10 @@
   },
   "devDependencies": {
     "@opentelemetry/api": "1.0.3",
-    "@opentelemetry/api-metrics": "0.24.0",
-    "@opentelemetry/core": "0.24.0",
-    "@opentelemetry/metrics": "0.24.0",
-    "@opentelemetry/resources": "0.24.0",
+    "@opentelemetry/api-metrics": "0.25.0",
+    "@opentelemetry/core": "0.25.0",
+    "@opentelemetry/sdk-metrics-base": "0.25.0",
+    "@opentelemetry/resources": "0.25.0",
     "@types/mocha": "9.0.0",
     "@types/nock": "11.1.0",
     "@types/node": "14.17.17",
@@ -59,14 +59,14 @@
   },
   "dependencies": {
     "@google-cloud/opentelemetry-resource-util": "^0.11.0",
-    "@opentelemetry/semantic-conventions": "^0.24.0",
+    "@opentelemetry/semantic-conventions": "^0.25.0",
     "google-auth-library": "^7.0.0",
     "googleapis": "^87.0.0"
   },
   "peerDependencies": {
     "@opentelemetry/api": "^1.0.0",
-    "@opentelemetry/core": "^0.24.0",
-    "@opentelemetry/metrics": "^0.24.0",
-    "@opentelemetry/resources": "^0.24.0"
+    "@opentelemetry/core": "^0.25.0",
+    "@opentelemetry/sdk-metrics-base": "^0.25.0",
+    "@opentelemetry/resources": "^0.25.0"
   }
 }

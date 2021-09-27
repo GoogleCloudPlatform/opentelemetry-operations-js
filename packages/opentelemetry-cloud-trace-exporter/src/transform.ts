@@ -15,7 +15,7 @@
 import * as ot from '@opentelemetry/api';
 import {VERSION as CORE_VERSION} from '@opentelemetry/core';
 import {Resource} from '@opentelemetry/resources';
-import {ReadableSpan} from '@opentelemetry/tracing';
+import {ReadableSpan} from '@opentelemetry/sdk-trace-base';
 import {
   AttributeMap,
   Attributes,

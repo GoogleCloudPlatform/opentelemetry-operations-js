@@ -14,13 +14,15 @@
 //
 
 // [START opentelemetry_trace_samples]
-'use strict';
+"use strict";
 
 // [START opentelemetry_trace_import]
-const opentelemetry = require('@opentelemetry/api');
-const {NodeTracerProvider} = require('@opentelemetry/node');
-const {SimpleSpanProcessor} = require('@opentelemetry/tracing');
-const { TraceExporter } = require('@google-cloud/opentelemetry-cloud-trace-exporter');
+const opentelemetry = require("@opentelemetry/api");
+const { NodeTracerProvider } = require("@opentelemetry/sdk-trace-node");
+const { SimpleSpanProcessor } = require("@opentelemetry/sdk-trace-base");
+const {
+  TraceExporter,
+} = require("@google-cloud/opentelemetry-cloud-trace-exporter");
 // [END opentelemetry_trace_import]
 
 // [START setup_exporter]
@@ -44,24 +46,24 @@ provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
 // Initialize the OpenTelemetry APIs to use the
 // NodeTracerProvider bindings
 opentelemetry.trace.setGlobalTracerProvider(provider);
-const tracer = opentelemetry.trace.getTracer('basic');
+const tracer = opentelemetry.trace.getTracer("basic");
 
 // Create a span.
-const span = tracer.startSpan('foo');
+const span = tracer.startSpan("foo");
 
 // Set attributes to the span.
-span.setAttribute('key', 'value');
+span.setAttribute("key", "value");
 
 // Annotate our span to capture metadata about our operation
-span.addEvent('invoking work');
+span.addEvent("invoking work");
 
 // simulate some random work.
-for (let i = 0; i <= Math.floor(Math.random() * 40000000); i += 1) { }
+for (let i = 0; i <= Math.floor(Math.random() * 40000000); i += 1) {}
 
 // Be sure to end the span.
 span.end();
 // [END opentelemetry_trace_custom_span]
 
-console.log('Done recording traces.');
+console.log("Done recording traces.");
 
 // [END opentelemetry_trace_samples]

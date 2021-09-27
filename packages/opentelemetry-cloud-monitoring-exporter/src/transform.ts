@@ -19,7 +19,7 @@ import {
   Histogram as OTHistogram,
   Point as OTPoint,
   PointValueType,
-} from '@opentelemetry/metrics';
+} from '@opentelemetry/sdk-metrics-base';
 import {ValueType as OTValueType} from '@opentelemetry/api-metrics';
 import {mapOtelResourceToMonitoredResource} from '@google-cloud/opentelemetry-resource-util';
 import {

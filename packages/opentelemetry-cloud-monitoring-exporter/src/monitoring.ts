@@ -16,7 +16,7 @@ import {
   MetricExporter as IMetricExporter,
   MetricRecord,
   MetricDescriptor as OTMetricDescriptor,
-} from '@opentelemetry/metrics';
+} from '@opentelemetry/sdk-metrics-base';
 import {ExportResult, ExportResultCode, VERSION} from '@opentelemetry/core';
 import {ExporterOptions} from './external-types';
 import {GoogleAuth, JWT} from 'google-auth-library';

@@ -9,14 +9,14 @@ OpenTelemetry Google Cloud Monitoring Exporter allows the user to send collected
 ## Installation
 
 ```bash
-npm install --save @opentelemetry/metrics
+npm install --save @opentelemetry/sdk-metrics-base
 npm install --save @google-cloud/opentelemetry-cloud-monitoring-exporter
 ```
 
 ## Usage
 
 ```js
-const { MeterProvider }  = require('@opentelemetry/metrics');
+const { MeterProvider }  = require('@opentelemetry/sdk-metrics-base');
 const { MetricExporter } = require('@google-cloud/opentelemetry-cloud-monitoring-exporter');
 
 const exporter = new MetricExporter();

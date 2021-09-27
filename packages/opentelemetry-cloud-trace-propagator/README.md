@@ -22,7 +22,7 @@ Format:
 ## Usage
 
 ```javascript
-const { NodeTracerProvider } = require('@opentelemetry/node');
+const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
 const { CloudPropagator } = require('@google-cloud/opentelemetry-cloud-trace-propagator');
 
 const provider = new NodeTracerProvider();
