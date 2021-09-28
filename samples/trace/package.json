@@ -1,6 +1,6 @@
 {
   "name": "nodejs-example-google-cloud-trace",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "private": true,
   "license": "Apache-2.0",
   "author": "Google Inc.",
@@ -12,9 +12,9 @@
   },
   "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
   "dependencies": {
-    "@google-cloud/opentelemetry-cloud-trace-exporter": "^0.11.0",
+    "@google-cloud/opentelemetry-cloud-trace-exporter": "^0.12.0",
     "@opentelemetry/api": "^1.0.0",
-    "@opentelemetry/sdk-trace-node": "^0.25.0",
-    "@opentelemetry/sdk-trace-base": "^0.25.0"
+    "@opentelemetry/sdk-trace-base": "^0.25.0",
+    "@opentelemetry/sdk-trace-node": "^0.25.0"
   }
 }
