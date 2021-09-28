@@ -74,8 +74,7 @@ describe('transform', () => {
       links: {link: []},
       endTime: {seconds: 1566156731, nanos: 709},
       startTime: {seconds: 1566156729, nanos: 709},
-      name:
-        'projects/project-id/traces/d4cda95b652f4a1592b449d5929fda1b/spans/6e0c63257de34c92',
+      name: 'projects/project-id/traces/d4cda95b652f4a1592b449d5929fda1b/spans/6e0c63257de34c92',
       spanId: '6e0c63257de34c92',
       spanKind: SpanKind.CLIENT,
       status: {code: Code.OK},

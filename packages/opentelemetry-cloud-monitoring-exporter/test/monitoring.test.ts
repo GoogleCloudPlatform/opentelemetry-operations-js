@@ -281,8 +281,8 @@ describe('MetricExporter', () => {
       });
 
       assert(timeSeries.calledOnce);
-      const calledWithSeries1 = timeSeries.firstCall.args[0].requestBody!
-        .timeSeries!;
+      const calledWithSeries1 =
+        timeSeries.firstCall.args[0].requestBody!.timeSeries!;
       assert.strictEqual(calledWithSeries1.length, 1);
       assert.strictEqual(calledWithSeries1[0].points!.length, 1);
       const interval1 = calledWithSeries1[0].points![0].interval!;
@@ -301,8 +301,8 @@ describe('MetricExporter', () => {
       });
 
       assert(timeSeries.calledTwice);
-      const calledWithSeries2 = timeSeries.secondCall.args[0].requestBody!
-        .timeSeries!;
+      const calledWithSeries2 =
+        timeSeries.secondCall.args[0].requestBody!.timeSeries!;
       assert.strictEqual(calledWithSeries2.length, 1);
       assert.strictEqual(calledWithSeries2[0].points!.length, 1);
       const interval2 = calledWithSeries2[0].points![0].interval!;

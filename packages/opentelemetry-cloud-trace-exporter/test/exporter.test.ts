@@ -151,7 +151,8 @@ describe('Google Cloud Trace Exporter', () => {
           };
           // Replace the TraceService with a mock TraceService
           def.google.devtools.cloudtrace.v2.TraceService = class MockTraceService
-            implements TraceService {
+            implements TraceService
+          {
             BatchWriteSpans = batchWrite;
             constructor(host: string, creds: grpc.ChannelCredentials) {
               traceServiceConstructor(host, creds);

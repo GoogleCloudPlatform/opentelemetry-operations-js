@@ -53,10 +53,8 @@ export class MetricExporter implements IMetricExporter {
   static readonly CUSTOM_OPENTELEMETRY_DOMAIN: string =
     'custom.googleapis.com/opentelemetry';
 
-  private registeredMetricDescriptors: Map<
-    string,
-    OTMetricDescriptor
-  > = new Map();
+  private registeredMetricDescriptors: Map<string, OTMetricDescriptor> =
+    new Map();
 
   private static readonly _monitoring = google.monitoring('v3');
 
