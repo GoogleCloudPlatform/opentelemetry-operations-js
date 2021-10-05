@@ -39,13 +39,13 @@
   },
   "devDependencies": {
     "@opentelemetry/api": "1.0.3",
-    "@opentelemetry/api-metrics": "0.25.0",
+    "@opentelemetry/api-metrics": "0.26.0",
     "@opentelemetry/core": "1.0.0",
     "@opentelemetry/resources": "1.0.0",
-    "@opentelemetry/sdk-metrics-base": "0.25.0",
+    "@opentelemetry/sdk-metrics-base": "0.26.0",
     "@types/mocha": "8.2.3",
     "@types/nock": "11.1.0",
-    "@types/node": "14.17.20",
+    "@types/node": "14.17.21",
     "@types/sinon": "10.0.4",
     "codecov": "3.8.3",
     "gts": "3.1.0",
@@ -67,6 +67,6 @@
     "@opentelemetry/api": "^1.0.0",
     "@opentelemetry/core": "^1.0.0",
     "@opentelemetry/resources": "^1.0.0",
-    "@opentelemetry/sdk-metrics-base": "^0.25.0"
+    "@opentelemetry/sdk-metrics-base": "^0.25.0 || ^0.26.0"
   }
 }
