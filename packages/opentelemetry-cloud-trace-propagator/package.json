@@ -1,6 +1,6 @@
 {
   "name": "@google-cloud/opentelemetry-cloud-trace-propagator",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "OpenTelemetry propagation package for Google Cloud Trace format",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
