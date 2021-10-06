@@ -26,6 +26,7 @@ RUN chown node:node $SRC
 USER node
 # copy local dependencies
 COPY --chown=node:node packages/ packages/
+COPY --chown=node:node scripts/ scripts/
 COPY --chown=node:node lerna.json package.json package-lock.json ./
 # copy package.json
 COPY --chown=node:node e2e-test-server/package.json e2e-test-server/package-lock.json e2e-test-server/

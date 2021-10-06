@@ -1,8 +1,5 @@
 {
-  "packages": [
-    "packages/*",
-    "samples/*",
-    "e2e-test-server"
-  ],
-  "version": "0.12.0"
+  "packages": ["packages/*", "samples/*", "e2e-test-server"],
+  "ignoreChanges": ["**/test/**", "**/*.md", "**/package-lock.json"],
+  "version": "independent"
 }
