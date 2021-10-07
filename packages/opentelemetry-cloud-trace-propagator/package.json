@@ -9,6 +9,7 @@
     "lint": "gts lint",
     "codecov": "nyc report --reporter=json && codecov -f coverage/*.json -p ../../",
     "clean": "gts clean",
+    "precompile": "node ../../scripts/version-update.js",
     "compile": "tsc",
     "prepare": "npm run compile",
     "test": "nyc ts-mocha -p tsconfig.json 'test/**/*.test.ts'",
