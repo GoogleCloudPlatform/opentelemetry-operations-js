@@ -1,5 +1,10 @@
 {
   "packages": ["packages/*", "samples/*", "e2e-test-server"],
   "ignoreChanges": ["**/test/**", "**/*.md", "**/package-lock.json"],
-  "version": "independent"
+  "version": "independent",
+  "command": {
+    "publish": {
+      "registry": "https://wombat-dressing-room.appspot.com"
+    }
+  }
 }

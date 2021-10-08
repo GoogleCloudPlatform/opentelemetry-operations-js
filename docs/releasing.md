@@ -96,14 +96,24 @@ a token:
 npm login --registry https://wombat-dressing-room.appspot.com
 ```
 
-Now use lerna to publish the packages. This command will upload each package to
-npm and create and create git release tags for each package on the current
-commit. **Need to verify this after actually doing a release with it. I'm not
-100% if this will create tags**.
+Now use lerna to publish the packages. This command will build and upload each package to
+npm.
 
 ```bash
 lerna publish from-package
 ```
+
+## Create tags for each package
+
+To make the monorepo easier to navigate, we create an individual tag for each
+released package version. To create the tags, run:
+
+```bash
+npm run create-release-tags
+```
+
+This script will also output a command to push the tags to origin, which you
+should run when you're confident everything is correct.
 
 ## Publish the GitHub Release
 

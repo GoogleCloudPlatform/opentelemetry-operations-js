@@ -11,7 +11,8 @@
     "test": "lerna run test",
     "bootstrap": "lerna bootstrap",
     "lint": "lerna run lint",
-    "fix": "lerna run fix"
+    "fix": "lerna run fix",
+    "create-release-tags": "node scripts/create-release-tags.js"
   },
   "repository": "https://github.com/GoogleCloudPlatform/opentelemetry-operations-js",
   "keywords": [
