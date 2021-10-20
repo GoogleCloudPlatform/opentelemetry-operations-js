@@ -14,7 +14,7 @@
 
 # Build relative to root of repository i.e. `docker build --file Dockerfile --tag=$tag ..`
 
-FROM node:16-alpine as node-base
+FROM node:17-alpine as node-base
 ENV SRC="/src"
 RUN npm install -g npm@^7
 USER node
