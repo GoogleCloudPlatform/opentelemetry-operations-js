@@ -73,10 +73,13 @@ function transformMetricKind(kind: OTMetricKind): MetricKind {
   switch (kind) {
     case OTMetricKind.COUNTER:
     case OTMetricKind.SUM_OBSERVER:
+    case OTMetricKind.OBSERVABLE_COUNTER:
       return MetricKind.CUMULATIVE;
     case OTMetricKind.UP_DOWN_COUNTER:
     case OTMetricKind.VALUE_OBSERVER:
     case OTMetricKind.UP_DOWN_SUM_OBSERVER:
+    case OTMetricKind.OBSERVABLE_UP_DOWN_COUNTER:
+    case OTMetricKind.OBSERVABLE_GAUGE:
       return MetricKind.GAUGE;
     default:
       // TODO: Add support for OTMetricKind.ValueRecorder
