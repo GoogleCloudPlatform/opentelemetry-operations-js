@@ -33,8 +33,10 @@ export class TraceExporter implements SpanExporter {
   private _projectId: string | void | Promise<string | void>;
   private readonly _auth: GoogleAuth;
   private _traceServiceClient?: TraceService = undefined;
+  private _resourceFilter?: RegExp = undefined;
 
   constructor(options: TraceExporterOptions = {}) {
+    this._resourceFilter = options.resourceFilter;
     this._auth = new GoogleAuth({
       credentials: options.credentials,
       keyFile: options.keyFile,
@@ -73,7 +75,9 @@ export class TraceExporter implements SpanExporter {
 
     const namedSpans: NamedSpans = {
       name: `projects/${this._projectId}`,
-      spans: spans.map(getReadableSpanTransformer(this._projectId)),
+      spans: spans.map(
+        getReadableSpanTransformer(this._projectId, this._resourceFilter)
+      ),
     };
 
     const result = await this._batchWriteSpans(namedSpans);
