@@ -72,12 +72,9 @@ function transformDisplayName(displayNamePrefix: string, name: string): string {
 function transformMetricKind(kind: OTMetricKind): MetricKind {
   switch (kind) {
     case OTMetricKind.COUNTER:
-    case OTMetricKind.SUM_OBSERVER:
     case OTMetricKind.OBSERVABLE_COUNTER:
       return MetricKind.CUMULATIVE;
     case OTMetricKind.UP_DOWN_COUNTER:
-    case OTMetricKind.VALUE_OBSERVER:
-    case OTMetricKind.UP_DOWN_SUM_OBSERVER:
     case OTMetricKind.OBSERVABLE_UP_DOWN_COUNTER:
     case OTMetricKind.OBSERVABLE_GAUGE:
       return MetricKind.GAUGE;
@@ -127,8 +124,8 @@ function transformMetric(
   const type = transformMetricType(metricPrefix, metric.descriptor.name);
   const labels: {[key: string]: string} = {};
 
-  Object.keys(metric.labels).forEach(
-    key => (labels[key] = `${metric.labels[key]}`)
+  Object.keys(metric.attributes).forEach(
+    key => (labels[key] = `${metric.attributes[key]}`)
   );
   labels[OPENTELEMETRY_TASK] = OPENTELEMETRY_TASK_VALUE_DEFAULT;
   return {type, labels};
@@ -147,7 +144,7 @@ function transformPoint(
   // and https://github.com/open-telemetry/opentelemetry-js/issues/488
   switch (metricDescriptor.metricKind) {
     case OTMetricKind.COUNTER:
-    case OTMetricKind.SUM_OBSERVER:
+    case OTMetricKind.OBSERVABLE_COUNTER:
       return {
         value: transformValue(metricDescriptor.valueType, point.value),
         interval: {
