@@ -350,7 +350,7 @@ describe('transform', () => {
     });
   });
 
-  it('should transform matching resource attributes labels', () => {
+  it('should transform resource attributes matching resourceFilter', () => {
     const transformer = getReadableSpanTransformer('project-id', /^custom\./);
 
     const result = transformer({

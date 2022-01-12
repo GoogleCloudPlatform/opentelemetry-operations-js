@@ -41,7 +41,7 @@ You can use built-in `SimpleSpanProcessor` or `BatchSpanProcessor` or write your
 
 ## Resource attributes
 
-By default, OpenTelemetry resource attributes are ignored. If you wish to export attributes you set on your resource, you must specify a regexp that should match the attributes you'd like.
+By default, OpenTelemetry resource attributes which do not map to a monitored resource are ignored. If you wish to export other resource attributes, you must specify a regexp that should match the attribute keys you'd like.
 
 For example, if you are setting up a resource with the "service" semantic attributes:
 ```typescript
