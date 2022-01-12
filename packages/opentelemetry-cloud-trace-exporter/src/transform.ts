@@ -36,7 +36,8 @@ const AGENT_LABEL_KEY = 'g.co/agent';
 const AGENT_LABEL_VALUE = `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`;
 
 export function getReadableSpanTransformer(
-  projectId: string
+  projectId: string,
+  resourceFilter?: RegExp | undefined
 ): (span: ReadableSpan) => Span {
   return span => {
     // @todo get dropped attribute count from sdk ReadableSpan
@@ -46,7 +47,7 @@ export function getReadableSpanTransformer(
         [AGENT_LABEL_KEY]: AGENT_LABEL_VALUE,
       }),
       // Add in special g.co/r resource labels
-      transformResourceToAttributes(span.resource, projectId)
+      transformResourceToAttributes(span.resource, projectId, resourceFilter)
     );
 
     const out: Span = {
@@ -173,13 +174,22 @@ function mergeAttributes(...attributeList: Attributes[]): Attributes {
 
 function transformResourceToAttributes(
   resource: Resource,
-  projectId: string
+  projectId: string,
+  resourceFilter?: RegExp
 ): Attributes {
   const monitoredResource = mapOtelResourceToMonitoredResource(
     resource,
     projectId
   );
   const attributes: ot.SpanAttributes = {};
+
+  if (resourceFilter) {
+    Object.keys(resource.attributes)
+      .filter(key => resourceFilter.test(key))
+      .forEach(key => {
+        attributes[key] = resource.attributes[key];
+      });
+  }
 
   // global is the "default" so just skip
   if (monitoredResource.type !== 'global') {

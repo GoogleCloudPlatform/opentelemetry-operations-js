@@ -17,7 +17,7 @@ npm install --save @google-cloud/opentelemetry-cloud-trace-exporter
 ```
 
 ## Usage
-Install the exporter on your application, register the exporter, and start tracing. If you are running in a GCP environment, the exporter will automatically authenticate using the environment's service account. If not, you will need to follow the instructions in  [Authentication](#Authentication).
+Install the exporter on your application, register the exporter, and start tracing. If you are running in a GCP environment, the exporter will automatically authenticate using the environment's service account. If not, you will need to follow the instructions in [Authentication](#Authentication).
 
 ```js
 const { TraceExporter } = require('@google-cloud/opentelemetry-cloud-trace-exporter');
@@ -38,6 +38,33 @@ You can use built-in `SimpleSpanProcessor` or `BatchSpanProcessor` or write your
 
 - [SimpleSpanProcessor](https://github.com/open-telemetry/opentelemetry-specification/blob/v1.4.0/specification/trace/sdk.md#simple-processor): The implementation of `SpanProcessor` that passes ended span directly to the configured `SpanExporter`.
 - [BatchSpanProcessor](https://github.com/open-telemetry/opentelemetry-specification/blob/v1.4.0/specification/trace/sdk.md#batching-processor): The implementation of the `SpanProcessor` that batches ended spans and pushes them to the configured `SpanExporter`. It is recommended to use this `SpanProcessor` for better performance and optimization.
+
+## Resource attributes
+
+By default, OpenTelemetry resource attributes which do not map to a monitored resource are ignored. If you wish to export other resource attributes, you must specify a regexp that should match the attribute keys you'd like.
+
+For example, if you are setting up a resource with the "service" semantic attributes:
+```typescript
+const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
+
+const provider = new NodeTracerProvider({
+  // ...
+  resource: new Resource({
+    [SemanticResourceAttributes.SERVICE_NAME]: 'things-service',
+    [SemanticResourceAttributes.SERVICE_NAMESPACE]: 'things',
+    [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
+    [SemanticResourceAttributes.SERVICE_INSTANCE_ID]: 'abc123',
+  }),
+})
+```
+
+You can ensure they are exported by using a regexp that matches them:
+```typescript
+const exporter = new TraceExporter({
+  // will export all resource attributes that start with "service."
+  resourceFilter: /^service\./
+});
+```
 
 ## Authentication
 

@@ -350,6 +350,42 @@ describe('transform', () => {
     });
   });
 
+  it('should transform resource attributes matching resourceFilter', () => {
+    const transformer = getReadableSpanTransformer('project-id', /^custom\./);
+
+    const result = transformer({
+      ...readableSpan,
+      resource: new Resource({
+        'custom.foo': 'bar',
+        'custom.bool': true,
+        'custom.number': 5,
+        'not.custom.thing': 'not-custom',
+        'custom-without-a-dot': 'ignored',
+      }),
+    });
+    assert.deepStrictEqual(result.attributes, {
+      attributeMap: {
+        'custom.foo': {
+          stringValue: {
+            value: 'bar',
+          },
+        },
+        'custom.bool': {
+          boolValue: true,
+        },
+        'custom.number': {
+          intValue: '5',
+        },
+        'g.co/agent': {
+          stringValue: {
+            value: `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`,
+          },
+        },
+      },
+      droppedAttributesCount: 0,
+    });
+  });
+
   it('should transform span kinds', () => {
     assert.strictEqual(
       transformer({

@@ -35,6 +35,12 @@ export interface TraceExporterOptions {
    * Object containing client_email and private_key properties
    */
   credentials?: Credentials;
+  /**
+   * A RegExp used to determine which resource attributes are exported,
+   * attributes that match will be included as span labels.
+   * If not specified, most resource attributes are ignored.
+   */
+  resourceFilter?: RegExp;
 }
 
 export interface Credentials {
