@@ -184,10 +184,11 @@ function transformResourceToAttributes(
   const attributes: ot.SpanAttributes = {};
 
   if (resourceFilter) {
-    const filteredResourceAttributes: [string, ot.SpanAttributeValue][] =
-      Object.keys(resource.attributes)
-        .filter(key => resourceFilter.test(key))
-        .forEach(key => { attributes[key] = resource.attributes[key]; });
+    Object.keys(resource.attributes)
+      .filter(key => resourceFilter.test(key))
+      .forEach(key => {
+        attributes[key] = resource.attributes[key];
+      });
   }
 
   // global is the "default" so just skip
