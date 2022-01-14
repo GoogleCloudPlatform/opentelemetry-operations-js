@@ -20,7 +20,7 @@ import * as sinon from 'sinon';
 import {MetricExporter} from '../src';
 import {ExportResult, ExportResultCode} from '@opentelemetry/core';
 import {MeterProvider} from '@opentelemetry/sdk-metrics-base';
-import {Labels} from '@opentelemetry/api-metrics';
+import {Attributes} from '@opentelemetry/api-metrics';
 
 import type {monitoring_v3} from 'googleapis';
 
@@ -161,7 +161,7 @@ describe('MetricExporter', () => {
 
     it('should not raise an UnhandledPromiseRejectionEvent if projectId rejects', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
+      const labels: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter('name');
       counter.add(10, labels);
       await meter.collect();
@@ -184,7 +184,7 @@ describe('MetricExporter', () => {
 
     it('should export metrics', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
+      const labels: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter('name');
       counter.add(10, labels);
       await meter.collect();
@@ -208,7 +208,7 @@ describe('MetricExporter', () => {
 
     it('should return FAILED if there is an error sending TimeSeries', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
+      const labels: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter('name');
       counter.add(10, labels);
       await meter.collect();
@@ -231,12 +231,12 @@ describe('MetricExporter', () => {
     it('should enforce batch size limit on metrics', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
 
-      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
+      const attributes: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
       let nMetrics = 401;
       while (nMetrics > 0) {
         nMetrics -= 1;
         const counter = meter.createCounter(`name${nMetrics.toString()}`);
-        counter.bind(labels).add(10);
+        counter.add(10, attributes);
       }
       await meter.collect();
       const records = meter.getProcessor().checkPointSet();
@@ -268,7 +268,7 @@ describe('MetricExporter', () => {
 
     it('should use the same startTime for cumulative metrics each export', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
+      const labels: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter('name');
       counter.add(10, labels);
       await meter.collect();
