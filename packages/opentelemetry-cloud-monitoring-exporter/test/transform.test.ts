@@ -27,7 +27,7 @@ import {
   Histogram,
 } from '@opentelemetry/sdk-metrics-base';
 import {SemanticResourceAttributes} from '@opentelemetry/semantic-conventions';
-import {ValueType as OTValueType, Labels} from '@opentelemetry/api-metrics';
+import {ValueType as OTValueType, Attributes} from '@opentelemetry/api-metrics';
 import {MetricKind, ValueType, MetricDescriptor} from '../src/types';
 import {Resource} from '@opentelemetry/resources';
 
@@ -48,7 +48,7 @@ describe('transform', () => {
       name: METRIC_NAME,
       description: METRIC_DESCRIPTION,
       unit: DEFAULT_UNIT,
-      metricKind: OTMetricKind.UP_DOWN_SUM_OBSERVER,
+      metricKind: OTMetricKind.OBSERVABLE_UP_DOWN_COUNTER,
       valueType: OTValueType.DOUBLE,
     };
 
@@ -58,7 +58,7 @@ describe('transform', () => {
         MetricKind.CUMULATIVE
       );
       assert.strictEqual(
-        TEST_ONLY.transformMetricKind(OTMetricKind.SUM_OBSERVER),
+        TEST_ONLY.transformMetricKind(OTMetricKind.OBSERVABLE_COUNTER),
         MetricKind.CUMULATIVE
       );
       assert.strictEqual(
@@ -66,15 +66,15 @@ describe('transform', () => {
         MetricKind.GAUGE
       );
       assert.strictEqual(
-        TEST_ONLY.transformMetricKind(OTMetricKind.VALUE_OBSERVER),
+        TEST_ONLY.transformMetricKind(OTMetricKind.OBSERVABLE_GAUGE),
         MetricKind.GAUGE
       );
       assert.strictEqual(
-        TEST_ONLY.transformMetricKind(OTMetricKind.UP_DOWN_SUM_OBSERVER),
+        TEST_ONLY.transformMetricKind(OTMetricKind.OBSERVABLE_UP_DOWN_COUNTER),
         MetricKind.GAUGE
       );
       assert.strictEqual(
-        TEST_ONLY.transformMetricKind(OTMetricKind.VALUE_RECORDER),
+        TEST_ONLY.transformMetricKind(OTMetricKind.HISTOGRAM),
         MetricKind.UNSPECIFIED
       );
     });
@@ -180,12 +180,12 @@ describe('transform', () => {
 
     it('should return a Google Cloud Monitoring Metric with a default resource', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
+      const attributes: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
 
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
       });
-      counter.bind(labels).add(10);
+      counter.add(10, attributes);
       await meter.collect();
       const [record] = meter.getProcessor().checkPointSet();
       const ts = createTimeSeries(
@@ -214,11 +214,11 @@ describe('transform', () => {
       const meter = new MeterProvider({
         resource: new Resource(mockAwsResource),
       }).getMeter('test-meter');
-      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
+      const attributes: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
       });
-      counter.bind(labels).add(10);
+      counter.add(10, attributes);
       await meter.collect();
       const [record] = meter.getProcessor().checkPointSet();
       const ts = createTimeSeries(
@@ -233,11 +233,11 @@ describe('transform', () => {
       const meter = new MeterProvider({
         resource: new Resource(mockGCResource),
       }).getMeter('test-meter');
-      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
+      const attributes: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
       });
-      counter.bind(labels).add(10);
+      counter.add(10, attributes);
       await meter.collect();
       const [record] = meter.getProcessor().checkPointSet();
       const ts = createTimeSeries(
@@ -258,11 +258,11 @@ describe('transform', () => {
       const meter = new MeterProvider({
         resource: new Resource(incompleteResource),
       }).getMeter('test-meter');
-      const labels: Labels = {['keya']: 'value1', ['keyb']: 'value2'};
+      const attributes: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
       const counter = meter.createCounter(METRIC_NAME, {
         description: METRIC_DESCRIPTION,
       });
-      counter.bind(labels).add(10);
+      counter.add(10, attributes);
       await meter.collect();
       const [record] = meter.getProcessor().checkPointSet();
       const ts = createTimeSeries(
@@ -279,8 +279,8 @@ describe('transform', () => {
 
     it('should return a Google Cloud Monitoring Metric for an observer', async () => {
       const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Labels = {keya: 'value1', keyb: 'value2'};
-      meter.createSumObserver(
+      const labels: Attributes = {keya: 'value1', keyb: 'value2'};
+      meter.createObservableCounter(
         METRIC_NAME,
         {
           description: METRIC_DESCRIPTION,
@@ -325,7 +325,7 @@ describe('transform', () => {
         name: METRIC_NAME,
         description: METRIC_DESCRIPTION,
         unit: DEFAULT_UNIT,
-        metricKind: OTMetricKind.SUM_OBSERVER,
+        metricKind: OTMetricKind.OBSERVABLE_COUNTER,
         valueType: OTValueType.INT,
       };
       const point: OTPoint<number> = {
