@@ -1,6 +1,6 @@
 {
   "name": "@google-cloud/opentelemetry-resource-util",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Resource util used by other @google-cloud/opentelemetry* packages",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
