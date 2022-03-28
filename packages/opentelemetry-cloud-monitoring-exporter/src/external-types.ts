@@ -39,12 +39,12 @@ export interface ExporterOptions {
    * Display name for metric overrides the OpenTelemetry prefix
    * of a stackdriver metric. Optional
    */
-  dipslayNamePrefix?: string;
+  displayNamePrefix?: string;
   /**
    * Custom OpenTelemetry domain override default
-   * custom.googleapis.com/OpenTelemetry. Optional 
+   * custom.googleapis.com/OpenTelemetry. Optional
    */
-   customOTDomain?: string;
+  customOTDomain?: string;
 }
 
 export interface Credentials {
