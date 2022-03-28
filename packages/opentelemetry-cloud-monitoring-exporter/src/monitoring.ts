@@ -60,9 +60,9 @@ export class MetricExporter implements IMetricExporter {
 
   constructor(options: ExporterOptions = {}) {
     this._metricPrefix =
-      options.prefix || MetricExporter.CUSTOM_OPENTELEMETRY_DOMAIN;
+      options.customOTDomain || MetricExporter.CUSTOM_OPENTELEMETRY_DOMAIN;
     this._displayNamePrefix =
-      options.prefix || MetricExporter.DEFAULT_DISPLAY_NAME_PREFIX;
+      options.displayNamePrefix || MetricExporter.DEFAULT_DISPLAY_NAME_PREFIX;
 
     this._auth = new GoogleAuth({
       credentials: options.credentials,
