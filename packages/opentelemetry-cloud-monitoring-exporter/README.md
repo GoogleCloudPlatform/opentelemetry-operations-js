@@ -31,14 +31,16 @@ const meter = new MeterProvider({
 const counter = meter.createCounter('metric_name');
 counter.add(10, { [key]: 'value' });
 ```
-## Setting Custom Display Name
+## Setting Custom Display Name - Prefix
 
 ```js
 const exporter = new MetricExporter({
-  customDisplayName: 'myApplication',
+  prefix: 'myApplication',
 }
 ```
-When viewing the metric you should be able to filter on the customDisplayName value (e.g.; myApplication). 
+When viewing the metric you should be able to filter on the prefix value (e.g.; myApplication). 
+
+In addition to setting a custom prefix you can specify a custom OpenTelemetry Domain using the customOTDomain option. The default value is custom.googleapis.com/opentelemetry.
 
 ##  Viewing your metrics:
 
