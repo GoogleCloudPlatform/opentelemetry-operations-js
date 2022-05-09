@@ -41,6 +41,11 @@ export interface TraceExporterOptions {
    * If not specified, most resource attributes are ignored.
    */
   resourceFilter?: RegExp;
+  /**
+   * The endpoint of the cloud trace service. Defaults to
+   * cloudtrace.googleapis.com.
+   */
+  apiEndpoint?: string;
 }
 
 export interface Credentials {

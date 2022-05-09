@@ -40,6 +40,7 @@ describe('Google Cloud Trace Exporter', () => {
           client_email: 'noreply@fake.example.com',
           private_key: 'this is a key',
         },
+        apiEndpoint: 'othercloudtrace.googleapis.com:443',
       });
 
       assert.ok(exporter);

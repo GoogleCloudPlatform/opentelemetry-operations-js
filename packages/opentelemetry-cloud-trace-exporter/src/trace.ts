@@ -34,6 +34,7 @@ export class TraceExporter implements SpanExporter {
   private readonly _auth: GoogleAuth;
   private _traceServiceClient?: TraceService = undefined;
   private _resourceFilter?: RegExp = undefined;
+  private _apiEndpoint = 'cloudtrace.googleapis.com:443';
 
   constructor(options: TraceExporterOptions = {}) {
     this._resourceFilter = options.resourceFilter;
@@ -50,6 +51,10 @@ export class TraceExporter implements SpanExporter {
     this._projectId = this._auth.getProjectId().catch(err => {
       diag.error(err);
     });
+
+    if (options.apiEndpoint) {
+      this._apiEndpoint = options.apiEndpoint;
+    }
   }
 
   /**
@@ -147,7 +152,7 @@ export class TraceExporter implements SpanExporter {
     const sslCreds = grpc.credentials.createSsl();
     const callCreds = grpc.credentials.createFromGoogleCredential(creds);
     return new traceService(
-      'cloudtrace.googleapis.com:443',
+      this._apiEndpoint,
       grpc.credentials.combineChannelCredentials(sslCreds, callCreds)
     );
   }
