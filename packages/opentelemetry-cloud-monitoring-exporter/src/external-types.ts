@@ -40,6 +40,11 @@ export interface ExporterOptions {
    * of a stackdriver metric. Optional
    */
   prefix?: string;
+  /**
+   * The api endpoint of the cloud monitoring service. Defaults to
+   * monitoring.googleapis.com:443.
+   */
+  apiEndpoint?: string;
 }
 
 export interface Credentials {

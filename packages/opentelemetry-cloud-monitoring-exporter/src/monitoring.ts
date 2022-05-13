@@ -20,7 +20,7 @@ import {
 import {ExportResult, ExportResultCode, VERSION} from '@opentelemetry/core';
 import {ExporterOptions} from './external-types';
 import {GoogleAuth, JWT} from 'google-auth-library';
-import {google} from 'googleapis';
+import {google, monitoring_v3} from 'googleapis';
 import {transformMetricDescriptor, createTimeSeries} from './transform';
 import {TimeSeries} from './types';
 import {partitionList} from './utils';
@@ -56,7 +56,7 @@ export class MetricExporter implements IMetricExporter {
   private registeredMetricDescriptors: Map<string, OTMetricDescriptor> =
     new Map();
 
-  private static readonly _monitoring = google.monitoring('v3');
+  private _monitoring: monitoring_v3.Monitoring;
 
   constructor(options: ExporterOptions = {}) {
     this._metricPrefix =
@@ -70,6 +70,12 @@ export class MetricExporter implements IMetricExporter {
       keyFilename: options.keyFilename,
       projectId: options.projectId,
       scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+    });
+
+    this._monitoring = google.monitoring({
+      version: 'v3',
+      rootUrl:
+        'https://' + (options.apiEndpoint || 'monitoring.googleapis.com:443'),
     });
 
     // Start this async process as early as possible. It will be
@@ -208,7 +214,7 @@ export class MetricExporter implements IMetricExporter {
     );
     try {
       return new Promise<void>((resolve, reject) => {
-        MetricExporter._monitoring.projects.metricDescriptors.create(
+        this._monitoring.projects.metricDescriptors.create(
           {
             name: `projects/${this._projectId}`,
             requestBody: descriptor,
@@ -234,7 +240,7 @@ export class MetricExporter implements IMetricExporter {
 
     return this._authorize().then(authClient => {
       return new Promise<void>((resolve, reject) => {
-        MetricExporter._monitoring.projects.timeSeries.create(
+        this._monitoring.projects.timeSeries.create(
           {
             name: `projects/${this._projectId}`,
             requestBody: {timeSeries},

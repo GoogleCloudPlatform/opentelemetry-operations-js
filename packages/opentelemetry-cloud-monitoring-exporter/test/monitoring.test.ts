@@ -90,7 +90,7 @@ describe('MetricExporter', () => {
       );
 
       sinon.replace(
-        MetricExporter['_monitoring'].projects.metricDescriptors,
+        exporter['_monitoring'].projects.metricDescriptors,
         'create',
         metricDescriptors as any
       );
@@ -109,7 +109,7 @@ describe('MetricExporter', () => {
       );
 
       sinon.replace(
-        MetricExporter['_monitoring'].projects.timeSeries,
+        exporter['_monitoring'].projects.timeSeries,
         'create',
         timeSeries as any
       );
