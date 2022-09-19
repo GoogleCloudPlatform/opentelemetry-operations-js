@@ -47,7 +47,10 @@ export function transformMetricDescriptor(
     description: metricDescriptor.description,
     displayName: transformDisplayName(displayNamePrefix, metricDescriptor.name),
     metricKind: transformMetricKind(metricDescriptor.metricKind),
-    valueType: transformValueType(metricDescriptor.valueType),
+    valueType: transformValueType(
+      metricDescriptor.valueType,
+      metricDescriptor.metricKind
+    ),
     unit: metricDescriptor.unit,
     labels: [
       {
@@ -73,20 +76,27 @@ function transformMetricKind(kind: OTMetricKind): MetricKind {
   switch (kind) {
     case OTMetricKind.COUNTER:
     case OTMetricKind.OBSERVABLE_COUNTER:
+    case OTMetricKind.HISTOGRAM:
       return MetricKind.CUMULATIVE;
     case OTMetricKind.UP_DOWN_COUNTER:
     case OTMetricKind.OBSERVABLE_GAUGE:
     case OTMetricKind.OBSERVABLE_UP_DOWN_COUNTER:
       return MetricKind.GAUGE;
     default:
-      // TODO: Add support for OTMetricKind.HISTOGRAM
       return MetricKind.UNSPECIFIED;
   }
 }
 
 /** Transforms a OpenTelemetry ValueType to a StackDriver ValueType. */
-function transformValueType(valueType: OTValueType): ValueType {
+function transformValueType(
+  valueType: OTValueType,
+  metricKind: OTMetricKind
+): ValueType {
+  // Stackdriver ValueType is not a 1 to 1 with OTel ValueType
   if (valueType === OTValueType.DOUBLE) {
+    if (metricKind === OTMetricKind.HISTOGRAM) {
+      return ValueType.DISTRIBUTION;
+    }
     return ValueType.DOUBLE;
   } else if (valueType === OTValueType.INT) {
     return ValueType.INT64;
@@ -109,7 +119,10 @@ export function createTimeSeries(
     metric: transformMetric(metric, metricPrefix),
     resource: mapOtelResourceToMonitoredResource(metric.resource, projectId),
     metricKind: transformMetricKind(metric.descriptor.metricKind),
-    valueType: transformValueType(metric.descriptor.valueType),
+    valueType: transformValueType(
+      metric.descriptor.valueType,
+      metric.descriptor.metricKind
+    ),
     points: [
       transformPoint(metric.aggregator.toPoint(), metric.descriptor, startTime),
     ],
@@ -144,6 +157,7 @@ function transformPoint(
   switch (metricDescriptor.metricKind) {
     case OTMetricKind.COUNTER:
     case OTMetricKind.OBSERVABLE_COUNTER:
+    case OTMetricKind.HISTOGRAM:
       return {
         value: transformValue(metricDescriptor.valueType, point.value),
         interval: {

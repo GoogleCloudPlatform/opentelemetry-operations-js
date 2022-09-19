@@ -75,22 +75,29 @@ describe('transform', () => {
       );
       assert.strictEqual(
         TEST_ONLY.transformMetricKind(OTMetricKind.HISTOGRAM),
-        MetricKind.UNSPECIFIED
+        MetricKind.CUMULATIVE
       );
     });
 
     it('should return a Google Cloud Monitoring ValueType', () => {
       assert.strictEqual(
-        TEST_ONLY.transformValueType(OTValueType.INT),
+        TEST_ONLY.transformValueType(OTValueType.INT, OTMetricKind.COUNTER),
         ValueType.INT64
       );
       assert.strictEqual(
-        TEST_ONLY.transformValueType(OTValueType.DOUBLE),
+        TEST_ONLY.transformValueType(OTValueType.DOUBLE, OTMetricKind.COUNTER),
         ValueType.DOUBLE
       );
       assert.strictEqual(
-        TEST_ONLY.transformValueType(2),
+        TEST_ONLY.transformValueType(2, OTMetricKind.COUNTER),
         ValueType.VALUE_TYPE_UNSPECIFIED
+      );
+      assert.strictEqual(
+        TEST_ONLY.transformValueType(
+          OTValueType.DOUBLE,
+          OTMetricKind.HISTOGRAM
+        ),
+        ValueType.DISTRIBUTION
       );
     });
 

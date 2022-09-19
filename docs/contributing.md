@@ -45,3 +45,9 @@ This is a convenience command for a number of steps, which can run separately if
 
 - `npm run compile` compiles the code, checking for type errors.
 - `npm run bootstrap` Bootstrap the packages in the current Lerna repo. Installs all of their dependencies and links any cross-dependencies.
+
+## Node version support
+
+Node version 10.x and above is supported.
+
+This means some libraries, such as mocha/ts-mocha, must stay off their latest to continue support.

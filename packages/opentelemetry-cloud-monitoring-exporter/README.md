@@ -36,8 +36,6 @@ counter.add(10, { [key]: 'value' });
 
 With the above you should now be able to navigate to the Google Cloud Monitoring UI at: <https://console.cloud.google.com/monitoring>
 
-
-
 ## Useful links
 - For more information on OpenTelemetry, visit: <https://opentelemetry.io/>
 - For more about OpenTelemetry JavaScript: <https://github.com/open-telemetry/opentelemetry-js>
