@@ -15,7 +15,7 @@
       "groupName": "mocha"
     },
     {
-      "matchPackagePrefix": ["@opentelemetry/"],
+      "matchPackagePrefixes": ["@opentelemetry/"],
       "groupName": "opentelemetry upstream"
     }
   ]
