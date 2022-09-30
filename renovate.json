@@ -13,6 +13,10 @@
     {
       "matchPackageNames": ["mocha", "ts-mocha", "@types/mocha"],
       "groupName": "mocha"
+    },
+    {
+      "matchPackagePrefix": ["@opentelemetry/"],
+      "groupName": "opentelemetry upstream"
     }
   ]
 }
