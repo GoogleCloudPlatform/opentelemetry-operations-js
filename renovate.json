@@ -9,6 +9,10 @@
     {
       "matchPackageNames": ["typescript"],
       "groupName": "typescript"
+    },
+    {
+      "matchPackageNames": ["mocha", "ts-mocha", "@types/mocha"],
+      "groupName": "mocha"
     }
   ]
 }
