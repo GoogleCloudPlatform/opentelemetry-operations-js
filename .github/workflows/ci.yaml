@@ -10,7 +10,7 @@ jobs:
       matrix:
         node: [10, 12, 14, 16]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
@@ -24,7 +24,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 15
@@ -35,7 +35,7 @@ jobs:
   verify-package-lock-v2:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: |
           for f in $(git ls-files "**package-lock.json")
           do
