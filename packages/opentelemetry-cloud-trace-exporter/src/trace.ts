@@ -31,6 +31,7 @@ const OT_REQUEST_HEADER = 'x-opentelemetry-outgoing-request';
  */
 export class TraceExporter implements SpanExporter {
   private _projectId: string | void | Promise<string | void>;
+  private _stringifyArrayAttributes: boolean;
   private readonly _auth: GoogleAuth;
   private _traceServiceClient?: TraceService = undefined;
   private _resourceFilter?: RegExp = undefined;
@@ -38,6 +39,8 @@ export class TraceExporter implements SpanExporter {
 
   constructor(options: TraceExporterOptions = {}) {
     this._resourceFilter = options.resourceFilter;
+    this._stringifyArrayAttributes = options.stringifyArrayAttributes ?? false;
+
     this._auth = new GoogleAuth({
       credentials: options.credentials,
       keyFile: options.keyFile,
@@ -81,7 +84,11 @@ export class TraceExporter implements SpanExporter {
     const namedSpans: NamedSpans = {
       name: `projects/${this._projectId}`,
       spans: spans.map(
-        getReadableSpanTransformer(this._projectId, this._resourceFilter)
+        getReadableSpanTransformer(
+          this._projectId,
+          this._resourceFilter,
+          this._stringifyArrayAttributes
+        )
       ),
     };
 
