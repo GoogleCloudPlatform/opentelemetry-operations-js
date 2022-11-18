@@ -229,31 +229,13 @@ function transformResourceToAttributes(
   return spanAttributesToGCTAttributes(attributes, stringifyArrayAttributes);
 }
 
-function isAttributeValue(value: unknown): value is ot.AttributeValue {
-  switch (typeof value) {
-    case 'number':
-    case 'boolean':
-    case 'string':
-      return true;
-    default:
-      if (Array.isArray(value)) {
-        return value.every(
-          value =>
-            isAttributeValue(value) || value === null || value === undefined
-        );
-      }
-
-      return false;
-  }
-}
-
 function transformAttributeValues(
   attributes: ot.SpanAttributes,
   stringifyArrayAttributes?: boolean
 ): AttributeMap {
   const out: AttributeMap = {};
   for (const [key, value] of Object.entries(attributes)) {
-    if (!isAttributeValue(value)) {
+    if (value === undefined) {
       continue;
     }
     const attributeValue = valueToAttributeValue(
@@ -272,13 +254,7 @@ function stringToTruncatableString(value: string): TruncatableString {
 }
 
 function valueToAttributeValue(
-  value:
-    | string
-    | number
-    | boolean
-    | Array<string | null | undefined>
-    | Array<number | null | undefined>
-    | Array<boolean | null | undefined>,
+  value: ot.AttributeValue,
   stringifyArrayAttributes?: boolean
 ): AttributeValue | undefined {
   switch (typeof value) {
