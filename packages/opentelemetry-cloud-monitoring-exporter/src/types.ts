@@ -35,11 +35,16 @@ export interface MetricDescriptor
  * monitored resource and a fully-specified metric.
  */
 export interface TimeSeries extends monitoring_v3.Schema$TimeSeries {
-  metric: {type: string; labels: {[key: string]: string}};
+  metric: Metric;
   resource: MonitoredResource;
   metricKind: MetricKind;
   valueType: ValueType;
   points: Point[];
+}
+
+export interface Metric {
+  type: string;
+  labels: {[key: string]: string};
 }
 
 /**

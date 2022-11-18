@@ -19,8 +19,8 @@ import * as nock from 'nock';
 import * as sinon from 'sinon';
 import {MetricExporter} from '../src';
 import {ExportResult, ExportResultCode} from '@opentelemetry/core';
-import {MeterProvider} from '@opentelemetry/sdk-metrics-base';
-import {Attributes} from '@opentelemetry/api-metrics';
+import {emptyResourceMetrics, generateMetricsData} from './util';
+import {Attributes} from '@opentelemetry/api';
 
 import type {monitoring_v3} from 'googleapis';
 
@@ -28,6 +28,11 @@ describe('MetricExporter', () => {
   beforeEach(() => {
     process.env.GCLOUD_PROJECT = 'not-real';
     nock.disableNetConnect();
+  });
+
+  afterEach(() => {
+    nock.restore();
+    sinon.restore();
   });
 
   describe('constructor', () => {
@@ -122,17 +127,12 @@ describe('MetricExporter', () => {
       });
     });
 
-    afterEach(() => {
-      nock.restore();
-      sinon.restore();
-    });
-
     it('should return FAILED if project id missing', async () => {
       await exporter['_projectId'];
       exporter['_projectId'] = undefined;
 
       const result = await new Promise<ExportResult>(resolve => {
-        exporter.export([], result => {
+        exporter.export(emptyResourceMetrics(), result => {
           resolve(result);
         });
       });
@@ -147,7 +147,7 @@ describe('MetricExporter', () => {
       });
 
       const result = await new Promise<ExportResult>(resolve => {
-        exporter.export([], result => {
+        exporter.export(emptyResourceMetrics(), result => {
           resolve(result);
         });
       });
@@ -160,13 +160,7 @@ describe('MetricExporter', () => {
     });
 
     it('should not raise an UnhandledPromiseRejectionEvent if projectId rejects', async () => {
-      const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
-      const counter = meter.createCounter('name');
-      counter.add(10, labels);
-      await meter.collect();
-      const records = meter.getProcessor().checkPointSet();
-
+      const resourceMetrics = await generateMetricsData();
       await exporter['_projectId'];
       exporter['_projectId'] = Promise.reject({
         message: 'Failed to resolve projectId',
@@ -177,24 +171,24 @@ describe('MetricExporter', () => {
         unhandledPromiseRejectionEvent = true;
       });
 
-      await exporter.export(records, () => {});
+      await new Promise<ExportResult>(resolve => {
+        exporter.export(resourceMetrics, result => {
+          resolve(result);
+        });
+      });
 
       assert.strictEqual(unhandledPromiseRejectionEvent, false);
     });
 
     it('should export metrics', async () => {
-      const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
-      const counter = meter.createCounter('name');
-      counter.add(10, labels);
-      await meter.collect();
-      const records = meter.getProcessor().checkPointSet();
-
+      const resourceMetrics = await generateMetricsData();
+      console.log(resourceMetrics);
       const result = await new Promise<ExportResult>(resolve => {
-        exporter.export(records, result => {
+        exporter.export(resourceMetrics, result => {
           resolve(result);
         });
       });
+      assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
       assert.deepStrictEqual(
         metricDescriptors.getCall(0).args[0].requestBody!.type,
         'custom.googleapis.com/opentelemetry/name'
@@ -202,23 +196,18 @@ describe('MetricExporter', () => {
 
       assert.strictEqual(metricDescriptors.callCount, 1);
       assert.strictEqual(timeSeries.callCount, 1);
-
-      assert.strictEqual(result.code, ExportResultCode.SUCCESS);
     });
 
     it('should return FAILED if there is an error sending TimeSeries', async () => {
-      const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
-      const counter = meter.createCounter('name');
-      counter.add(10, labels);
-      await meter.collect();
-      const records = meter.getProcessor().checkPointSet();
+      const resourceMetrics = await generateMetricsData();
+
       createTimeSeriesShouldFail = true;
       const result = await new Promise<ExportResult>(resolve => {
-        exporter.export(records, result => {
+        exporter.export(resourceMetrics, result => {
           resolve(result);
         });
       });
+
       assert.deepStrictEqual(
         metricDescriptors.getCall(0).args[0].requestBody!.type,
         'custom.googleapis.com/opentelemetry/name'
@@ -229,20 +218,18 @@ describe('MetricExporter', () => {
     });
 
     it('should enforce batch size limit on metrics', async () => {
-      const meter = new MeterProvider().getMeter('test-meter');
+      const resourceMetrics = await generateMetricsData((_, meter) => {
+        const attributes: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
 
-      const attributes: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
-      let nMetrics = 401;
-      while (nMetrics > 0) {
-        nMetrics -= 1;
-        const counter = meter.createCounter(`name${nMetrics.toString()}`);
-        counter.add(10, attributes);
-      }
-      await meter.collect();
-      const records = meter.getProcessor().checkPointSet();
-
+        let nMetrics = 401;
+        while (nMetrics > 0) {
+          nMetrics -= 1;
+          const counter = meter.createCounter(`name${nMetrics.toString()}`);
+          counter.add(10, attributes);
+        }
+      });
       const result = await new Promise<ExportResult>(resolve => {
-        exporter.export(records, result => {
+        exporter.export(resourceMetrics, result => {
           resolve(result);
         });
       });
@@ -264,53 +251,6 @@ describe('MetricExporter', () => {
       assert.strictEqual(timeSeries.callCount, 3);
 
       assert.strictEqual(result.code, ExportResultCode.SUCCESS);
-    });
-
-    it('should use the same startTime for cumulative metrics each export', async () => {
-      const meter = new MeterProvider().getMeter('test-meter');
-      const labels: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
-      const counter = meter.createCounter('name');
-      counter.add(10, labels);
-      await meter.collect();
-      const records1 = meter.getProcessor().checkPointSet();
-
-      await new Promise<ExportResult>(resolve => {
-        exporter.export(records1, result => {
-          resolve(result);
-        });
-      });
-
-      assert(timeSeries.calledOnce);
-      const calledWithSeries1 =
-        timeSeries.firstCall.args[0].requestBody!.timeSeries!;
-      assert.strictEqual(calledWithSeries1.length, 1);
-      assert.strictEqual(calledWithSeries1[0].points!.length, 1);
-      const interval1 = calledWithSeries1[0].points![0].interval!;
-      assert(interval1.startTime);
-      assert(interval1.endTime);
-
-      // Export a second time
-      counter.add(15, labels);
-      await meter.collect();
-      const records2 = meter.getProcessor().checkPointSet();
-
-      await new Promise<ExportResult>(resolve => {
-        exporter.export(records2, result => {
-          resolve(result);
-        });
-      });
-
-      assert(timeSeries.calledTwice);
-      const calledWithSeries2 =
-        timeSeries.secondCall.args[0].requestBody!.timeSeries!;
-      assert.strictEqual(calledWithSeries2.length, 1);
-      assert.strictEqual(calledWithSeries2[0].points!.length, 1);
-      const interval2 = calledWithSeries2[0].points![0].interval!;
-      assert(interval1.startTime);
-      assert(interval1.endTime);
-
-      assert.strictEqual(interval1.startTime, interval2.startTime);
-      assert(interval2.endTime);
     });
   });
 });

@@ -13,42 +13,47 @@
 // limitations under the License.
 
 import {
-  MetricDescriptor as OTMetricDescriptor,
-  MetricKind as OTMetricKind,
-  MetricRecord,
-  Histogram as OTHistogram,
-  Point as OTPoint,
-  PointValueType,
-} from '@opentelemetry/sdk-metrics-base';
-import {ValueType as OTValueType} from '@opentelemetry/api-metrics';
-import {mapOtelResourceToMonitoredResource} from '@google-cloud/opentelemetry-resource-util';
+  InstrumentDescriptor,
+  InstrumentType,
+  Histogram,
+  MetricData,
+  DataPoint,
+  DataPointType,
+} from '@opentelemetry/sdk-metrics';
+import {ValueType as OTValueType, diag} from '@opentelemetry/api';
+import {MonitoredResource} from '@google-cloud/opentelemetry-resource-util';
 import {
   MetricDescriptor,
   MetricKind,
-  ValueType,
-  TimeSeries,
   Point,
+  TimeSeries,
+  Metric,
+  ValueType,
 } from './types';
 import * as path from 'path';
 import * as os from 'os';
 import type {monitoring_v3} from 'googleapis';
+import {PreciseDate} from '@google-cloud/precise-date';
 
 const OPENTELEMETRY_TASK = 'opentelemetry_task';
 const OPENTELEMETRY_TASK_DESCRIPTION = 'OpenTelemetry task identifier';
 export const OPENTELEMETRY_TASK_VALUE_DEFAULT = generateDefaultTaskValue();
 
 export function transformMetricDescriptor(
-  metricDescriptor: OTMetricDescriptor,
+  instrumentDescriptor: InstrumentDescriptor,
   metricPrefix: string,
   displayNamePrefix: string
 ): MetricDescriptor {
   return {
-    type: transformMetricType(metricPrefix, metricDescriptor.name),
-    description: metricDescriptor.description,
-    displayName: transformDisplayName(displayNamePrefix, metricDescriptor.name),
-    metricKind: transformMetricKind(metricDescriptor.metricKind),
-    valueType: transformValueType(metricDescriptor.valueType),
-    unit: metricDescriptor.unit,
+    type: transformMetricType(metricPrefix, instrumentDescriptor.name),
+    description: instrumentDescriptor.description,
+    displayName: transformDisplayName(
+      displayNamePrefix,
+      instrumentDescriptor.name
+    ),
+    metricKind: transformMetricKind(instrumentDescriptor.type),
+    valueType: transformValueType(instrumentDescriptor.valueType),
+    unit: instrumentDescriptor.unit,
     labels: [
       {
         key: OPENTELEMETRY_TASK,
@@ -68,23 +73,23 @@ function transformDisplayName(displayNamePrefix: string, name: string): string {
   return path.posix.join(displayNamePrefix, name);
 }
 
-/** Transforms a OpenTelemetry Type to a StackDriver MetricKind. */
-function transformMetricKind(kind: OTMetricKind): MetricKind {
-  switch (kind) {
-    case OTMetricKind.COUNTER:
-    case OTMetricKind.OBSERVABLE_COUNTER:
+/** Transforms a OpenTelemetry instrument type to a GCM MetricKind. */
+function transformMetricKind(instrumentType: InstrumentType): MetricKind {
+  switch (instrumentType) {
+    case InstrumentType.COUNTER:
+    case InstrumentType.OBSERVABLE_COUNTER:
       return MetricKind.CUMULATIVE;
-    case OTMetricKind.UP_DOWN_COUNTER:
-    case OTMetricKind.OBSERVABLE_GAUGE:
-    case OTMetricKind.OBSERVABLE_UP_DOWN_COUNTER:
+    case InstrumentType.UP_DOWN_COUNTER:
+    case InstrumentType.OBSERVABLE_GAUGE:
+    case InstrumentType.OBSERVABLE_UP_DOWN_COUNTER:
       return MetricKind.GAUGE;
     default:
-      // TODO: Add support for OTMetricKind.HISTOGRAM
+      // TODO: Add support for InstrumentType.HISTOGRAM
       return MetricKind.UNSPECIFIED;
   }
 }
 
-/** Transforms a OpenTelemetry ValueType to a StackDriver ValueType. */
+/** Transforms a OpenTelemetry ValueType to a GCM ValueType. */
 function transformValueType(valueType: OTValueType): ValueType {
   if (valueType === OTValueType.DOUBLE) {
     return ValueType.DOUBLE;
@@ -97,100 +102,118 @@ function transformValueType(valueType: OTValueType): ValueType {
 
 /**
  * Converts metric's timeseries to a TimeSeries, so that metric can be
- * uploaded to StackDriver.
+ * uploaded to GCM.
  */
-export function createTimeSeries(
-  metric: MetricRecord,
-  metricPrefix: string,
-  startTime: string,
-  projectId: string
-): TimeSeries {
-  return {
-    metric: transformMetric(metric, metricPrefix),
-    resource: mapOtelResourceToMonitoredResource(metric.resource, projectId),
-    metricKind: transformMetricKind(metric.descriptor.metricKind),
-    valueType: transformValueType(metric.descriptor.valueType),
-    points: [
-      transformPoint(metric.aggregator.toPoint(), metric.descriptor, startTime),
-    ],
-  };
+export function createTimeSeries<TMetricData extends MetricData>(
+  metric: TMetricData,
+  resource: MonitoredResource,
+  metricPrefix: string
+): TimeSeries[] {
+  const metricKind = transformMetricKind(metric.descriptor.type);
+  const valueType = transformValueType(metric.descriptor.valueType);
+
+  return transformPoints(metric, metricPrefix).map(({point, metric}) => ({
+    metric,
+    resource,
+    metricKind,
+    valueType,
+    points: [point],
+  }));
 }
 
-function transformMetric(
-  metric: MetricRecord,
+function transformMetric<T>(
+  point: DataPoint<T>,
+  instrumentDescriptor: InstrumentDescriptor,
   metricPrefix: string
 ): {type: string; labels: {[key: string]: string}} {
-  const type = transformMetricType(metricPrefix, metric.descriptor.name);
+  const type = transformMetricType(metricPrefix, instrumentDescriptor.name);
   const labels: {[key: string]: string} = {};
 
-  Object.keys(metric.attributes).forEach(
-    key => (labels[key] = `${metric.attributes[key]}`)
+  Object.keys(point.attributes).forEach(
+    key => (labels[key] = `${point.attributes[key]}`)
   );
   labels[OPENTELEMETRY_TASK] = OPENTELEMETRY_TASK_VALUE_DEFAULT;
   return {type, labels};
 }
 
 /**
- * Transform timeseries's point, so that metric can be uploaded to StackDriver.
+ * Transform timeseries's point, so that metric can be uploaded to GCM.
  */
-function transformPoint(
-  point: OTPoint<PointValueType>,
-  metricDescriptor: OTMetricDescriptor,
-  startTime: string
-): Point {
-  // TODO: Add endTime and startTime support, once available in OpenTelemetry
-  // Related issues: https://github.com/open-telemetry/opentelemetry-js/pull/893
-  // and https://github.com/open-telemetry/opentelemetry-js/issues/488
-  switch (metricDescriptor.metricKind) {
-    case OTMetricKind.COUNTER:
-    case OTMetricKind.OBSERVABLE_COUNTER:
-      return {
-        value: transformValue(metricDescriptor.valueType, point.value),
-        interval: {
-          startTime,
-          endTime: new Date().toISOString(),
+function transformPoints(
+  metric: MetricData,
+  metricPrefix: string
+): {point: Point; metric: Metric}[] {
+  switch (metric.dataPointType) {
+    case DataPointType.SUM:
+    case DataPointType.GAUGE:
+      return metric.dataPoints.map(dataPoint => ({
+        metric: transformMetric(dataPoint, metric.descriptor, metricPrefix),
+        point: {
+          value: transformNumberValue(
+            metric.descriptor.valueType,
+            dataPoint.value
+          ),
+          interval: {
+            // Add start time for non-gauge points
+            ...(metric.dataPointType === DataPointType.SUM && metric.isMonotonic
+              ? {
+                  startTime: new PreciseDate(dataPoint.startTime).toISOString(),
+                }
+              : null),
+            endTime: new PreciseDate(dataPoint.endTime).toISOString(),
+          },
         },
-      };
+      }));
+    case DataPointType.HISTOGRAM:
+      return metric.dataPoints.map(dataPoint => ({
+        metric: transformMetric(dataPoint, metric.descriptor, metricPrefix),
+        point: {
+          value: transformHistogramValue(dataPoint.value),
+          interval: {
+            startTime: new PreciseDate(dataPoint.startTime).toISOString(),
+            endTime: new PreciseDate(dataPoint.endTime).toISOString(),
+          },
+        },
+      }));
     default:
-      return {
-        value: transformValue(metricDescriptor.valueType, point.value),
-        interval: {
-          endTime: new Date().toISOString(),
-        },
-      };
+      exhaust(metric);
+      diag.info(
+        'Encountered unexpected dataPointType=%s, dropping the point',
+        (metric as MetricData).dataPointType
+      );
+      break;
   }
+  return [];
 }
 
-/** Transforms a OpenTelemetry Point's value to a StackDriver Point value. */
-function transformValue(
+/** Transforms a OpenTelemetry Point's value to a GCM Point value. */
+function transformNumberValue(
   valueType: OTValueType,
-  value: PointValueType
+  value: number
 ): monitoring_v3.Schema$TypedValue {
-  if (isHistogramValue(value)) {
-    return {
-      distributionValue: {
-        // sumOfSquaredDeviation param not aggregated
-        count: value.count.toString(),
-        mean: value.sum / value.count,
-        bucketOptions: {
-          explicitBuckets: {bounds: value.buckets.boundaries},
-        },
-        bucketCounts: value.buckets.counts.map(count => count.toString()),
-      },
-    };
-  }
-
   if (valueType === OTValueType.INT) {
     return {int64Value: value.toString()};
   } else if (valueType === OTValueType.DOUBLE) {
     return {doubleValue: value};
   }
+  exhaust(valueType);
   throw Error(`unsupported value type: ${valueType}`);
 }
 
-/** Returns true if value is of type OTHistogram */
-function isHistogramValue(value: PointValueType): value is OTHistogram {
-  return Object.prototype.hasOwnProperty.call(value, 'buckets');
+function transformHistogramValue(
+  value: Histogram
+): monitoring_v3.Schema$TypedValue {
+  return {
+    distributionValue: {
+      // sumOfSquaredDeviation param not aggregated
+      count: value.count.toString(),
+      mean: value.count && value.sum ? value.sum / value.count : 0,
+      bucketOptions: {
+        explicitBuckets: {bounds: value.buckets.boundaries},
+      },
+      bucketCounts: value.buckets.counts.map(count => count.toString()),
+    },
+  };
 }
 
 /** Returns a task label value in the format of 'nodejs-<pid>@<hostname>'. */
@@ -200,12 +223,19 @@ function generateDefaultTaskValue(): string {
   return 'nodejs-' + pid + '@' + hostname;
 }
 
+/**
+ * Assert switch case is exhaustive
+ */
+function exhaust(switchValue: never) {
+  return switchValue;
+}
+
 export const TEST_ONLY = {
   transformMetricKind,
   transformValueType,
   transformDisplayName,
   transformMetricType,
   transformMetric,
-  transformPoint,
+  transformPoints,
   OPENTELEMETRY_TASK,
 };
