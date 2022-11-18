@@ -47,7 +47,7 @@ export interface TraceExporterOptions {
    */
   apiEndpoint?: string;
   /**
-   * If enabled, array type Span attributes are stringified before
+   * If enabled, array type Span attributes are JSON stringified before
    * exporting. Default: false, which means array attributes are simply
    * ignored and not exported
    */
