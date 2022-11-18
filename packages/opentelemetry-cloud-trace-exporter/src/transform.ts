@@ -37,24 +37,33 @@ const AGENT_LABEL_VALUE = `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-
 
 export function getReadableSpanTransformer(
   projectId: string,
-  resourceFilter?: RegExp | undefined
+  resourceFilter?: RegExp | undefined,
+  stringifyArrayAttributes?: boolean
 ): (span: ReadableSpan) => Span {
   return span => {
     // @todo get dropped attribute count from sdk ReadableSpan
     const attributes = mergeAttributes(
-      transformAttributes({
-        ...span.attributes,
-        [AGENT_LABEL_KEY]: AGENT_LABEL_VALUE,
-      }),
+      transformAttributes(
+        {
+          ...span.attributes,
+          [AGENT_LABEL_KEY]: AGENT_LABEL_VALUE,
+        },
+        stringifyArrayAttributes
+      ),
       // Add in special g.co/r resource labels
-      transformResourceToAttributes(span.resource, projectId, resourceFilter)
+      transformResourceToAttributes(
+        span.resource,
+        projectId,
+        resourceFilter,
+        stringifyArrayAttributes
+      )
     );
 
     const out: Span = {
       attributes,
       displayName: stringToTruncatableString(span.name),
       links: {
-        link: span.links.map(transformLink),
+        link: span.links.map(getLinkTransformer(stringifyArrayAttributes)),
       },
       endTime: transformTime(span.endTime),
       startTime: transformTime(span.startTime),
@@ -69,7 +78,10 @@ export function getReadableSpanTransformer(
         timeEvent: span.events.map(e => ({
           time: transformTime(e.time),
           annotation: {
-            attributes: transformAttributes(e.attributes ?? {}),
+            attributes: transformAttributes(
+              e.attributes ?? {},
+              stringifyArrayAttributes
+            ),
             description: stringToTruncatableString(e.name),
           },
         })),
@@ -134,24 +146,39 @@ function transformTime(time: ot.HrTime): Timestamp {
   };
 }
 
-function transformLink(link: ot.Link): Link {
-  return {
-    attributes: transformAttributes(link.attributes ?? {}),
+function getLinkTransformer(
+  stringifyArrayAttributes?: boolean
+): (link: ot.Link) => Link {
+  return link => ({
+    attributes: transformAttributes(
+      link.attributes ?? {},
+      stringifyArrayAttributes
+    ),
     spanId: link.context.spanId,
     traceId: link.context.traceId,
     type: LinkType.UNSPECIFIED,
-  };
+  });
 }
 
-function transformAttributes(attributes: ot.SpanAttributes): Attributes {
+function transformAttributes(
+  attributes: ot.SpanAttributes,
+  stringifyArrayAttributes?: boolean
+): Attributes {
   const changedAttributes = transformAttributeNames(attributes);
-  return spanAttributesToGCTAttributes(changedAttributes);
+  return spanAttributesToGCTAttributes(
+    changedAttributes,
+    stringifyArrayAttributes
+  );
 }
 
 function spanAttributesToGCTAttributes(
-  attributes: ot.SpanAttributes
+  attributes: ot.SpanAttributes,
+  stringifyArrayAttributes?: boolean
 ): Attributes {
-  const attributeMap = transformAttributeValues(attributes);
+  const attributeMap = transformAttributeValues(
+    attributes,
+    stringifyArrayAttributes
+  );
   return {
     attributeMap,
     droppedAttributesCount:
@@ -175,7 +202,8 @@ function mergeAttributes(...attributeList: Attributes[]): Attributes {
 function transformResourceToAttributes(
   resource: Resource,
   projectId: string,
-  resourceFilter?: RegExp
+  resourceFilter?: RegExp,
+  stringifyArrayAttributes?: boolean
 ): Attributes {
   const monitoredResource = mapOtelResourceToMonitoredResource(
     resource,
@@ -198,20 +226,24 @@ function transformResourceToAttributes(
       attributes[key] = monitoredResource.labels[labelKey];
     });
   }
-  return spanAttributesToGCTAttributes(attributes);
+  return spanAttributesToGCTAttributes(attributes, stringifyArrayAttributes);
 }
 
-function transformAttributeValues(attributes: ot.SpanAttributes): AttributeMap {
+function transformAttributeValues(
+  attributes: ot.SpanAttributes,
+  stringifyArrayAttributes?: boolean
+): AttributeMap {
   const out: AttributeMap = {};
   for (const [key, value] of Object.entries(attributes)) {
-    switch (typeof value) {
-      case 'number':
-      case 'boolean':
-      case 'string':
-        out[key] = valueToAttributeValue(value);
-        break;
-      default:
-        break;
+    if (value === undefined) {
+      continue;
+    }
+    const attributeValue = valueToAttributeValue(
+      value,
+      stringifyArrayAttributes
+    );
+    if (attributeValue !== undefined) {
+      out[key] = attributeValue;
     }
   }
   return out;
@@ -222,8 +254,9 @@ function stringToTruncatableString(value: string): TruncatableString {
 }
 
 function valueToAttributeValue(
-  value: string | number | boolean
-): AttributeValue {
+  value: ot.AttributeValue,
+  stringifyArrayAttributes?: boolean
+): AttributeValue | undefined {
   switch (typeof value) {
     case 'number':
       // TODO: Consider to change to doubleValue when available in V2 API.
@@ -233,7 +266,12 @@ function valueToAttributeValue(
     case 'string':
       return {stringValue: stringToTruncatableString(value)};
     default:
-      return {};
+      if (stringifyArrayAttributes) {
+        return {stringValue: stringToTruncatableString(JSON.stringify(value))};
+      }
+
+      // TODO: Handle array types without stringification once API level support is added
+      return undefined;
   }
 }
 

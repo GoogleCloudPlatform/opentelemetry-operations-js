@@ -46,6 +46,12 @@ export interface TraceExporterOptions {
    * cloudtrace.googleapis.com.
    */
   apiEndpoint?: string;
+  /**
+   * If enabled, array type Span attributes are JSON stringified before
+   * exporting. Default: false, which means array attributes are simply
+   * ignored and not exported
+   */
+  stringifyArrayAttributes?: boolean;
 }
 
 export interface Credentials {

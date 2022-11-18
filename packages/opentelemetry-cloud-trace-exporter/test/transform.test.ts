@@ -109,6 +109,9 @@ describe('transform', () => {
     readableSpan.attributes.testBool = true;
     readableSpan.attributes.testInt = 3;
     readableSpan.attributes.testString = 'str';
+    readableSpan.attributes.testBoolArray = [null, true, undefined];
+    readableSpan.attributes.testIntArray = [null, undefined, 3];
+    readableSpan.attributes.testStringArray = ['str', null, undefined];
 
     const result = transformer(readableSpan);
 
@@ -120,6 +123,50 @@ describe('transform', () => {
     });
     assert.deepStrictEqual(result.attributes!.attributeMap!.testString, {
       stringValue: {value: 'str'},
+    });
+    assert.deepStrictEqual(
+      result.attributes!.attributeMap!.testBoolArray,
+      undefined
+    );
+    assert.deepStrictEqual(
+      result.attributes!.attributeMap!.testIntArray,
+      undefined
+    );
+    assert.deepStrictEqual(
+      result.attributes!.attributeMap!.testStringArray,
+      undefined
+    );
+    assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 3);
+  });
+
+  it('should transform attributes while stringifying arrays', () => {
+    readableSpan.attributes.testBool = true;
+    readableSpan.attributes.testInt = 3;
+    readableSpan.attributes.testString = 'str';
+    readableSpan.attributes.testBoolArray = [null, true, undefined];
+    readableSpan.attributes.testIntArray = [null, undefined, 3];
+    readableSpan.attributes.testStringArray = ['str', null, undefined];
+
+    transformer = getReadableSpanTransformer('project-id', undefined, true);
+    const result = transformer(readableSpan);
+
+    assert.deepStrictEqual(result.attributes!.attributeMap!.testBool, {
+      boolValue: true,
+    });
+    assert.deepStrictEqual(result.attributes!.attributeMap!.testInt, {
+      intValue: '3',
+    });
+    assert.deepStrictEqual(result.attributes!.attributeMap!.testString, {
+      stringValue: {value: 'str'},
+    });
+    assert.deepStrictEqual(result.attributes!.attributeMap!.testBoolArray, {
+      stringValue: {value: '[null,true,null]'},
+    });
+    assert.deepStrictEqual(result.attributes!.attributeMap!.testIntArray, {
+      stringValue: {value: '[null,null,3]'},
+    });
+    assert.deepStrictEqual(result.attributes!.attributeMap!.testStringArray, {
+      stringValue: {value: '["str",null,null]'},
     });
     assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 0);
   });
