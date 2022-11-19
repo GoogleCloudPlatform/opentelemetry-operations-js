@@ -98,12 +98,10 @@ export class MetricExporter implements PushMetricExporter {
     metrics: ResourceMetrics,
     resultCallback: (result: ExportResult) => void
   ): void {
-    this._exportAsync(metrics)
-      .then(resultCallback)
-      .catch(err => {
-        diag.error(err.message);
-        resultCallback({code: ExportResultCode.FAILED, error: err});
-      });
+    this._exportAsync(metrics).then(resultCallback, err => {
+      diag.error(err.message);
+      resultCallback({code: ExportResultCode.FAILED, error: err});
+    });
   }
 
   async shutdown(): Promise<void> {}
