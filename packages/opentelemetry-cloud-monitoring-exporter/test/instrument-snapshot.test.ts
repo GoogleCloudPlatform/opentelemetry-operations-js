@@ -30,6 +30,7 @@ import {MetricExporter} from '../src';
 import {generateMetricsData} from './util';
 
 import type {monitoring_v3} from 'googleapis';
+import type {AsyncFunc, Func} from 'mocha';
 
 const LABELS: Attributes = {
   string: 'string',
@@ -119,20 +120,115 @@ describe('MetricExporter snapshot tests', () => {
     sinon.restore();
   });
 
-  it('counter', async () => {
-    const resourceMetrics = await generateMetricsData((_, meter) => {
-      meter
-        .createCounter('mycounter', {
-          description: 'counter description',
-          unit: '{myunit}',
-          valueType: ValueType.INT,
-        })
-        .add(1, LABELS);
+  [
+    {valueType: ValueType.INT, value: 10},
+    {valueType: ValueType.DOUBLE, value: 12.3},
+  ].forEach(({valueType, value}) => {
+    function itParams(title: string, f: Func | AsyncFunc) {
+      it(`${title} - ${ValueType[valueType]}`, f);
+    }
+
+    itParams('Counter', async () => {
+      const resourceMetrics = await generateMetricsData((_, meter) => {
+        meter
+          .createCounter('mycounter', {
+            description: 'counter description',
+            unit: '{myunit}',
+            valueType,
+          })
+          .add(value, LABELS);
+      });
+
+      const result = await callExporter(resourceMetrics);
+      assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+      gcmNock.snapshotCalls();
     });
 
-    const result = await callExporter(resourceMetrics);
-    assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
-    gcmNock.snapshotCalls();
+    itParams('UpDownCounter', async () => {
+      const resourceMetrics = await generateMetricsData((_, meter) => {
+        meter
+          .createUpDownCounter('myupdowncounter', {
+            description: 'updowncounter description',
+            unit: '{myunit}',
+            valueType,
+          })
+          .add(value, LABELS);
+      });
+
+      const result = await callExporter(resourceMetrics);
+      assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+      gcmNock.snapshotCalls();
+    });
+
+    itParams('Histogram', async () => {
+      const resourceMetrics = await generateMetricsData((_, meter) => {
+        meter
+          .createHistogram('myhistogram', {
+            description: 'histogram description',
+            unit: '{myunit}',
+            valueType,
+          })
+          .record(value, LABELS);
+      });
+
+      const result = await callExporter(resourceMetrics);
+      assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+      gcmNock.snapshotCalls();
+    });
+
+    itParams('ObservableCounter', async () => {
+      const resourceMetrics = await generateMetricsData((_, meter) => {
+        meter
+          .createObservableCounter('myobservablecounter', {
+            description: 'counter description',
+            unit: '{myunit}',
+            valueType,
+          })
+          .addCallback(observableResult => {
+            observableResult.observe(value, LABELS);
+          });
+      });
+
+      const result = await callExporter(resourceMetrics);
+      assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+      gcmNock.snapshotCalls();
+    });
+
+    itParams('ObservableUpDownCounter', async () => {
+      const resourceMetrics = await generateMetricsData((_, meter) => {
+        meter
+          .createObservableUpDownCounter('myobservableupdowncounter', {
+            description: 'instrument description',
+            unit: '{myunit}',
+            valueType,
+          })
+          .addCallback(observableResult => {
+            observableResult.observe(value, LABELS);
+          });
+      });
+
+      const result = await callExporter(resourceMetrics);
+      assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+      gcmNock.snapshotCalls();
+    });
+
+    itParams('ObservableGauge', async () => {
+      const resourceMetrics = await generateMetricsData((_, meter) => {
+        meter
+          .createObservableGauge('myobservablegauge', {
+            description: 'instrument description',
+            unit: '{myunit}',
+            valueType,
+          })
+          .addCallback(observableResult => {
+            observableResult.observe(value, LABELS);
+          });
+      });
+
+      const result = await callExporter(resourceMetrics);
+      assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+      gcmNock.snapshotCalls();
+    });
   });
 });
 
