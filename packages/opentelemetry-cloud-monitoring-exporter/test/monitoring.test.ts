@@ -182,7 +182,6 @@ describe('MetricExporter', () => {
 
     it('should export metrics', async () => {
       const resourceMetrics = await generateMetricsData();
-      console.log(resourceMetrics);
       const result = await new Promise<ExportResult>(resolve => {
         exporter.export(resourceMetrics, result => {
           resolve(result);

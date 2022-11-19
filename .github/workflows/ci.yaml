@@ -9,12 +9,23 @@ jobs:
     strategy:
       matrix:
         node: [10, 12, 14, 16]
+        include:
+          # use latest npm by default
+          - npm-version: latest
+          # overrides for node 10 and 12
+          - node: 10
+            npm-version: ^7
+          - node: 12
+            npm-version: ^8
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
       - run: node --version
+      # TODO: remove once node 14 is dropped
+      - name: Upgrade to latest npm to support lockfile v2
+        run: npm install -g npm@${{ matrix.npm-version }}
       - run: npm install --ignore-scripts
       - run: npx lerna bootstrap --no-ci
       - run: npm test
