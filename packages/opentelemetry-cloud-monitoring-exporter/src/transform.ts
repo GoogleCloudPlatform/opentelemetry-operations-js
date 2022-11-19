@@ -78,13 +78,15 @@ function transformMetricKind(instrumentType: InstrumentType): MetricKind {
   switch (instrumentType) {
     case InstrumentType.COUNTER:
     case InstrumentType.OBSERVABLE_COUNTER:
+    case InstrumentType.HISTOGRAM:
       return MetricKind.CUMULATIVE;
     case InstrumentType.UP_DOWN_COUNTER:
     case InstrumentType.OBSERVABLE_GAUGE:
     case InstrumentType.OBSERVABLE_UP_DOWN_COUNTER:
       return MetricKind.GAUGE;
     default:
-      // TODO: Add support for InstrumentType.HISTOGRAM
+      exhaust(instrumentType);
+      diag.info('Encountered unexpected instrumentType=%s', instrumentType);
       return MetricKind.UNSPECIFIED;
   }
 }
