@@ -1,0 +1,148 @@
+// Copyright 2022 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+/**
+ * Snapshot tests written using https://github.com/bahmutov/snap-shot-it. Snapshots are sorted
+ * based on the config option in package.json.
+ *
+ * To update snapshots, use `npm run update-snapshot-tests`
+ */
+
+import {Attributes, ValueType} from '@opentelemetry/api';
+import * as snapshot from 'snap-shot-it';
+import {ExportResult, ExportResultCode} from '@opentelemetry/core';
+import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
+import * as assert from 'assert';
+import * as nock from 'nock';
+import * as sinon from 'sinon';
+import {MetricExporter} from '../src';
+import {generateMetricsData} from './util';
+
+import type {monitoring_v3} from 'googleapis';
+
+const LABELS: Attributes = {
+  string: 'string',
+  int: 123,
+  float: 123.4,
+};
+
+const PROJECT_ID = 'otel-starter-project';
+
+type Body =
+  | monitoring_v3.Schema$CreateTimeSeriesRequest
+  | monitoring_v3.Schema$MetricDescriptor;
+
+class GcmNock {
+  calls: {
+    uri: string;
+    body: Body;
+    userAgent: string;
+  }[] = [];
+
+  constructor() {
+    const calls = this.calls;
+    const replyCallback = function (
+      this: nock.ReplyFnContext,
+      uri: string,
+      body: nock.Body
+    ): nock.ReplyBody {
+      const userAgent = this.req.headers['user-agent'];
+      calls.push({uri, body: body as Body, userAgent});
+      return {};
+    };
+
+    nock('https://oauth2.googleapis.com:443')
+      .persist()
+      .post('/token')
+      .reply(200, {});
+    nock('https://monitoring.googleapis.com')
+      .persist()
+      .post(/v3\/.+\/metricDescriptors/)
+      .reply(200, replyCallback)
+      .post(/v3\/projects\/.+\/timeSeries/)
+      .reply(200, replyCallback);
+  }
+
+  /**
+   * Sanitizes recorded calls to GCM API and then asserts the call matches the previously saved
+   * snapshot.
+   *
+   * To update snapshots, use `npm run update-snapshot-tests`
+   */
+  snapshotCalls() {
+    // Remove any dynamic parts of the metrics which can't be snapshot tested
+    this.calls.forEach(call => {
+      if ('timeSeries' in call.body) {
+        call.body.timeSeries?.forEach(ts => {
+          // Sanitize the opentelemetry_task per-process label that will change every time
+          if (ts.metric?.labels?.opentelemetry_task) {
+            ts.metric.labels.opentelemetry_task = 'opentelemetry_task';
+          }
+
+          ts.points?.forEach(point => {
+            // Sanitize start and end times
+            if (point.interval?.startTime) {
+              point.interval.startTime = 'startTime';
+            }
+            if (point.interval?.endTime) {
+              point.interval.endTime = 'endTime';
+            }
+          });
+        });
+      }
+    });
+    snapshot(this.calls);
+  }
+}
+
+describe('MetricExporter snapshot tests', () => {
+  let gcmNock: GcmNock;
+
+  beforeEach(async () => {
+    nock.disableNetConnect();
+    gcmNock = new GcmNock();
+  });
+
+  afterEach(() => {
+    nock.cleanAll();
+    sinon.restore();
+  });
+
+  it('counter', async () => {
+    const resourceMetrics = await generateMetricsData((_, meter) => {
+      meter
+        .createCounter('mycounter', {
+          description: 'counter description',
+          unit: '{myunit}',
+          valueType: ValueType.INT,
+        })
+        .add(1, LABELS);
+    });
+
+    const result = await callExporter(resourceMetrics);
+    assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+    gcmNock.snapshotCalls();
+  });
+});
+
+function callExporter(resourceMetrics: ResourceMetrics): Promise<ExportResult> {
+  return new Promise(resolve => {
+    const exporter = new MetricExporter({
+      projectId: PROJECT_ID,
+    });
+    // Application default credentials won't be available so stub them away
+    sinon.stub(exporter['_auth'], 'getClient');
+    exporter.export(resourceMetrics, resolve);
+  });
+}

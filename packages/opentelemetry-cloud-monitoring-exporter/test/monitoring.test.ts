@@ -31,7 +31,6 @@ describe('MetricExporter', () => {
   });
 
   afterEach(() => {
-    nock.restore();
     sinon.restore();
   });
 
