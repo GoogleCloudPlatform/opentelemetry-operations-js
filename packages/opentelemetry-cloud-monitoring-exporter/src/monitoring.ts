@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import {
-  MetricExporter as IMetricExporter,
-  MetricRecord,
-  MetricDescriptor as OTMetricDescriptor,
-} from '@opentelemetry/sdk-metrics-base';
+  PushMetricExporter,
+  ResourceMetrics,
+  InstrumentDescriptor,
+} from '@opentelemetry/sdk-metrics';
 import {ExportResult, ExportResultCode, VERSION} from '@opentelemetry/core';
 import {ExporterOptions} from './external-types';
 import {GoogleAuth, JWT} from 'google-auth-library';
@@ -25,6 +25,7 @@ import {transformMetricDescriptor, createTimeSeries} from './transform';
 import {TimeSeries} from './types';
 import {partitionList} from './utils';
 import {diag} from '@opentelemetry/api';
+import {mapOtelResourceToMonitoredResource} from '@google-cloud/opentelemetry-resource-util';
 
 // Stackdriver Monitoring v3 only accepts up to 200 TimeSeries per
 // CreateTimeSeries call.
@@ -42,7 +43,7 @@ google.options({headers: OT_REQUEST_HEADER});
 /**
  * Format and sends metrics information to Google Cloud Monitoring.
  */
-export class MetricExporter implements IMetricExporter {
+export class MetricExporter implements PushMetricExporter {
   private _projectId: string | void | Promise<string | void>;
   private readonly _metricPrefix: string;
   private readonly _displayNamePrefix: string;
@@ -53,7 +54,7 @@ export class MetricExporter implements IMetricExporter {
   static readonly CUSTOM_OPENTELEMETRY_DOMAIN: string =
     'custom.googleapis.com/opentelemetry';
 
-  private registeredMetricDescriptors: Map<string, OTMetricDescriptor> =
+  private registeredInstrumentDescriptors: Map<string, InstrumentDescriptor> =
     new Map();
 
   private _monitoring: monitoring_v3.Monitoring;
@@ -86,32 +87,36 @@ export class MetricExporter implements IMetricExporter {
   }
 
   /**
-   * Implementation for {@link IMetricExporter.export}.
+   * Implementation for {@link PushMetricExporter.export}.
    * Calls the async wrapper method {@link _exportAsync} and
    * assures no rejected promises bubble up to the caller.
    *
    * @param metrics Metrics to be sent to the Google Cloud Monitoring backend
-   * @param cb result callback to be called on finish
+   * @param resultCallback result callback to be called on finish
    */
-  export(metrics: MetricRecord[], cb: (result: ExportResult) => void): void {
-    this._exportAsync(metrics)
-      .then(cb)
-      .catch(err => {
-        diag.error(err.message);
-        return cb({code: ExportResultCode.FAILED, error: err});
-      });
+  export(
+    metrics: ResourceMetrics,
+    resultCallback: (result: ExportResult) => void
+  ): void {
+    this._exportAsync(metrics).then(resultCallback, err => {
+      diag.error(err.message);
+      resultCallback({code: ExportResultCode.FAILED, error: err});
+    });
   }
 
   async shutdown(): Promise<void> {}
+  async forceFlush(): Promise<void> {}
 
   /**
    * Asnyc wrapper for the {@link export} implementation.
    * Writes the current values of all exported {@link MetricRecord}s
    * to the Google Cloud Monitoring backend.
    *
-   * @param metrics Metrics to be sent to the Google Cloud Monitoring backend
+   * @param resourceMetrics Metrics to be sent to the Google Cloud Monitoring backend
    */
-  private async _exportAsync(metrics: MetricRecord[]): Promise<ExportResult> {
+  private async _exportAsync(
+    resourceMetrics: ResourceMetrics
+  ): Promise<ExportResult> {
     if (this._projectId instanceof Promise) {
       this._projectId = await this._projectId;
     }
@@ -123,20 +128,21 @@ export class MetricExporter implements IMetricExporter {
     }
 
     diag.debug('Google Cloud Monitoring export');
+    const resource = mapOtelResourceToMonitoredResource(
+      resourceMetrics.resource,
+      this._projectId
+    );
     const timeSeries: TimeSeries[] = [];
-    for (const metric of metrics) {
-      const isRegistered = await this._registerMetricDescriptor(
-        metric.descriptor
-      );
-      if (isRegistered) {
-        timeSeries.push(
-          createTimeSeries(
-            metric,
-            this._metricPrefix,
-            this._startTime,
-            this._projectId
-          )
+    for (const scopeMetric of resourceMetrics.scopeMetrics) {
+      for (const metric of scopeMetric.metrics) {
+        const isRegistered = await this._registerMetricDescriptor(
+          metric.descriptor
         );
+        if (isRegistered) {
+          timeSeries.push(
+            ...createTimeSeries(metric, resource, this._metricPrefix)
+          );
+        }
       }
     }
 
@@ -166,70 +172,67 @@ export class MetricExporter implements IMetricExporter {
    * Returns true if the given metricDescriptor is successfully registered to
    * Google Cloud Monitoring, or the exact same metric has already been
    * registered. Returns false otherwise.
-   * @param metricDescriptor The OpenTelemetry MetricDescriptor.
+   * @param instrumentDescriptor The OpenTelemetry MetricDescriptor.
    */
   private async _registerMetricDescriptor(
-    metricDescriptor: OTMetricDescriptor
+    instrumentDescriptor: InstrumentDescriptor
   ) {
-    const existingMetricDescriptor = this.registeredMetricDescriptors.get(
-      metricDescriptor.name
-    );
+    const existingInstrumentDescriptor =
+      this.registeredInstrumentDescriptors.get(instrumentDescriptor.name);
 
-    if (existingMetricDescriptor) {
-      if (existingMetricDescriptor === metricDescriptor) {
-        // Ignore metricDescriptor that are already registered.
+    if (existingInstrumentDescriptor) {
+      if (existingInstrumentDescriptor === instrumentDescriptor) {
+        // Ignore descriptors that are already registered.
         return true;
       } else {
         diag.warn(
-          `A different metric with the same name is already registered: ${existingMetricDescriptor}`
+          'A different metric with the same name is already registered: %s',
+          existingInstrumentDescriptor
         );
         return false;
       }
     }
-    const isRegistered = await this._createMetricDescriptor(metricDescriptor)
-      .then(() => {
-        this.registeredMetricDescriptors.set(
-          metricDescriptor.name,
-          metricDescriptor
-        );
-        return true;
-      })
-      .catch(err => {
-        diag.error(err);
-        return false;
-      });
-    return isRegistered;
+
+    try {
+      await this._createMetricDescriptor(instrumentDescriptor);
+      this.registeredInstrumentDescriptors.set(
+        instrumentDescriptor.name,
+        instrumentDescriptor
+      );
+      return true;
+    } catch (e) {
+      const err = asError(e);
+      diag.error('Error creating metric descriptor: %s', err.message);
+      return false;
+    }
   }
 
   /**
-   * Creates a new metric descriptor.
-   * @param metricDescriptor The OpenTelemetry MetricDescriptor.
+   * Calls CreateMetricDescriptor in the GCM API for the given InstrumentDescriptor
+   * @param instrumentDescriptor The OpenTelemetry InstrumentDescriptor.
    */
-  private async _createMetricDescriptor(metricDescriptor: OTMetricDescriptor) {
+  private async _createMetricDescriptor(
+    instrumentDescriptor: InstrumentDescriptor
+  ) {
     const authClient = await this._authorize();
     const descriptor = transformMetricDescriptor(
-      metricDescriptor,
+      instrumentDescriptor,
       this._metricPrefix,
       this._displayNamePrefix
     );
     try {
-      return new Promise<void>((resolve, reject) => {
-        this._monitoring.projects.metricDescriptors.create(
-          {
-            name: `projects/${this._projectId}`,
-            requestBody: descriptor,
-            auth: authClient,
-          },
-          {headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT]},
-          (err: Error | null) => {
-            diag.debug('sent metric descriptor', descriptor);
-            err ? reject(err) : resolve();
-          }
-        );
-      });
+      await this._monitoring.projects.metricDescriptors.create(
+        {
+          name: `projects/${this._projectId}`,
+          requestBody: descriptor,
+          auth: authClient,
+        },
+        {headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT]}
+      );
+      diag.debug('sent metric descriptor', descriptor);
     } catch (e) {
       const err = asError(e);
-      diag.error('MetricExporter: Failed to write data: %s', err.message);
+      diag.error('Failed to create metric descriptor: %s', err.message);
     }
   }
 
