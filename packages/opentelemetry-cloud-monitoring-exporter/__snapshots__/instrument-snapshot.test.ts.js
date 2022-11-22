@@ -16,7 +16,7 @@ exports['MetricExporter snapshot tests counter 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.8.0 google-api-nodejs-client/5.1.0 (gzip)"
+      "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
     ]
   },
   {
@@ -56,7 +56,7 @@ exports['MetricExporter snapshot tests counter 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.8.0 google-api-nodejs-client/5.1.0 (gzip)"
+      "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
     ]
   }
 ]

@@ -64,16 +64,12 @@ describe('MetricExporter', () => {
   describe('export', () => {
     let exporter: MetricExporter;
     let metricDescriptors: sinon.SinonSpy<
-      [
-        monitoring_v3.Params$Resource$Projects$Metricdescriptors$Create,
-        any,
-        any
-      ],
-      void
+      [monitoring_v3.Params$Resource$Projects$Metricdescriptors$Create, any],
+      Promise<any>
     >;
     let timeSeries: sinon.SinonSpy<
-      [monitoring_v3.Params$Resource$Projects$Timeseries$Create, any, any],
-      any
+      [monitoring_v3.Params$Resource$Projects$Timeseries$Create, any],
+      Promise<any>
     >;
     let getClientShouldFail: boolean;
     let createTimeSeriesShouldFail: boolean;
@@ -84,13 +80,8 @@ describe('MetricExporter', () => {
       exporter = new MetricExporter({});
 
       metricDescriptors = sinon.spy(
-        (
-          request: any,
-          params: any,
-          callback: (err: Error | null) => void
-        ): any => {
-          callback(null);
-        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        async (request: any, params: any): Promise<any> => {}
       );
 
       sinon.replace(
@@ -99,18 +90,12 @@ describe('MetricExporter', () => {
         metricDescriptors as any
       );
 
-      timeSeries = sinon.spy(
-        (
-          request: any,
-          params: any,
-          callback: (err: Error | null) => void
-        ): any => {
-          if (createTimeSeriesShouldFail) {
-            return callback(new Error('fail'));
-          }
-          callback(null);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      timeSeries = sinon.spy(async (req: any, params: any): Promise<any> => {
+        if (createTimeSeriesShouldFail) {
+          throw new Error('fail');
         }
-      );
+      });
 
       sinon.replace(
         exporter['_monitoring'].projects.timeSeries,

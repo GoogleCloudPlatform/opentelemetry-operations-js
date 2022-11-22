@@ -17,7 +17,11 @@ import {
   ResourceMetrics,
   InstrumentDescriptor,
 } from '@opentelemetry/sdk-metrics';
-import {ExportResult, ExportResultCode, VERSION} from '@opentelemetry/core';
+import {
+  ExportResult,
+  ExportResultCode,
+  VERSION as OT_VERSION,
+} from '@opentelemetry/core';
 import {ExporterOptions} from './external-types';
 import {GoogleAuth, JWT} from 'google-auth-library';
 import {google, monitoring_v3} from 'googleapis';
@@ -27,18 +31,29 @@ import {partitionList} from './utils';
 import {diag} from '@opentelemetry/api';
 import {mapOtelResourceToMonitoredResource} from '@google-cloud/opentelemetry-resource-util';
 
+import {VERSION} from './version';
+
 // Stackdriver Monitoring v3 only accepts up to 200 TimeSeries per
 // CreateTimeSeries call.
 const MAX_BATCH_EXPORT_SIZE = 200;
 
-const OT_USER_AGENT = {
-  product: 'opentelemetry-js',
-  version: VERSION,
-};
+const OT_USER_AGENTS = [
+  {
+    product: 'opentelemetry-js',
+    version: OT_VERSION,
+  },
+  {
+    product: 'google-cloud-metric-exporter',
+    version: VERSION,
+  },
+];
 const OT_REQUEST_HEADER = {
   'x-opentelemetry-outgoing-request': 0x1,
 };
-google.options({headers: OT_REQUEST_HEADER});
+google.options({
+  headers: OT_REQUEST_HEADER,
+  userAgentDirectives: OT_USER_AGENTS,
+});
 
 /**
  * Format and sends metrics information to Google Cloud Monitoring.
@@ -221,14 +236,11 @@ export class MetricExporter implements PushMetricExporter {
       this._displayNamePrefix
     );
     try {
-      await this._monitoring.projects.metricDescriptors.create(
-        {
-          name: `projects/${this._projectId}`,
-          requestBody: descriptor,
-          auth: authClient,
-        },
-        {headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT]}
-      );
+      await this._monitoring.projects.metricDescriptors.create({
+        name: `projects/${this._projectId}`,
+        requestBody: descriptor,
+        auth: authClient,
+      });
       diag.debug('sent metric descriptor', descriptor);
     } catch (e) {
       const err = asError(e);
@@ -241,22 +253,13 @@ export class MetricExporter implements PushMetricExporter {
       return Promise.resolve();
     }
 
-    return this._authorize().then(authClient => {
-      return new Promise<void>((resolve, reject) => {
-        this._monitoring.projects.timeSeries.create(
-          {
-            name: `projects/${this._projectId}`,
-            requestBody: {timeSeries},
-            auth: authClient,
-          },
-          {headers: OT_REQUEST_HEADER, userAgentDirectives: [OT_USER_AGENT]},
-          (err: Error | null) => {
-            diag.debug('sent time series', timeSeries);
-            err ? reject(err) : resolve();
-          }
-        );
-      });
+    const authClient = await this._authorize();
+    await this._monitoring.projects.timeSeries.create({
+      name: `projects/${this._projectId}`,
+      requestBody: {timeSeries},
+      auth: authClient,
     });
+    diag.debug('sent time series', timeSeries);
   }
 
   /**

@@ -12,7 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {ExportResult, ExportResultCode} from '@opentelemetry/core';
+import {
+  ExportResult,
+  ExportResultCode,
+  VERSION as OT_VERSION,
+} from '@opentelemetry/core';
 import {ReadableSpan, SpanExporter} from '@opentelemetry/sdk-trace-base';
 import {diag} from '@opentelemetry/api';
 import * as protoloader from '@grpc/proto-loader';
@@ -23,8 +27,10 @@ import {promisify} from 'util';
 import {TraceExporterOptions} from './external-types';
 import {getReadableSpanTransformer} from './transform';
 import {TraceService, NamedSpans} from './types';
+import {VERSION} from './version';
 
 const OT_REQUEST_HEADER = 'x-opentelemetry-outgoing-request';
+const TRACE_USER_AGENT = `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`;
 
 /**
  * Format and sends span information to Google Cloud Trace.
@@ -116,6 +122,8 @@ export class TraceExporter implements SpanExporter {
 
     const metadata = new grpc.Metadata();
     metadata.add(OT_REQUEST_HEADER, '1');
+    metadata.add('user-agent', TRACE_USER_AGENT);
+
     const batchWriteSpans = promisify(
       this._traceServiceClient.BatchWriteSpans
     ).bind(this._traceServiceClient);
