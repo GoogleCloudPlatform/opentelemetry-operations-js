@@ -357,5 +357,47 @@ describe('Google Cloud Trace Exporter', () => {
 
       assert.strictEqual(result.code, ExportResultCode.FAILED);
     });
+
+    it('should pass user-agent when making the request', async () => {
+      const readableSpan: ReadableSpan = {
+        attributes: {},
+        duration: [32, 800000000],
+        startTime: [1566156729, 709],
+        endTime: [1566156731, 709],
+        ended: true,
+        events: [],
+        kind: types.SpanKind.CLIENT,
+        links: [],
+        name: 'my-span',
+        spanContext: () => ({
+          traceId: 'd4cda95b652f4a1592b449d5929fda1b',
+          spanId: '6e0c63257de34c92',
+          traceFlags: TraceFlags.NONE,
+          isRemote: true,
+        }),
+        status: {code: types.SpanStatusCode.OK},
+        resource: Resource.empty(),
+        instrumentationLibrary: {name: 'default', version: '0.0.1'},
+      };
+
+      const result = await new Promise<ExportResult>(resolve => {
+        exporter.export([readableSpan], result => {
+          resolve(result);
+        });
+      });
+      assert.deepStrictEqual(result, {
+        code: ExportResultCode.SUCCESS,
+      });
+
+      const calls = batchWrite.getCalls();
+      const userAgentMetadata = calls[0].args[1].get('user-agent');
+      assert.strictEqual(userAgentMetadata.length, 1);
+
+      // TODO remove conditional call once node 10 is dropped
+      assert.match?.(
+        userAgentMetadata[0] as string,
+        /opentelemetry-js \S+; google-cloud-trace-exporter \S+/
+      );
+    });
   });
 });
