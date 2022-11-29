@@ -14,7 +14,6 @@
 
 import {
   InstrumentDescriptor,
-  InstrumentType,
   Histogram,
   MetricData,
   DataPoint,
@@ -39,17 +38,28 @@ const OPENTELEMETRY_TASK = 'opentelemetry_task';
 const OPENTELEMETRY_TASK_DESCRIPTION = 'OpenTelemetry task identifier';
 export const OPENTELEMETRY_TASK_VALUE_DEFAULT = generateDefaultTaskValue();
 
+/**
+ *
+ * @param metric the MetricData to create a descriptor for
+ * @param metricPrefix prefix to add to metric names
+ * @param displayNamePrefix prefix to add to display name in the descriptor
+ * @returns the GCM MetricDescriptor or null if the MetricData was empty
+ */
 export function transformMetricDescriptor(
-  instrumentDescriptor: InstrumentDescriptor,
+  metric: MetricData,
   metricPrefix: string
 ): MetricDescriptor {
+  const {
+    descriptor: {name, description, unit},
+  } = metric;
+
   return {
-    type: transformMetricType(metricPrefix, instrumentDescriptor.name),
-    description: instrumentDescriptor.description,
-    displayName: instrumentDescriptor.name,
-    metricKind: transformMetricKind(instrumentDescriptor.type),
-    valueType: transformValueType(instrumentDescriptor.valueType),
-    unit: instrumentDescriptor.unit,
+    type: transformMetricType(metricPrefix, name),
+    description,
+    displayName: name,
+    metricKind: transformMetricKind(metric),
+    valueType: transformValueType(metric),
+    unit,
     labels: [
       {
         key: OPENTELEMETRY_TASK,
@@ -65,30 +75,34 @@ function transformMetricType(metricPrefix: string, name: string): string {
 }
 
 /** Transforms a OpenTelemetry instrument type to a GCM MetricKind. */
-function transformMetricKind(instrumentType: InstrumentType): MetricKind {
-  switch (instrumentType) {
-    case InstrumentType.COUNTER:
-    case InstrumentType.OBSERVABLE_COUNTER:
-    case InstrumentType.HISTOGRAM:
-      return MetricKind.CUMULATIVE;
-    case InstrumentType.UP_DOWN_COUNTER:
-    case InstrumentType.OBSERVABLE_GAUGE:
-    case InstrumentType.OBSERVABLE_UP_DOWN_COUNTER:
+function transformMetricKind(metric: MetricData): MetricKind {
+  switch (metric.dataPointType) {
+    case DataPointType.SUM:
+      return metric.isMonotonic ? MetricKind.CUMULATIVE : MetricKind.GAUGE;
+    case DataPointType.GAUGE:
       return MetricKind.GAUGE;
+    case DataPointType.HISTOGRAM:
+      return MetricKind.CUMULATIVE;
     default:
-      exhaust(instrumentType);
-      diag.info('Encountered unexpected instrumentType=%s', instrumentType);
+      exhaust(metric);
+      diag.info(
+        'Encountered unexpected data point type %s',
+        (metric as MetricData).dataPointType
+      );
       return MetricKind.UNSPECIFIED;
   }
 }
 
 /** Transforms a OpenTelemetry ValueType to a GCM ValueType. */
-function transformValueType(valueType: OTValueType): ValueType {
+function transformValueType(metric: MetricData): ValueType {
+  const {valueType} = metric.descriptor;
   if (valueType === OTValueType.DOUBLE) {
     return ValueType.DOUBLE;
   } else if (valueType === OTValueType.INT) {
     return ValueType.INT64;
   } else {
+    exhaust(valueType);
+    diag.info('Encountered unexpected value type %s', valueType);
     return ValueType.VALUE_TYPE_UNSPECIFIED;
   }
 }
@@ -97,13 +111,13 @@ function transformValueType(valueType: OTValueType): ValueType {
  * Converts metric's timeseries to a TimeSeries, so that metric can be
  * uploaded to GCM.
  */
-export function createTimeSeries<TMetricData extends MetricData>(
-  metric: TMetricData,
+export function createTimeSeries(
+  metric: MetricData,
   resource: MonitoredResource,
   metricPrefix: string
 ): TimeSeries[] {
-  const metricKind = transformMetricKind(metric.descriptor.type);
-  const valueType = transformValueType(metric.descriptor.valueType);
+  const metricKind = transformMetricKind(metric);
+  const valueType = transformValueType(metric);
 
   return transformPoints(metric, metricPrefix).map(({point, metric}) => ({
     metric,

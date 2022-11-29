@@ -15,7 +15,7 @@
 import {
   PushMetricExporter,
   ResourceMetrics,
-  InstrumentDescriptor,
+  MetricData,
 } from '@opentelemetry/sdk-metrics';
 import {
   ExportResult,
@@ -62,12 +62,14 @@ export class MetricExporter implements PushMetricExporter {
   private _projectId: string | void | Promise<string | void>;
   private readonly _metricPrefix: string;
   private readonly _auth: GoogleAuth;
-  private readonly _startTime = new Date().toISOString();
 
   static readonly DEFAULT_METRIC_PREFIX: string = 'workload.googleapis.com';
 
-  private registeredInstrumentDescriptors: Map<string, InstrumentDescriptor> =
-    new Map();
+  /**
+   * Set of OTel metric names that have already had their metric descriptors successfully
+   * created
+   */
+  private createdMetricDescriptors: Set<string> = new Set();
 
   private _monitoring: monitoring_v3.Monitoring;
 
@@ -144,9 +146,7 @@ export class MetricExporter implements PushMetricExporter {
     const timeSeries: TimeSeries[] = [];
     for (const scopeMetric of resourceMetrics.scopeMetrics) {
       for (const metric of scopeMetric.metrics) {
-        const isRegistered = await this._registerMetricDescriptor(
-          metric.descriptor
-        );
+        const isRegistered = await this._registerMetricDescriptor(metric);
         if (isRegistered) {
           timeSeries.push(
             ...createTimeSeries(metric, resource, this._metricPrefix)
@@ -180,54 +180,38 @@ export class MetricExporter implements PushMetricExporter {
   /**
    * Returns true if the given metricDescriptor is successfully registered to
    * Google Cloud Monitoring, or the exact same metric has already been
-   * registered. Returns false otherwise.
-   * @param instrumentDescriptor The OpenTelemetry MetricDescriptor.
+   * registered. Returns false otherwise and should be skipped.
+   *
+   * @param metric The OpenTelemetry MetricData.
    */
   private async _registerMetricDescriptor(
-    instrumentDescriptor: InstrumentDescriptor
-  ) {
-    const existingInstrumentDescriptor =
-      this.registeredInstrumentDescriptors.get(instrumentDescriptor.name);
+    metric: MetricData
+  ): Promise<boolean> {
+    const isDescriptorCreated = this.createdMetricDescriptors.has(
+      metric.descriptor.name
+    );
 
-    if (existingInstrumentDescriptor) {
-      if (existingInstrumentDescriptor === instrumentDescriptor) {
-        // Ignore descriptors that are already registered.
-        return true;
-      } else {
-        diag.warn(
-          'A different metric with the same name is already registered: %s',
-          existingInstrumentDescriptor
-        );
-        return false;
-      }
-    }
-
-    try {
-      await this._createMetricDescriptor(instrumentDescriptor);
-      this.registeredInstrumentDescriptors.set(
-        instrumentDescriptor.name,
-        instrumentDescriptor
-      );
+    if (isDescriptorCreated) {
       return true;
-    } catch (e) {
-      const err = asError(e);
-      diag.error('Error creating metric descriptor: %s', err.message);
-      return false;
     }
+
+    const res = await this._createMetricDescriptor(metric);
+    if (res) {
+      this.createdMetricDescriptors.add(metric.descriptor.name);
+      return true;
+    }
+    return false;
   }
 
   /**
    * Calls CreateMetricDescriptor in the GCM API for the given InstrumentDescriptor
-   * @param instrumentDescriptor The OpenTelemetry InstrumentDescriptor.
+   * @param metric The OpenTelemetry MetricData.
+   * @returns whether or not the descriptor was successfully created
    */
-  private async _createMetricDescriptor(
-    instrumentDescriptor: InstrumentDescriptor
-  ) {
+  private async _createMetricDescriptor(metric: MetricData): Promise<boolean> {
     const authClient = await this._authorize();
-    const descriptor = transformMetricDescriptor(
-      instrumentDescriptor,
-      this._metricPrefix
-    );
+    const descriptor = transformMetricDescriptor(metric, this._metricPrefix);
+
     try {
       await this._monitoring.projects.metricDescriptors.create({
         name: `projects/${this._projectId}`,
@@ -235,9 +219,11 @@ export class MetricExporter implements PushMetricExporter {
         auth: authClient,
       });
       diag.debug('sent metric descriptor', descriptor);
+      return true;
     } catch (e) {
       const err = asError(e);
       diag.error('Failed to create metric descriptor: %s', err.message);
+      return false;
     }
   }
 
