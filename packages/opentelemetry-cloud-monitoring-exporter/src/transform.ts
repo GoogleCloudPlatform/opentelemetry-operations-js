@@ -30,13 +30,8 @@ import {
   ValueType,
 } from './types';
 import * as path from 'path';
-import * as os from 'os';
 import type {monitoring_v3} from 'googleapis';
 import {PreciseDate} from '@google-cloud/precise-date';
-
-const OPENTELEMETRY_TASK = 'opentelemetry_task';
-const OPENTELEMETRY_TASK_DESCRIPTION = 'OpenTelemetry task identifier';
-export const OPENTELEMETRY_TASK_VALUE_DEFAULT = generateDefaultTaskValue();
 
 /**
  *
@@ -60,12 +55,7 @@ export function transformMetricDescriptor(
     metricKind: transformMetricKind(metric),
     valueType: transformValueType(metric),
     unit,
-    labels: [
-      {
-        key: OPENTELEMETRY_TASK,
-        description: OPENTELEMETRY_TASK_DESCRIPTION,
-      },
-    ],
+    labels: [],
   };
 }
 
@@ -139,7 +129,6 @@ function transformMetric<T>(
   Object.keys(point.attributes).forEach(
     key => (labels[key] = `${point.attributes[key]}`)
   );
-  labels[OPENTELEMETRY_TASK] = OPENTELEMETRY_TASK_VALUE_DEFAULT;
   return {type, labels};
 }
 
@@ -221,13 +210,6 @@ function transformHistogramValue(
       bucketCounts: value.buckets.counts.map(count => count.toString()),
     },
   };
-}
-
-/** Returns a task label value in the format of 'nodejs-<pid>@<hostname>'. */
-function generateDefaultTaskValue(): string {
-  const pid = process.pid;
-  const hostname = os.hostname() || 'localhost';
-  return 'nodejs-' + pid + '@' + hostname;
 }
 
 /**

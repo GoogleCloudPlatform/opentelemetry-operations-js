@@ -8,12 +8,7 @@ exports['MetricExporter snapshot tests Counter - DOUBLE 1'] = [
       "metricKind": "CUMULATIVE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
-      "labels": [
-        {
-          "key": "opentelemetry_task",
-          "description": "OpenTelemetry task identifier"
-        }
-      ]
+      "labels": []
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -29,8 +24,7 @@ exports['MetricExporter snapshot tests Counter - DOUBLE 1'] = [
             "labels": {
               "string": "string",
               "int": "123",
-              "float": "123.4",
-              "opentelemetry_task": "opentelemetry_task"
+              "float": "123.4"
             }
           },
           "resource": {
@@ -71,12 +65,7 @@ exports['MetricExporter snapshot tests Counter - INT 1'] = [
       "metricKind": "CUMULATIVE",
       "valueType": "INT64",
       "unit": "{myunit}",
-      "labels": [
-        {
-          "key": "opentelemetry_task",
-          "description": "OpenTelemetry task identifier"
-        }
-      ]
+      "labels": []
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -92,8 +81,7 @@ exports['MetricExporter snapshot tests Counter - INT 1'] = [
             "labels": {
               "string": "string",
               "int": "123",
-              "float": "123.4",
-              "opentelemetry_task": "opentelemetry_task"
+              "float": "123.4"
             }
           },
           "resource": {
@@ -134,12 +122,7 @@ exports['MetricExporter snapshot tests Histogram - DOUBLE 1'] = [
       "metricKind": "CUMULATIVE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
-      "labels": [
-        {
-          "key": "opentelemetry_task",
-          "description": "OpenTelemetry task identifier"
-        }
-      ]
+      "labels": []
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -155,8 +138,7 @@ exports['MetricExporter snapshot tests Histogram - DOUBLE 1'] = [
             "labels": {
               "string": "string",
               "int": "123",
-              "float": "123.4",
-              "opentelemetry_task": "opentelemetry_task"
+              "float": "123.4"
             }
           },
           "resource": {
@@ -229,12 +211,7 @@ exports['MetricExporter snapshot tests Histogram - INT 1'] = [
       "metricKind": "CUMULATIVE",
       "valueType": "INT64",
       "unit": "{myunit}",
-      "labels": [
-        {
-          "key": "opentelemetry_task",
-          "description": "OpenTelemetry task identifier"
-        }
-      ]
+      "labels": []
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -250,8 +227,7 @@ exports['MetricExporter snapshot tests Histogram - INT 1'] = [
             "labels": {
               "string": "string",
               "int": "123",
-              "float": "123.4",
-              "opentelemetry_task": "opentelemetry_task"
+              "float": "123.4"
             }
           },
           "resource": {
@@ -324,12 +300,7 @@ exports['MetricExporter snapshot tests ObservableCounter - DOUBLE 1'] = [
       "metricKind": "CUMULATIVE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
-      "labels": [
-        {
-          "key": "opentelemetry_task",
-          "description": "OpenTelemetry task identifier"
-        }
-      ]
+      "labels": []
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -345,8 +316,7 @@ exports['MetricExporter snapshot tests ObservableCounter - DOUBLE 1'] = [
             "labels": {
               "string": "string",
               "int": "123",
-              "float": "123.4",
-              "opentelemetry_task": "opentelemetry_task"
+              "float": "123.4"
             }
           },
           "resource": {
@@ -387,12 +357,7 @@ exports['MetricExporter snapshot tests ObservableCounter - INT 1'] = [
       "metricKind": "CUMULATIVE",
       "valueType": "INT64",
       "unit": "{myunit}",
-      "labels": [
-        {
-          "key": "opentelemetry_task",
-          "description": "OpenTelemetry task identifier"
-        }
-      ]
+      "labels": []
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -408,8 +373,7 @@ exports['MetricExporter snapshot tests ObservableCounter - INT 1'] = [
             "labels": {
               "string": "string",
               "int": "123",
-              "float": "123.4",
-              "opentelemetry_task": "opentelemetry_task"
+              "float": "123.4"
             }
           },
           "resource": {
@@ -450,12 +414,7 @@ exports['MetricExporter snapshot tests ObservableGauge - DOUBLE 1'] = [
       "metricKind": "GAUGE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
-      "labels": [
-        {
-          "key": "opentelemetry_task",
-          "description": "OpenTelemetry task identifier"
-        }
-      ]
+      "labels": []
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -471,8 +430,7 @@ exports['MetricExporter snapshot tests ObservableGauge - DOUBLE 1'] = [
             "labels": {
               "string": "string",
               "int": "123",
-              "float": "123.4",
-              "opentelemetry_task": "opentelemetry_task"
+              "float": "123.4"
             }
           },
           "resource": {
@@ -512,12 +470,7 @@ exports['MetricExporter snapshot tests ObservableGauge - INT 1'] = [
       "metricKind": "GAUGE",
       "valueType": "INT64",
       "unit": "{myunit}",
-      "labels": [
-        {
-          "key": "opentelemetry_task",
-          "description": "OpenTelemetry task identifier"
-        }
-      ]
+      "labels": []
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -533,8 +486,7 @@ exports['MetricExporter snapshot tests ObservableGauge - INT 1'] = [
             "labels": {
               "string": "string",
               "int": "123",
-              "float": "123.4",
-              "opentelemetry_task": "opentelemetry_task"
+              "float": "123.4"
             }
           },
           "resource": {
@@ -574,12 +526,7 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - DOUBLE 1'] = [
       "metricKind": "GAUGE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
-      "labels": [
-        {
-          "key": "opentelemetry_task",
-          "description": "OpenTelemetry task identifier"
-        }
-      ]
+      "labels": []
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -595,8 +542,7 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - DOUBLE 1'] = [
             "labels": {
               "string": "string",
               "int": "123",
-              "float": "123.4",
-              "opentelemetry_task": "opentelemetry_task"
+              "float": "123.4"
             }
           },
           "resource": {
@@ -636,12 +582,7 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - INT 1'] = [
       "metricKind": "GAUGE",
       "valueType": "INT64",
       "unit": "{myunit}",
-      "labels": [
-        {
-          "key": "opentelemetry_task",
-          "description": "OpenTelemetry task identifier"
-        }
-      ]
+      "labels": []
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -657,8 +598,7 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - INT 1'] = [
             "labels": {
               "string": "string",
               "int": "123",
-              "float": "123.4",
-              "opentelemetry_task": "opentelemetry_task"
+              "float": "123.4"
             }
           },
           "resource": {
@@ -698,12 +638,7 @@ exports['MetricExporter snapshot tests UpDownCounter - DOUBLE 1'] = [
       "metricKind": "GAUGE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
-      "labels": [
-        {
-          "key": "opentelemetry_task",
-          "description": "OpenTelemetry task identifier"
-        }
-      ]
+      "labels": []
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -719,8 +654,7 @@ exports['MetricExporter snapshot tests UpDownCounter - DOUBLE 1'] = [
             "labels": {
               "string": "string",
               "int": "123",
-              "float": "123.4",
-              "opentelemetry_task": "opentelemetry_task"
+              "float": "123.4"
             }
           },
           "resource": {
@@ -760,12 +694,7 @@ exports['MetricExporter snapshot tests UpDownCounter - INT 1'] = [
       "metricKind": "GAUGE",
       "valueType": "INT64",
       "unit": "{myunit}",
-      "labels": [
-        {
-          "key": "opentelemetry_task",
-          "description": "OpenTelemetry task identifier"
-        }
-      ]
+      "labels": []
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -781,8 +710,7 @@ exports['MetricExporter snapshot tests UpDownCounter - INT 1'] = [
             "labels": {
               "string": "string",
               "int": "123",
-              "float": "123.4",
-              "opentelemetry_task": "opentelemetry_task"
+              "float": "123.4"
             }
           },
           "resource": {
@@ -822,12 +750,7 @@ exports['MetricExporter snapshot tests reconfigure with views counter with histo
       "metricKind": "CUMULATIVE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
-      "labels": [
-        {
-          "key": "opentelemetry_task",
-          "description": "OpenTelemetry task identifier"
-        }
-      ]
+      "labels": []
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -840,9 +763,7 @@ exports['MetricExporter snapshot tests reconfigure with views counter with histo
         {
           "metric": {
             "type": "workload.googleapis.com/myrenamedhistogram",
-            "labels": {
-              "opentelemetry_task": "opentelemetry_task"
-            }
+            "labels": {}
           },
           "resource": {
             "type": "global",
