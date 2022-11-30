@@ -36,8 +36,10 @@ export interface ExporterOptions {
    */
   credentials?: Credentials;
   /**
-   * Prefix for metric overrides the OpenTelemetry prefix
-   * of a stackdriver metric. Optional
+   * Prefix prepended to OpenTelemetry metric names when writing to Cloud Monitoring. See
+   * https://cloud.google.com/monitoring/custom-metrics#identifier for more details.
+   *
+   * Optional, default is `workload.googleapis.com`.
    */
   prefix?: string;
   /**

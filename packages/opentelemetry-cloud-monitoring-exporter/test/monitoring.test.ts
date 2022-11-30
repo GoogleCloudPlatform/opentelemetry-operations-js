@@ -174,7 +174,7 @@ describe('MetricExporter', () => {
       assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
       assert.deepStrictEqual(
         metricDescriptors.getCall(0).args[0].requestBody!.type,
-        'custom.googleapis.com/opentelemetry/name'
+        'workload.googleapis.com/name'
       );
 
       assert.strictEqual(metricDescriptors.callCount, 1);
@@ -193,7 +193,7 @@ describe('MetricExporter', () => {
 
       assert.deepStrictEqual(
         metricDescriptors.getCall(0).args[0].requestBody!.type,
-        'custom.googleapis.com/opentelemetry/name'
+        'workload.googleapis.com/name'
       );
       assert.strictEqual(metricDescriptors.callCount, 1);
       assert.strictEqual(timeSeries.callCount, 1);
@@ -219,15 +219,15 @@ describe('MetricExporter', () => {
 
       assert.deepStrictEqual(
         metricDescriptors.getCall(0).args[0].requestBody!.type,
-        'custom.googleapis.com/opentelemetry/name400'
+        'workload.googleapis.com/name400'
       );
       assert.deepStrictEqual(
         metricDescriptors.getCall(100).args[0].requestBody!.type,
-        'custom.googleapis.com/opentelemetry/name300'
+        'workload.googleapis.com/name300'
       );
       assert.deepStrictEqual(
         metricDescriptors.getCall(400).args[0].requestBody!.type,
-        'custom.googleapis.com/opentelemetry/name0'
+        'workload.googleapis.com/name0'
       );
 
       assert.strictEqual(metricDescriptors.callCount, 401);

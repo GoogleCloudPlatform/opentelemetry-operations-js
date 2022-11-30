@@ -61,13 +61,10 @@ google.options({
 export class MetricExporter implements PushMetricExporter {
   private _projectId: string | void | Promise<string | void>;
   private readonly _metricPrefix: string;
-  private readonly _displayNamePrefix: string;
   private readonly _auth: GoogleAuth;
   private readonly _startTime = new Date().toISOString();
 
-  static readonly DEFAULT_DISPLAY_NAME_PREFIX: string = 'OpenTelemetry';
-  static readonly CUSTOM_OPENTELEMETRY_DOMAIN: string =
-    'custom.googleapis.com/opentelemetry';
+  static readonly DEFAULT_METRIC_PREFIX: string = 'workload.googleapis.com';
 
   private registeredInstrumentDescriptors: Map<string, InstrumentDescriptor> =
     new Map();
@@ -75,10 +72,7 @@ export class MetricExporter implements PushMetricExporter {
   private _monitoring: monitoring_v3.Monitoring;
 
   constructor(options: ExporterOptions = {}) {
-    this._metricPrefix =
-      options.prefix || MetricExporter.CUSTOM_OPENTELEMETRY_DOMAIN;
-    this._displayNamePrefix =
-      options.prefix || MetricExporter.DEFAULT_DISPLAY_NAME_PREFIX;
+    this._metricPrefix = options.prefix ?? MetricExporter.DEFAULT_METRIC_PREFIX;
 
     this._auth = new GoogleAuth({
       credentials: options.credentials,
@@ -232,8 +226,7 @@ export class MetricExporter implements PushMetricExporter {
     const authClient = await this._authorize();
     const descriptor = transformMetricDescriptor(
       instrumentDescriptor,
-      this._metricPrefix,
-      this._displayNamePrefix
+      this._metricPrefix
     );
     try {
       await this._monitoring.projects.metricDescriptors.create({
