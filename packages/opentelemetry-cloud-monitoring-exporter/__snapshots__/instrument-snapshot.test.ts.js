@@ -8,7 +8,20 @@ exports['MetricExporter snapshot tests Counter - DOUBLE 1'] = [
       "metricKind": "CUMULATIVE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
-      "labels": []
+      "labels": [
+        {
+          "key": "string",
+          "description": ""
+        },
+        {
+          "key": "int",
+          "description": ""
+        },
+        {
+          "key": "float",
+          "description": ""
+        }
+      ]
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -67,7 +80,20 @@ exports['MetricExporter snapshot tests Counter - INT 1'] = [
       "metricKind": "CUMULATIVE",
       "valueType": "INT64",
       "unit": "{myunit}",
-      "labels": []
+      "labels": [
+        {
+          "key": "string",
+          "description": ""
+        },
+        {
+          "key": "int",
+          "description": ""
+        },
+        {
+          "key": "float",
+          "description": ""
+        }
+      ]
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -126,7 +152,20 @@ exports['MetricExporter snapshot tests Histogram - DOUBLE 1'] = [
       "metricKind": "CUMULATIVE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
-      "labels": []
+      "labels": [
+        {
+          "key": "string",
+          "description": ""
+        },
+        {
+          "key": "int",
+          "description": ""
+        },
+        {
+          "key": "float",
+          "description": ""
+        }
+      ]
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -217,7 +256,20 @@ exports['MetricExporter snapshot tests Histogram - INT 1'] = [
       "metricKind": "CUMULATIVE",
       "valueType": "INT64",
       "unit": "{myunit}",
-      "labels": []
+      "labels": [
+        {
+          "key": "string",
+          "description": ""
+        },
+        {
+          "key": "int",
+          "description": ""
+        },
+        {
+          "key": "float",
+          "description": ""
+        }
+      ]
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -308,7 +360,20 @@ exports['MetricExporter snapshot tests ObservableCounter - DOUBLE 1'] = [
       "metricKind": "CUMULATIVE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
-      "labels": []
+      "labels": [
+        {
+          "key": "string",
+          "description": ""
+        },
+        {
+          "key": "int",
+          "description": ""
+        },
+        {
+          "key": "float",
+          "description": ""
+        }
+      ]
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -367,7 +432,20 @@ exports['MetricExporter snapshot tests ObservableCounter - INT 1'] = [
       "metricKind": "CUMULATIVE",
       "valueType": "INT64",
       "unit": "{myunit}",
-      "labels": []
+      "labels": [
+        {
+          "key": "string",
+          "description": ""
+        },
+        {
+          "key": "int",
+          "description": ""
+        },
+        {
+          "key": "float",
+          "description": ""
+        }
+      ]
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -426,7 +504,20 @@ exports['MetricExporter snapshot tests ObservableGauge - DOUBLE 1'] = [
       "metricKind": "GAUGE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
-      "labels": []
+      "labels": [
+        {
+          "key": "string",
+          "description": ""
+        },
+        {
+          "key": "int",
+          "description": ""
+        },
+        {
+          "key": "float",
+          "description": ""
+        }
+      ]
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -484,7 +575,20 @@ exports['MetricExporter snapshot tests ObservableGauge - INT 1'] = [
       "metricKind": "GAUGE",
       "valueType": "INT64",
       "unit": "{myunit}",
-      "labels": []
+      "labels": [
+        {
+          "key": "string",
+          "description": ""
+        },
+        {
+          "key": "int",
+          "description": ""
+        },
+        {
+          "key": "float",
+          "description": ""
+        }
+      ]
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -542,7 +646,20 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - DOUBLE 1'] = [
       "metricKind": "GAUGE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
-      "labels": []
+      "labels": [
+        {
+          "key": "string",
+          "description": ""
+        },
+        {
+          "key": "int",
+          "description": ""
+        },
+        {
+          "key": "float",
+          "description": ""
+        }
+      ]
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -600,7 +717,20 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - INT 1'] = [
       "metricKind": "GAUGE",
       "valueType": "INT64",
       "unit": "{myunit}",
-      "labels": []
+      "labels": [
+        {
+          "key": "string",
+          "description": ""
+        },
+        {
+          "key": "int",
+          "description": ""
+        },
+        {
+          "key": "float",
+          "description": ""
+        }
+      ]
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -658,7 +788,20 @@ exports['MetricExporter snapshot tests UpDownCounter - DOUBLE 1'] = [
       "metricKind": "GAUGE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
-      "labels": []
+      "labels": [
+        {
+          "key": "string",
+          "description": ""
+        },
+        {
+          "key": "int",
+          "description": ""
+        },
+        {
+          "key": "float",
+          "description": ""
+        }
+      ]
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -716,7 +859,20 @@ exports['MetricExporter snapshot tests UpDownCounter - INT 1'] = [
       "metricKind": "GAUGE",
       "valueType": "INT64",
       "unit": "{myunit}",
-      "labels": []
+      "labels": [
+        {
+          "key": "string",
+          "description": ""
+        },
+        {
+          "key": "int",
+          "description": ""
+        },
+        {
+          "key": "float",
+          "description": ""
+        }
+      ]
     },
     "userAgent": [
       "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
@@ -751,6 +907,93 @@ exports['MetricExporter snapshot tests UpDownCounter - INT 1'] = [
                 "int64Value": "10"
               },
               "interval": {
+                "endTime": "endTime"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "userAgent": [
+      "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
+    ]
+  }
+]
+
+exports['MetricExporter snapshot tests normalizes label keys in metric and descriptor 1'] = [
+  {
+    "uri": "/v3/projects/otel-starter-project/metricDescriptors",
+    "body": {
+      "type": "workload.googleapis.com/mycounter",
+      "description": "instrument description",
+      "displayName": "mycounter",
+      "metricKind": "CUMULATIVE",
+      "valueType": "INT64",
+      "unit": "{myunit}",
+      "labels": [
+        {
+          "key": "key_123",
+          "description": ""
+        },
+        {
+          "key": "valid_key_1",
+          "description": ""
+        },
+        {
+          "key": "hellø",
+          "description": ""
+        },
+        {
+          "key": "key_321",
+          "description": ""
+        },
+        {
+          "key": "hyphens_dots_slashes_",
+          "description": ""
+        },
+        {
+          "key": "non_letters______",
+          "description": ""
+        }
+      ]
+    },
+    "userAgent": [
+      "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
+    ]
+  },
+  {
+    "uri": "/v3/projects/otel-starter-project/timeSeries",
+    "body": {
+      "timeSeries": [
+        {
+          "metric": {
+            "type": "workload.googleapis.com/mycounter",
+            "labels": {
+              "key_123": "key_123",
+              "valid_key_1": "valid_key_1",
+              "hellø": "hellø",
+              "key_321": "key_321",
+              "hyphens_dots_slashes_": "hyphens_dots_slashes_",
+              "non_letters______": "non_letters______"
+            }
+          },
+          "resource": {
+            "type": "generic_node",
+            "labels": {
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
+            }
+          },
+          "metricKind": "CUMULATIVE",
+          "valueType": "INT64",
+          "points": [
+            {
+              "value": {
+                "int64Value": "1"
+              },
+              "interval": {
+                "startTime": "startTime",
                 "endTime": "endTime"
               }
             }

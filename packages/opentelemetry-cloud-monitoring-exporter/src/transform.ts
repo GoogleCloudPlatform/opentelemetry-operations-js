@@ -28,6 +28,7 @@ import {
   TimeSeries,
   Metric,
   ValueType,
+  LabelDescriptor,
 } from './types';
 import * as path from 'path';
 import type {monitoring_v3} from 'googleapis';
@@ -55,8 +56,20 @@ export function transformMetricDescriptor(
     metricKind: transformMetricKind(metric),
     valueType: transformValueType(metric),
     unit,
-    labels: [],
+    labels: transformLabelDescriptors(metric),
   };
+}
+
+function transformLabelDescriptors(metric: MetricData): LabelDescriptor[] {
+  if (metric.dataPoints.length === 0) {
+    return [];
+  }
+
+  const attrs = metric.dataPoints[0].attributes;
+  return Object.keys(attrs).map(key => ({
+    key: normalizeLabelKey(key),
+    description: '',
+  }));
 }
 
 /** Transforms Metric type. */
@@ -126,9 +139,9 @@ function transformMetric<T>(
   const type = transformMetricType(metricPrefix, instrumentDescriptor.name);
   const labels: {[key: string]: string} = {};
 
-  Object.keys(point.attributes).forEach(
-    key => (labels[key] = `${point.attributes[key]}`)
-  );
+  Object.keys(point.attributes).forEach(key => {
+    labels[normalizeLabelKey(key)] = `${point.attributes[key]}`;
+  });
   return {type, labels};
 }
 
@@ -212,9 +225,27 @@ function transformHistogramValue(
   };
 }
 
+function normalizeLabelKey(key: string): string {
+  // Replace characters which are not Letter or Decimal_Number unicode category with "_", see
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Unicode_Property_Escapes
+  //
+  // Reimplementation of reference impl in Go:
+  // https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/e955c204f4f2bfdc92ff0ad52786232b975efcc2/exporter/metric/metric.go#L595-L604
+  let sanitized = key.replace(/[^\p{Letter}\p{Decimal_Number}_]/gu, '_');
+
+  if (sanitized[0].match(/\p{Decimal_Number}/u)) {
+    sanitized = 'key_' + sanitized;
+  }
+  return sanitized;
+}
+
 /**
  * Assert switch case is exhaustive
  */
 function exhaust(switchValue: never) {
   return switchValue;
 }
+
+export const _TEST_ONLY = {
+  normalizeLabelKey,
+};
