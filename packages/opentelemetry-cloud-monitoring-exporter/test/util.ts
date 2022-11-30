@@ -14,6 +14,7 @@
 
 import {
   MeterProvider,
+  MeterProviderOptions,
   MetricReader,
   ResourceMetrics,
 } from '@opentelemetry/sdk-metrics';
@@ -27,9 +28,10 @@ class InMemoryMetricReader extends MetricReader {
 }
 
 export async function generateMetricsData(
-  customize?: (meterProvider: MeterProvider, meter: Meter) => void
+  customize?: (meterProvider: MeterProvider, meter: Meter) => void,
+  meterProviderOptions?: MeterProviderOptions
 ): Promise<ResourceMetrics> {
-  const meterProvider = new MeterProvider();
+  const meterProvider = new MeterProvider(meterProviderOptions);
   const reader = new InMemoryMetricReader();
   meterProvider.addMetricReader(reader);
   const meter = meterProvider.getMeter('test-meter');

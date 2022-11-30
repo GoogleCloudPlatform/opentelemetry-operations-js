@@ -73,15 +73,21 @@ describe('MetricExporter', () => {
     >;
     let getClientShouldFail: boolean;
     let createTimeSeriesShouldFail: boolean;
+    let createMetricDesriptorShouldFail: boolean;
 
     beforeEach(() => {
       getClientShouldFail = false;
       createTimeSeriesShouldFail = false;
+      createMetricDesriptorShouldFail = false;
       exporter = new MetricExporter({});
 
       metricDescriptors = sinon.spy(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        async (request: any, params: any): Promise<any> => {}
+        async (request: any, params: any): Promise<any> => {
+          if (createMetricDesriptorShouldFail) {
+            throw new Error('fail');
+          }
+        }
       );
 
       sinon.replace(
@@ -179,6 +185,48 @@ describe('MetricExporter', () => {
 
       assert.strictEqual(metricDescriptors.callCount, 1);
       assert.strictEqual(timeSeries.callCount, 1);
+    });
+
+    it('should skip metrics when MetricDescriptor creation fails', async () => {
+      const resourceMetrics = await generateMetricsData();
+
+      createMetricDesriptorShouldFail = true;
+      const result = await new Promise<ExportResult>(resolve => {
+        exporter.export(resourceMetrics, result => {
+          resolve(result);
+        });
+      });
+
+      assert.strictEqual(metricDescriptors.callCount, 1);
+      assert.strictEqual(timeSeries.callCount, 0);
+      assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
+    });
+
+    it('should skip MetricDescriptor creation when a metric has already been seen', async () => {
+      const resourceMetrics = await generateMetricsData();
+
+      let result = await new Promise<ExportResult>(resolve => {
+        exporter.export(resourceMetrics, result => {
+          resolve(result);
+        });
+      });
+
+      assert.strictEqual(metricDescriptors.callCount, 1);
+      assert.strictEqual(timeSeries.callCount, 1);
+      assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
+
+      // Second time around, MetricDescriptors.create() should be skipped
+      metricDescriptors.resetHistory();
+      timeSeries.resetHistory();
+      result = await new Promise<ExportResult>(resolve => {
+        exporter.export(resourceMetrics, result => {
+          resolve(result);
+        });
+      });
+
+      assert.strictEqual(metricDescriptors.callCount, 0);
+      assert.strictEqual(timeSeries.callCount, 1);
+      assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
     });
 
     it('should return FAILED if there is an error sending TimeSeries', async () => {

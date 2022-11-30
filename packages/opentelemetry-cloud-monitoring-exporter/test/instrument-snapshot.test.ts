@@ -22,7 +22,7 @@
 import {Attributes, ValueType} from '@opentelemetry/api';
 import * as snapshot from 'snap-shot-it';
 import {ExportResult, ExportResultCode} from '@opentelemetry/core';
-import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
+import {Aggregation, ResourceMetrics, View} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
@@ -224,6 +224,35 @@ describe('MetricExporter snapshot tests', () => {
             observableResult.observe(value, LABELS);
           });
       });
+
+      const result = await callExporter(resourceMetrics);
+      assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+      gcmNock.snapshotCalls();
+    });
+  });
+
+  describe('reconfigure with views', () => {
+    it('counter with histogram view', async () => {
+      const resourceMetrics = await generateMetricsData(
+        (_, meter) => {
+          meter
+            .createCounter('mycounter', {
+              description: 'instrument description',
+              unit: '{myunit}',
+              valueType: ValueType.DOUBLE,
+            })
+            .add(12.3);
+        },
+        {
+          views: [
+            new View({
+              instrumentName: 'mycounter',
+              aggregation: Aggregation.Histogram(),
+              name: 'myrenamedhistogram',
+            }),
+          ],
+        }
+      );
 
       const result = await callExporter(resourceMetrics);
       assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});

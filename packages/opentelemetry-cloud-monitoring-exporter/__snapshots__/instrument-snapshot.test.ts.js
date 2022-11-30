@@ -811,3 +811,95 @@ exports['MetricExporter snapshot tests UpDownCounter - INT 1'] = [
     ]
   }
 ]
+
+exports['MetricExporter snapshot tests reconfigure with views counter with histogram view 1'] = [
+  {
+    "uri": "/v3/projects/otel-starter-project/metricDescriptors",
+    "body": {
+      "type": "workload.googleapis.com/myrenamedhistogram",
+      "description": "instrument description",
+      "displayName": "myrenamedhistogram",
+      "metricKind": "CUMULATIVE",
+      "valueType": "DOUBLE",
+      "unit": "{myunit}",
+      "labels": [
+        {
+          "key": "opentelemetry_task",
+          "description": "OpenTelemetry task identifier"
+        }
+      ]
+    },
+    "userAgent": [
+      "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
+    ]
+  },
+  {
+    "uri": "/v3/projects/otel-starter-project/timeSeries",
+    "body": {
+      "timeSeries": [
+        {
+          "metric": {
+            "type": "workload.googleapis.com/myrenamedhistogram",
+            "labels": {
+              "opentelemetry_task": "opentelemetry_task"
+            }
+          },
+          "resource": {
+            "type": "global",
+            "labels": {
+              "project_id": "otel-starter-project"
+            }
+          },
+          "metricKind": "CUMULATIVE",
+          "valueType": "DOUBLE",
+          "points": [
+            {
+              "value": {
+                "distributionValue": {
+                  "count": "1",
+                  "mean": 12.3,
+                  "bucketOptions": {
+                    "explicitBuckets": {
+                      "bounds": [
+                        0,
+                        5,
+                        10,
+                        25,
+                        50,
+                        75,
+                        100,
+                        250,
+                        500,
+                        1000
+                      ]
+                    }
+                  },
+                  "bucketCounts": [
+                    "0",
+                    "0",
+                    "0",
+                    "1",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                  ]
+                }
+              },
+              "interval": {
+                "startTime": "startTime",
+                "endTime": "endTime"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "userAgent": [
+      "opentelemetry-js/1.8.0 google-cloud-metric-exporter/0.14.0 google-api-nodejs-client/5.1.0 (gzip)"
+    ]
+  }
+]
