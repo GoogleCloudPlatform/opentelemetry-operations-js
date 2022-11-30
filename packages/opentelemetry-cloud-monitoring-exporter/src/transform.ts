@@ -41,16 +41,12 @@ export const OPENTELEMETRY_TASK_VALUE_DEFAULT = generateDefaultTaskValue();
 
 export function transformMetricDescriptor(
   instrumentDescriptor: InstrumentDescriptor,
-  metricPrefix: string,
-  displayNamePrefix: string
+  metricPrefix: string
 ): MetricDescriptor {
   return {
     type: transformMetricType(metricPrefix, instrumentDescriptor.name),
     description: instrumentDescriptor.description,
-    displayName: transformDisplayName(
-      displayNamePrefix,
-      instrumentDescriptor.name
-    ),
+    displayName: instrumentDescriptor.name,
     metricKind: transformMetricKind(instrumentDescriptor.type),
     valueType: transformValueType(instrumentDescriptor.valueType),
     unit: instrumentDescriptor.unit,
@@ -66,11 +62,6 @@ export function transformMetricDescriptor(
 /** Transforms Metric type. */
 function transformMetricType(metricPrefix: string, name: string): string {
   return path.posix.join(metricPrefix, name);
-}
-
-/** Transforms Metric display name. */
-function transformDisplayName(displayNamePrefix: string, name: string): string {
-  return path.posix.join(displayNamePrefix, name);
 }
 
 /** Transforms a OpenTelemetry instrument type to a GCM MetricKind. */
@@ -231,13 +222,3 @@ function generateDefaultTaskValue(): string {
 function exhaust(switchValue: never) {
   return switchValue;
 }
-
-export const TEST_ONLY = {
-  transformMetricKind,
-  transformValueType,
-  transformDisplayName,
-  transformMetricType,
-  transformMetric,
-  transformPoints,
-  OPENTELEMETRY_TASK,
-};

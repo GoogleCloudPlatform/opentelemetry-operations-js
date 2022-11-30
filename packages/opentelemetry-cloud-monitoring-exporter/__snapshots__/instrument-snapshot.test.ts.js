@@ -2,9 +2,9 @@ exports['MetricExporter snapshot tests Counter - DOUBLE 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors",
     "body": {
-      "type": "custom.googleapis.com/opentelemetry/mycounter",
+      "type": "workload.googleapis.com/mycounter",
       "description": "counter description",
-      "displayName": "OpenTelemetry/mycounter",
+      "displayName": "mycounter",
       "metricKind": "CUMULATIVE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
@@ -25,7 +25,7 @@ exports['MetricExporter snapshot tests Counter - DOUBLE 1'] = [
       "timeSeries": [
         {
           "metric": {
-            "type": "custom.googleapis.com/opentelemetry/mycounter",
+            "type": "workload.googleapis.com/mycounter",
             "labels": {
               "string": "string",
               "int": "123",
@@ -65,9 +65,9 @@ exports['MetricExporter snapshot tests Counter - INT 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors",
     "body": {
-      "type": "custom.googleapis.com/opentelemetry/mycounter",
+      "type": "workload.googleapis.com/mycounter",
       "description": "counter description",
-      "displayName": "OpenTelemetry/mycounter",
+      "displayName": "mycounter",
       "metricKind": "CUMULATIVE",
       "valueType": "INT64",
       "unit": "{myunit}",
@@ -88,7 +88,7 @@ exports['MetricExporter snapshot tests Counter - INT 1'] = [
       "timeSeries": [
         {
           "metric": {
-            "type": "custom.googleapis.com/opentelemetry/mycounter",
+            "type": "workload.googleapis.com/mycounter",
             "labels": {
               "string": "string",
               "int": "123",
@@ -128,9 +128,9 @@ exports['MetricExporter snapshot tests Histogram - DOUBLE 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors",
     "body": {
-      "type": "custom.googleapis.com/opentelemetry/myhistogram",
+      "type": "workload.googleapis.com/myhistogram",
       "description": "histogram description",
-      "displayName": "OpenTelemetry/myhistogram",
+      "displayName": "myhistogram",
       "metricKind": "CUMULATIVE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
@@ -151,7 +151,7 @@ exports['MetricExporter snapshot tests Histogram - DOUBLE 1'] = [
       "timeSeries": [
         {
           "metric": {
-            "type": "custom.googleapis.com/opentelemetry/myhistogram",
+            "type": "workload.googleapis.com/myhistogram",
             "labels": {
               "string": "string",
               "int": "123",
@@ -223,9 +223,9 @@ exports['MetricExporter snapshot tests Histogram - INT 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors",
     "body": {
-      "type": "custom.googleapis.com/opentelemetry/myhistogram",
+      "type": "workload.googleapis.com/myhistogram",
       "description": "histogram description",
-      "displayName": "OpenTelemetry/myhistogram",
+      "displayName": "myhistogram",
       "metricKind": "CUMULATIVE",
       "valueType": "INT64",
       "unit": "{myunit}",
@@ -246,7 +246,7 @@ exports['MetricExporter snapshot tests Histogram - INT 1'] = [
       "timeSeries": [
         {
           "metric": {
-            "type": "custom.googleapis.com/opentelemetry/myhistogram",
+            "type": "workload.googleapis.com/myhistogram",
             "labels": {
               "string": "string",
               "int": "123",
@@ -318,9 +318,9 @@ exports['MetricExporter snapshot tests ObservableCounter - DOUBLE 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors",
     "body": {
-      "type": "custom.googleapis.com/opentelemetry/myobservablecounter",
+      "type": "workload.googleapis.com/myobservablecounter",
       "description": "counter description",
-      "displayName": "OpenTelemetry/myobservablecounter",
+      "displayName": "myobservablecounter",
       "metricKind": "CUMULATIVE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
@@ -341,7 +341,7 @@ exports['MetricExporter snapshot tests ObservableCounter - DOUBLE 1'] = [
       "timeSeries": [
         {
           "metric": {
-            "type": "custom.googleapis.com/opentelemetry/myobservablecounter",
+            "type": "workload.googleapis.com/myobservablecounter",
             "labels": {
               "string": "string",
               "int": "123",
@@ -381,9 +381,9 @@ exports['MetricExporter snapshot tests ObservableCounter - INT 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors",
     "body": {
-      "type": "custom.googleapis.com/opentelemetry/myobservablecounter",
+      "type": "workload.googleapis.com/myobservablecounter",
       "description": "counter description",
-      "displayName": "OpenTelemetry/myobservablecounter",
+      "displayName": "myobservablecounter",
       "metricKind": "CUMULATIVE",
       "valueType": "INT64",
       "unit": "{myunit}",
@@ -404,7 +404,7 @@ exports['MetricExporter snapshot tests ObservableCounter - INT 1'] = [
       "timeSeries": [
         {
           "metric": {
-            "type": "custom.googleapis.com/opentelemetry/myobservablecounter",
+            "type": "workload.googleapis.com/myobservablecounter",
             "labels": {
               "string": "string",
               "int": "123",
@@ -444,9 +444,9 @@ exports['MetricExporter snapshot tests ObservableGauge - DOUBLE 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors",
     "body": {
-      "type": "custom.googleapis.com/opentelemetry/myobservablegauge",
+      "type": "workload.googleapis.com/myobservablegauge",
       "description": "instrument description",
-      "displayName": "OpenTelemetry/myobservablegauge",
+      "displayName": "myobservablegauge",
       "metricKind": "GAUGE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
@@ -467,7 +467,7 @@ exports['MetricExporter snapshot tests ObservableGauge - DOUBLE 1'] = [
       "timeSeries": [
         {
           "metric": {
-            "type": "custom.googleapis.com/opentelemetry/myobservablegauge",
+            "type": "workload.googleapis.com/myobservablegauge",
             "labels": {
               "string": "string",
               "int": "123",
@@ -506,9 +506,9 @@ exports['MetricExporter snapshot tests ObservableGauge - INT 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors",
     "body": {
-      "type": "custom.googleapis.com/opentelemetry/myobservablegauge",
+      "type": "workload.googleapis.com/myobservablegauge",
       "description": "instrument description",
-      "displayName": "OpenTelemetry/myobservablegauge",
+      "displayName": "myobservablegauge",
       "metricKind": "GAUGE",
       "valueType": "INT64",
       "unit": "{myunit}",
@@ -529,7 +529,7 @@ exports['MetricExporter snapshot tests ObservableGauge - INT 1'] = [
       "timeSeries": [
         {
           "metric": {
-            "type": "custom.googleapis.com/opentelemetry/myobservablegauge",
+            "type": "workload.googleapis.com/myobservablegauge",
             "labels": {
               "string": "string",
               "int": "123",
@@ -568,9 +568,9 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - DOUBLE 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors",
     "body": {
-      "type": "custom.googleapis.com/opentelemetry/myobservableupdowncounter",
+      "type": "workload.googleapis.com/myobservableupdowncounter",
       "description": "instrument description",
-      "displayName": "OpenTelemetry/myobservableupdowncounter",
+      "displayName": "myobservableupdowncounter",
       "metricKind": "GAUGE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
@@ -591,7 +591,7 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - DOUBLE 1'] = [
       "timeSeries": [
         {
           "metric": {
-            "type": "custom.googleapis.com/opentelemetry/myobservableupdowncounter",
+            "type": "workload.googleapis.com/myobservableupdowncounter",
             "labels": {
               "string": "string",
               "int": "123",
@@ -630,9 +630,9 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - INT 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors",
     "body": {
-      "type": "custom.googleapis.com/opentelemetry/myobservableupdowncounter",
+      "type": "workload.googleapis.com/myobservableupdowncounter",
       "description": "instrument description",
-      "displayName": "OpenTelemetry/myobservableupdowncounter",
+      "displayName": "myobservableupdowncounter",
       "metricKind": "GAUGE",
       "valueType": "INT64",
       "unit": "{myunit}",
@@ -653,7 +653,7 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - INT 1'] = [
       "timeSeries": [
         {
           "metric": {
-            "type": "custom.googleapis.com/opentelemetry/myobservableupdowncounter",
+            "type": "workload.googleapis.com/myobservableupdowncounter",
             "labels": {
               "string": "string",
               "int": "123",
@@ -692,9 +692,9 @@ exports['MetricExporter snapshot tests UpDownCounter - DOUBLE 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors",
     "body": {
-      "type": "custom.googleapis.com/opentelemetry/myupdowncounter",
+      "type": "workload.googleapis.com/myupdowncounter",
       "description": "updowncounter description",
-      "displayName": "OpenTelemetry/myupdowncounter",
+      "displayName": "myupdowncounter",
       "metricKind": "GAUGE",
       "valueType": "DOUBLE",
       "unit": "{myunit}",
@@ -715,7 +715,7 @@ exports['MetricExporter snapshot tests UpDownCounter - DOUBLE 1'] = [
       "timeSeries": [
         {
           "metric": {
-            "type": "custom.googleapis.com/opentelemetry/myupdowncounter",
+            "type": "workload.googleapis.com/myupdowncounter",
             "labels": {
               "string": "string",
               "int": "123",
@@ -754,9 +754,9 @@ exports['MetricExporter snapshot tests UpDownCounter - INT 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors",
     "body": {
-      "type": "custom.googleapis.com/opentelemetry/myupdowncounter",
+      "type": "workload.googleapis.com/myupdowncounter",
       "description": "updowncounter description",
-      "displayName": "OpenTelemetry/myupdowncounter",
+      "displayName": "myupdowncounter",
       "metricKind": "GAUGE",
       "valueType": "INT64",
       "unit": "{myunit}",
@@ -777,7 +777,7 @@ exports['MetricExporter snapshot tests UpDownCounter - INT 1'] = [
       "timeSeries": [
         {
           "metric": {
-            "type": "custom.googleapis.com/opentelemetry/myupdowncounter",
+            "type": "workload.googleapis.com/myupdowncounter",
             "labels": {
               "string": "string",
               "int": "123",
