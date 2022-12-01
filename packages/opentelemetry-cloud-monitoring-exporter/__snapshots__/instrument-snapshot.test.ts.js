@@ -28,9 +28,11 @@ exports['MetricExporter snapshot tests Counter - DOUBLE 1'] = [
             }
           },
           "resource": {
-            "type": "global",
+            "type": "generic_node",
             "labels": {
-              "project_id": "otel-starter-project"
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
             }
           },
           "metricKind": "CUMULATIVE",
@@ -85,9 +87,11 @@ exports['MetricExporter snapshot tests Counter - INT 1'] = [
             }
           },
           "resource": {
-            "type": "global",
+            "type": "generic_node",
             "labels": {
-              "project_id": "otel-starter-project"
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
             }
           },
           "metricKind": "CUMULATIVE",
@@ -142,9 +146,11 @@ exports['MetricExporter snapshot tests Histogram - DOUBLE 1'] = [
             }
           },
           "resource": {
-            "type": "global",
+            "type": "generic_node",
             "labels": {
-              "project_id": "otel-starter-project"
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
             }
           },
           "metricKind": "CUMULATIVE",
@@ -231,9 +237,11 @@ exports['MetricExporter snapshot tests Histogram - INT 1'] = [
             }
           },
           "resource": {
-            "type": "global",
+            "type": "generic_node",
             "labels": {
-              "project_id": "otel-starter-project"
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
             }
           },
           "metricKind": "CUMULATIVE",
@@ -320,9 +328,11 @@ exports['MetricExporter snapshot tests ObservableCounter - DOUBLE 1'] = [
             }
           },
           "resource": {
-            "type": "global",
+            "type": "generic_node",
             "labels": {
-              "project_id": "otel-starter-project"
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
             }
           },
           "metricKind": "CUMULATIVE",
@@ -377,9 +387,11 @@ exports['MetricExporter snapshot tests ObservableCounter - INT 1'] = [
             }
           },
           "resource": {
-            "type": "global",
+            "type": "generic_node",
             "labels": {
-              "project_id": "otel-starter-project"
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
             }
           },
           "metricKind": "CUMULATIVE",
@@ -434,9 +446,11 @@ exports['MetricExporter snapshot tests ObservableGauge - DOUBLE 1'] = [
             }
           },
           "resource": {
-            "type": "global",
+            "type": "generic_node",
             "labels": {
-              "project_id": "otel-starter-project"
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
             }
           },
           "metricKind": "GAUGE",
@@ -490,9 +504,11 @@ exports['MetricExporter snapshot tests ObservableGauge - INT 1'] = [
             }
           },
           "resource": {
-            "type": "global",
+            "type": "generic_node",
             "labels": {
-              "project_id": "otel-starter-project"
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
             }
           },
           "metricKind": "GAUGE",
@@ -546,9 +562,11 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - DOUBLE 1'] = [
             }
           },
           "resource": {
-            "type": "global",
+            "type": "generic_node",
             "labels": {
-              "project_id": "otel-starter-project"
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
             }
           },
           "metricKind": "GAUGE",
@@ -602,9 +620,11 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - INT 1'] = [
             }
           },
           "resource": {
-            "type": "global",
+            "type": "generic_node",
             "labels": {
-              "project_id": "otel-starter-project"
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
             }
           },
           "metricKind": "GAUGE",
@@ -658,9 +678,11 @@ exports['MetricExporter snapshot tests UpDownCounter - DOUBLE 1'] = [
             }
           },
           "resource": {
-            "type": "global",
+            "type": "generic_node",
             "labels": {
-              "project_id": "otel-starter-project"
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
             }
           },
           "metricKind": "GAUGE",
@@ -714,9 +736,11 @@ exports['MetricExporter snapshot tests UpDownCounter - INT 1'] = [
             }
           },
           "resource": {
-            "type": "global",
+            "type": "generic_node",
             "labels": {
-              "project_id": "otel-starter-project"
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
             }
           },
           "metricKind": "GAUGE",
@@ -766,9 +790,11 @@ exports['MetricExporter snapshot tests reconfigure with views counter with histo
             "labels": {}
           },
           "resource": {
-            "type": "global",
+            "type": "generic_node",
             "labels": {
-              "project_id": "otel-starter-project"
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
             }
           },
           "metricKind": "CUMULATIVE",
