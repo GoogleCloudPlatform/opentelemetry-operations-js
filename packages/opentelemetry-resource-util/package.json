@@ -13,6 +13,7 @@
     "compile": "tsc",
     "prepare": "npm run compile",
     "test": "nyc ts-mocha -p tsconfig.json 'test/**/*.test.ts'",
+    "update-snapshot-tests": "SNAPSHOT_UPDATE=1 npm run test",
     "fix": "gts fix",
     "pretest": "npm run compile"
   },
@@ -38,6 +39,11 @@
     "access": "public",
     "registry": "https://wombat-dressing-room.appspot.com"
   },
+  "config": {
+    "snap-shot-it": {
+      "sortSnapshots": true
+    }
+  },
   "devDependencies": {
     "@opentelemetry/api": "1.3.0",
     "@opentelemetry/resources": "1.8.0",
@@ -48,6 +54,7 @@
     "gts": "3.1.1",
     "mocha": "9.2.2",
     "nyc": "15.1.0",
+    "snap-shot-it": "^7.9.6",
     "ts-mocha": "9.0.2",
     "typescript": "4.8.4"
   },

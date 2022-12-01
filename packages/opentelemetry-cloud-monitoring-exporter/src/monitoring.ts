@@ -140,8 +140,7 @@ export class MetricExporter implements PushMetricExporter {
 
     diag.debug('Google Cloud Monitoring export');
     const resource = mapOtelResourceToMonitoredResource(
-      resourceMetrics.resource,
-      this._projectId
+      resourceMetrics.resource
     );
     const timeSeries: TimeSeries[] = [];
     for (const scopeMetric of resourceMetrics.scopeMetrics) {

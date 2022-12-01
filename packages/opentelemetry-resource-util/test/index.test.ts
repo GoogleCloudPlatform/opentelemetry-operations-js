@@ -12,74 +12,233 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * Snapshot tests written using https://github.com/bahmutov/snap-shot-it. Snapshots are sorted
+ * based on the config option in package.json.
+ *
+ * To update snapshots, use `npm run update-snapshot-tests`
+ */
 
-import * as assert from 'assert';
-import {SemanticResourceAttributes} from '@opentelemetry/semantic-conventions';
 import {mapOtelResourceToMonitoredResource} from '../src';
 import {Resource} from '@opentelemetry/resources';
 
-describe('Monitored resource util', () => {
-  const projectId = 'project_id';
-  const mockAwsResource = {
-    [SemanticResourceAttributes.CLOUD_PROVIDER]: 'aws',
-    [SemanticResourceAttributes.HOST_ID]: 'host_id',
-    [SemanticResourceAttributes.CLOUD_REGION]: 'my-region',
-    [SemanticResourceAttributes.CLOUD_ACCOUNT_ID]: '12345',
-  };
-  const mockAwsMonitoredResource = {
-    type: 'aws_ec2_instance',
-    labels: {
-      instance_id: 'host_id',
-      project_id: projectId,
-      region: 'aws:my-region',
-      aws_account: '12345',
+import * as snapshot from 'snap-shot-it';
+import * as assert from 'assert';
+
+describe('mapOtelResourceToMonitoredResource', () => {
+  [
+    {
+      title: 'should map to gce_instance',
+      otelAttributes: {
+        'cloud.platform': 'gcp_compute_engine',
+        'cloud.availability_zone': 'foo',
+        'host.id': 'myhost',
+      },
     },
-  };
-  const mockGCResource = {
-    [SemanticResourceAttributes.CLOUD_PROVIDER]: 'gcp',
-    [SemanticResourceAttributes.HOST_ID]: 'host_id',
-    [SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE]: 'my-zone',
-  };
-  const mockGCMonitoredResource = {
-    type: 'gce_instance',
-    labels: {
-      instance_id: 'host_id',
-      project_id: projectId,
-      zone: 'my-zone',
+
+    {
+      title: 'should map to k8s_container',
+      otelAttributes: {
+        'cloud.platform': 'gcp_kubernetes_engine',
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+        'k8s.container.name': 'mycontainer',
+      },
     },
-  };
-  const mockGlobalResource = {
-    type: 'global',
-    labels: {project_id: projectId},
-  };
 
-  describe('mapOtelResourceToMonitoredResource', () => {
-    it('should map GCE OTel resource => gce_instance monitored resource', () => {
-      const otelResource = new Resource(mockGCResource);
-      const monitoredResource = mapOtelResourceToMonitoredResource(
-        otelResource,
-        projectId
-      );
-      assert.deepStrictEqual(monitoredResource, mockGCMonitoredResource);
+    {
+      title: 'should map to k8s_container with region fallback',
+      otelAttributes: {
+        'cloud.platform': 'gcp_kubernetes_engine',
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+        'k8s.container.name': 'mycontainer',
+      },
+    },
+
+    {
+      title: 'should map to k8s_pod',
+      otelAttributes: {
+        'cloud.platform': 'gcp_kubernetes_engine',
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+      },
+    },
+
+    {
+      title: 'should map to k8s_pod with region fallback',
+      otelAttributes: {
+        'cloud.platform': 'gcp_kubernetes_engine',
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+      },
+    },
+
+    {
+      title: 'should map to k8s_node',
+      otelAttributes: {
+        'cloud.platform': 'gcp_kubernetes_engine',
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.node.name': 'mynode',
+      },
+    },
+
+    {
+      title: 'should map to k8s_node with region fallback',
+      otelAttributes: {
+        'cloud.platform': 'gcp_kubernetes_engine',
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.node.name': 'mynode',
+      },
+    },
+
+    {
+      title: 'should map to k8s_cluster',
+      otelAttributes: {
+        'cloud.platform': 'gcp_kubernetes_engine',
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+      },
+    },
+
+    {
+      title: 'should map to k8s_cluster with region fallback',
+      otelAttributes: {
+        'cloud.platform': 'gcp_kubernetes_engine',
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+      },
+    },
+
+    {
+      title: 'should map to aws_ec2_instance"',
+      otelAttributes: {
+        'cloud.platform': 'aws_ec2',
+        'cloud.availability_zone': 'myavailzone',
+        'host.id': 'myhostid',
+        'cloud.account.id': 'myawsaccount',
+      },
+    },
+
+    {
+      title: 'should map to aws_ec2_instance with region fallback',
+      otelAttributes: {
+        'cloud.platform': 'aws_ec2',
+        'cloud.region': 'myregion',
+        'host.id': 'myhostid',
+        'cloud.account.id': 'myawsaccount',
+      },
+    },
+
+    {
+      title: 'should map to generic_task',
+      otelAttributes: {
+        'cloud.availability_zone': 'myavailzone',
+        'service.namespace': 'servicens',
+        'service.name': 'servicename',
+        'service.instance.id': 'serviceinstanceid',
+      },
+    },
+
+    {
+      title: 'should map to generic_task with fallback to region',
+      otelAttributes: {
+        'cloud.region': 'myregion',
+        'service.namespace': 'servicens',
+        'service.name': 'servicename',
+        'service.instance.id': 'serviceinstanceid',
+      },
+    },
+
+    {
+      title: 'should map to generic_task with fallback to global',
+      otelAttributes: {
+        'service.namespace': 'servicens',
+        'service.name': 'servicename',
+        'service.instance.id': 'serviceinstanceid',
+      },
+    },
+
+    {
+      title: 'should map to generic_node',
+      otelAttributes: {
+        'cloud.availability_zone': 'myavailzone',
+        'service.namespace': 'servicens',
+        'service.name': 'servicename',
+        'host.id': 'hostid',
+      },
+    },
+
+    {
+      title: 'should map to generic_node fallback to region',
+      otelAttributes: {
+        'cloud.region': 'myregion',
+        'service.namespace': 'servicens',
+        'service.name': 'servicename',
+        'host.id': 'hostid',
+      },
+    },
+
+    {
+      title: 'should map to generic_node with fallback to global',
+      otelAttributes: {
+        'service.namespace': 'servicens',
+        'service.name': 'servicename',
+        'host.id': 'hostid',
+      },
+    },
+
+    {
+      title: 'should map to generic_node with fallback to host.name',
+      otelAttributes: {
+        'service.namespace': 'servicens',
+        'service.name': 'servicename',
+        'host.name': 'hostname',
+      },
+    },
+
+    {
+      title: 'should map empty resource to generic_node',
+      otelAttributes: {foo: 'bar', 'no.useful': 'resourceattribs'},
+    },
+  ].forEach(({title, otelAttributes}) => {
+    it(title, () => {
+      const resource = new Resource(otelAttributes);
+      const actual = mapOtelResourceToMonitoredResource(resource);
+      snapshot(actual);
     });
+  });
 
-    it('should map AWS OTel resource => aws_ec2_instance monitored resource', () => {
-      const otelResource = new Resource(mockAwsResource);
+  it('should map non-string values to JSON strings', () => {
+    [
+      [undefined, ''],
+      [123, '123'],
+      [123.4, '123.4'],
+      [[1, 2, 3, 4], '[1,2,3,4]'],
+      [[1.1, 2.2, 3.3, 4.4], '[1.1,2.2,3.3,4.4]'],
+      [['a', 'b', 'c', 'd'], '["a","b","c","d"]'],
+      [['a', null, 'c', 'd', undefined], '["a",null,"c","d",null]'],
+    ].forEach(([value, expect]) => {
       const monitoredResource = mapOtelResourceToMonitoredResource(
-        otelResource,
-        projectId
+        new Resource({'host.id': value})
       );
-      assert.deepStrictEqual(monitoredResource, mockAwsMonitoredResource);
-    });
+      const mappedValue = monitoredResource.labels['node_id'];
 
-    it('should map otherwise to global monitored resource', () => {
-      const otelResource = Resource.default();
-      const monitoredResource = mapOtelResourceToMonitoredResource(
-        otelResource,
-        projectId
-      );
-      assert.deepStrictEqual(monitoredResource, mockGlobalResource);
+      assert.strictEqual(mappedValue, expect);
     });
   });
 });

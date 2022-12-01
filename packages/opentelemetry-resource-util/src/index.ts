@@ -12,99 +12,223 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {Attributes, AttributeValue} from '@opentelemetry/api';
 import {Resource} from '@opentelemetry/resources';
-import {SemanticResourceAttributes} from '@opentelemetry/semantic-conventions';
+import {
+  SemanticResourceAttributes,
+  CloudPlatformValues,
+} from '@opentelemetry/semantic-conventions';
+
+const AWS_ACCOUNT = 'aws_account';
+const AWS_EC2_INSTANCE = 'aws_ec2_instance';
+const CLUSTER_NAME = 'cluster_name';
+const CONTAINER_NAME = 'container_name';
+const GCE_INSTANCE = 'gce_instance';
+const GENERIC_NODE = 'generic_node';
+const GENERIC_TASK = 'generic_task';
+const INSTANCE_ID = 'instance_id';
+const JOB = 'job';
+const K8S_CLUSTER = 'k8s_cluster';
+const K8S_CONTAINER = 'k8s_container';
+const K8S_NODE = 'k8s_node';
+const K8S_POD = 'k8s_pod';
+const LOCATION = 'location';
+const NAMESPACE = 'namespace';
+const NAMESPACE_NAME = 'namespace_name';
+const NODE_ID = 'node_id';
+const NODE_NAME = 'node_name';
+const POD_NAME = 'pod_name';
+const REGION = 'region';
+const TASK_ID = 'task_id';
+const ZONE = 'zone';
+
+/**
+ * Mappings of GCM resource label keys onto mapping config from OTel resource for a given
+ * monitored resource type. Copied from Go impl:
+ * https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/v1.8.0/internal/resourcemapping/resourcemapping.go#L51
+ */
+const MAPPINGS = {
+  [GCE_INSTANCE]: {
+    [ZONE]: {otelKeys: [SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE]},
+    [INSTANCE_ID]: {otelKeys: [SemanticResourceAttributes.HOST_ID]},
+  },
+  [K8S_CONTAINER]: {
+    [LOCATION]: {
+      otelKeys: [
+        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
+        SemanticResourceAttributes.CLOUD_REGION,
+      ],
+    },
+    [CLUSTER_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_CLUSTER_NAME]},
+    [NAMESPACE_NAME]: {
+      otelKeys: [SemanticResourceAttributes.K8S_NAMESPACE_NAME],
+    },
+    [POD_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_POD_NAME]},
+    [CONTAINER_NAME]: {
+      otelKeys: [SemanticResourceAttributes.K8S_CONTAINER_NAME],
+    },
+  },
+  [K8S_POD]: {
+    [LOCATION]: {
+      otelKeys: [
+        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
+        SemanticResourceAttributes.CLOUD_REGION,
+      ],
+    },
+    [CLUSTER_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_CLUSTER_NAME]},
+    [NAMESPACE_NAME]: {
+      otelKeys: [SemanticResourceAttributes.K8S_NAMESPACE_NAME],
+    },
+    [POD_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_POD_NAME]},
+  },
+  [K8S_NODE]: {
+    [LOCATION]: {
+      otelKeys: [
+        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
+        SemanticResourceAttributes.CLOUD_REGION,
+      ],
+    },
+    [CLUSTER_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_CLUSTER_NAME]},
+    [NODE_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_NODE_NAME]},
+  },
+  [K8S_CLUSTER]: {
+    [LOCATION]: {
+      otelKeys: [
+        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
+        SemanticResourceAttributes.CLOUD_REGION,
+      ],
+    },
+    [CLUSTER_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_CLUSTER_NAME]},
+  },
+  [AWS_EC2_INSTANCE]: {
+    [INSTANCE_ID]: {otelKeys: [SemanticResourceAttributes.HOST_ID]},
+    [REGION]: {
+      otelKeys: [
+        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
+        SemanticResourceAttributes.CLOUD_REGION,
+      ],
+    },
+    [AWS_ACCOUNT]: {otelKeys: [SemanticResourceAttributes.CLOUD_ACCOUNT_ID]},
+  },
+  [GENERIC_TASK]: {
+    [LOCATION]: {
+      otelKeys: [
+        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
+        SemanticResourceAttributes.CLOUD_REGION,
+      ],
+      fallback: 'global',
+    },
+    [NAMESPACE]: {otelKeys: [SemanticResourceAttributes.SERVICE_NAMESPACE]},
+    [JOB]: {otelKeys: [SemanticResourceAttributes.SERVICE_NAME]},
+    [TASK_ID]: {otelKeys: [SemanticResourceAttributes.SERVICE_INSTANCE_ID]},
+  },
+  [GENERIC_NODE]: {
+    [LOCATION]: {
+      otelKeys: [
+        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
+        SemanticResourceAttributes.CLOUD_REGION,
+      ],
+      fallback: 'global',
+    },
+    [NAMESPACE]: {otelKeys: [SemanticResourceAttributes.SERVICE_NAMESPACE]},
+    [NODE_ID]: {
+      otelKeys: [
+        SemanticResourceAttributes.HOST_ID,
+        SemanticResourceAttributes.HOST_NAME,
+      ],
+    },
+  },
+} as const;
+
+type Mapping = {
+  [key: string]: {
+    readonly otelKeys: readonly string[];
+    readonly fallback?: string;
+  };
+};
 
 type Labels = {[key: string]: string};
 export interface MonitoredResource {
   type: string;
   labels: Labels;
 }
-type LabelMapping = {[key: string]: string};
-
-const GCE_INSTANCE = 'gce_instance';
-const AWS_EC2_INSTANCE = 'aws_ec2_instance';
-
-const GCE_INSTANCE_LABEL_MAPPING: LabelMapping = {
-  instance_id: SemanticResourceAttributes.HOST_ID,
-  zone: SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
-};
-const AWS_EC2_INSTANCE_LABEL_MAPPING: LabelMapping = {
-  instance_id: SemanticResourceAttributes.HOST_ID,
-  region: SemanticResourceAttributes.CLOUD_REGION,
-  aws_account: SemanticResourceAttributes.CLOUD_ACCOUNT_ID,
-};
 
 /**
- * Given an OTel resource, return a MonitoredResource. If any field is missing,
- * return the global resource. The only currently supported monitored resources
- * are gce_instance and aws_ec2_instance.
- * @param resource
- * @param projectId
+ * Given an OTel resource, return a MonitoredResource. Copied from the collector's
+ * implementation in Go:
+ * https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/v1.8.0/internal/resourcemapping/resourcemapping.go#L51
+ *
+ * @param resource the OTel Resource
+ * @returns the corresponding GCM MonitoredResource
  */
 export function mapOtelResourceToMonitoredResource(
-  resource: Resource,
-  projectId: string
+  resource: Resource
 ): MonitoredResource {
-  const cloudProvider =
-    resource.attributes[SemanticResourceAttributes.CLOUD_PROVIDER];
-  const commonLabels = {project_id: projectId};
-  let monitoredResource: MonitoredResource | undefined;
-  if (cloudProvider === 'gcp') {
-    const labels = mapResourceAttributes(resource, GCE_INSTANCE_LABEL_MAPPING);
-    if (labels !== undefined) {
-      monitoredResource = {
-        type: GCE_INSTANCE,
-        labels: {
-          ...commonLabels,
-          ...labels,
-        },
-      };
+  const attrs = resource.attributes;
+  const platform = attrs[SemanticResourceAttributes.CLOUD_PLATFORM];
+
+  let mr: MonitoredResource;
+  if (platform === CloudPlatformValues.GCP_COMPUTE_ENGINE) {
+    mr = createMonitoredResource(GCE_INSTANCE, attrs);
+  } else if (platform === CloudPlatformValues.GCP_KUBERNETES_ENGINE) {
+    if (SemanticResourceAttributes.K8S_CONTAINER_NAME in attrs) {
+      mr = createMonitoredResource(K8S_CONTAINER, attrs);
+    } else if (SemanticResourceAttributes.K8S_POD_NAME in attrs) {
+      mr = createMonitoredResource(K8S_POD, attrs);
+    } else if (SemanticResourceAttributes.K8S_NODE_NAME in attrs) {
+      mr = createMonitoredResource(K8S_NODE, attrs);
+    } else {
+      mr = createMonitoredResource(K8S_CLUSTER, attrs);
     }
-  } else if (cloudProvider === 'aws') {
-    const labels = mapResourceAttributes(
-      resource,
-      AWS_EC2_INSTANCE_LABEL_MAPPING
-    );
-    if (labels !== undefined) {
-      monitoredResource = {
-        type: AWS_EC2_INSTANCE,
-        labels: {
-          ...commonLabels,
-          ...labels,
-          region: `aws:${labels.region}`,
-        },
-      };
+  } else if (platform === CloudPlatformValues.AWS_EC2) {
+    mr = createMonitoredResource(AWS_EC2_INSTANCE, attrs);
+  } else {
+    // fallback to generic_task
+    if (
+      SemanticResourceAttributes.SERVICE_NAME in attrs &&
+      SemanticResourceAttributes.SERVICE_INSTANCE_ID in attrs
+    ) {
+      mr = createMonitoredResource(GENERIC_TASK, attrs);
+    } else {
+      // If not possible, finally fallback to generic_node
+      mr = createMonitoredResource(GENERIC_NODE, attrs);
     }
   }
 
-  // fallback
-  if (monitoredResource === undefined) {
-    monitoredResource = {type: 'global', labels: {...commonLabels}};
-  }
-
-  return monitoredResource;
+  return mr;
 }
 
-/**
- * Given a LabelMapping, maps the resource into labels. If any resource
- * attribute is missing, returns undefined.
- *
- * @param resource
- * @param labelMapping
- * @returns
- */
-function mapResourceAttributes(
-  resource: Resource,
-  labelMapping: LabelMapping
-): Labels | undefined {
-  const labels: Labels = {};
-  for (const [labelKey, labelSource] of Object.entries(labelMapping)) {
-    const labelValue = resource.attributes[labelSource];
-    if (typeof labelValue !== 'string') {
-      return undefined;
+function createMonitoredResource(
+  monitoredResourceType: keyof typeof MAPPINGS,
+  resourceAttrs: Attributes
+): MonitoredResource {
+  const mapping: Mapping = MAPPINGS[monitoredResourceType];
+  const labels: {[key: string]: string} = {};
+
+  Object.entries(mapping).map(([mrKey, mapConfig]) => {
+    let mrValue: AttributeValue | undefined;
+    for (const otelKey of mapConfig.otelKeys) {
+      if (otelKey in resourceAttrs) {
+        mrValue = resourceAttrs[otelKey];
+        break;
+      }
     }
-    labels[labelKey] = labelValue;
-  }
-  return labels;
+
+    if (mrValue === undefined) {
+      mrValue = mapConfig.fallback ?? '';
+    }
+
+    // OTel attribute values can be any of string, boolean, number, or array of any of them.
+    // Encode any non-strings as json string
+    if (typeof mrValue !== 'string') {
+      mrValue = JSON.stringify(mrValue);
+    }
+
+    labels[mrKey] = mrValue;
+  });
+
+  return {
+    type: monitoredResourceType,
+    labels,
+  };
 }

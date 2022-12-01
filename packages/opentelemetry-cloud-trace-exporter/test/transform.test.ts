@@ -67,6 +67,21 @@ describe('transform', () => {
               value: `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`,
             },
           },
+          'g.co/r/generic_node/location': {
+            stringValue: {
+              value: 'global',
+            },
+          },
+          'g.co/r/generic_node/namespace': {
+            stringValue: {
+              value: '',
+            },
+          },
+          'g.co/r/generic_node/node_id': {
+            stringValue: {
+              value: '',
+            },
+          },
         },
         droppedAttributesCount: 0,
       },
@@ -196,9 +211,9 @@ describe('transform', () => {
     // @ts-expect-error testing behavior with unsupported type
     readableSpan.attributes.testUnknownType = {message: 'dropped'};
     const result = transformer(readableSpan);
-    // count of 1 for just the g.co/agent attribute
     assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 1);
-    assert.strictEqual(Object.keys(result.attributes!.attributeMap!).length, 1);
+    // count of 4 for the g.co/agent attribute + three g.co/r/generic_node/{label} labels
+    assert.strictEqual(Object.keys(result.attributes!.attributeMap!).length, 4);
   });
 
   it('should transform links', () => {
@@ -366,6 +381,7 @@ describe('transform', () => {
       ...readableSpan,
       resource: new Resource({
         'cloud.provider': 'gcp',
+        'cloud.platform': 'gcp_compute_engine',
         'host.id': 'foobar.com',
         'cloud.availability_zone': 'us-west1-a',
       }),
@@ -380,11 +396,6 @@ describe('transform', () => {
         'g.co/r/gce_instance/instance_id': {
           stringValue: {
             value: 'foobar.com',
-          },
-        },
-        'g.co/r/gce_instance/project_id': {
-          stringValue: {
-            value: 'project-id',
           },
         },
         'g.co/r/gce_instance/zone': {
@@ -426,6 +437,21 @@ describe('transform', () => {
         'g.co/agent': {
           stringValue: {
             value: `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`,
+          },
+        },
+        'g.co/r/generic_node/location': {
+          stringValue: {
+            value: 'global',
+          },
+        },
+        'g.co/r/generic_node/namespace': {
+          stringValue: {
+            value: '',
+          },
+        },
+        'g.co/r/generic_node/node_id': {
+          stringValue: {
+            value: '',
           },
         },
       },
