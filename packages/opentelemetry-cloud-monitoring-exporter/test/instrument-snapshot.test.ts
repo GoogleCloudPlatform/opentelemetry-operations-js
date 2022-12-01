@@ -86,11 +86,6 @@ class GcmNock {
     this.calls.forEach(call => {
       if ('timeSeries' in call.body) {
         call.body.timeSeries?.forEach(ts => {
-          // Sanitize the opentelemetry_task per-process label that will change every time
-          if (ts.metric?.labels?.opentelemetry_task) {
-            ts.metric.labels.opentelemetry_task = 'opentelemetry_task';
-          }
-
           ts.points?.forEach(point => {
             // Sanitize start and end times
             if (point.interval?.startTime) {
