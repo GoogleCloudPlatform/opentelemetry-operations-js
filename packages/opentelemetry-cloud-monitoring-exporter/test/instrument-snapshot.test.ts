@@ -226,6 +226,28 @@ describe('MetricExporter snapshot tests', () => {
     });
   });
 
+  it('normalizes label keys in metric and descriptor', async () => {
+    const resourceMetrics = await generateMetricsData((_, meter) => {
+      const counter = meter.createCounter('mycounter', {
+        description: 'instrument description',
+        unit: '{myunit}',
+        valueType: ValueType.INT,
+      });
+      counter.add(1, {
+        valid_key_1: 'valid_key_1',
+        hellø: 'hellø',
+        '123': 'key_123',
+        'key!321': 'key_321',
+        'hyphens-dots.slashes/': 'hyphens_dots_slashes_',
+        'non_letters_:£¢$∞': 'non_letters______',
+      });
+    });
+
+    const result = await callExporter(resourceMetrics);
+    assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+    gcmNock.snapshotCalls();
+  });
+
   describe('reconfigure with views', () => {
     it('counter with histogram view', async () => {
       const resourceMetrics = await generateMetricsData(

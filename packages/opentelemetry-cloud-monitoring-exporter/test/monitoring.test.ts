@@ -23,6 +23,12 @@ import {emptyResourceMetrics, generateMetricsData} from './util';
 import {Attributes} from '@opentelemetry/api';
 
 import type {monitoring_v3} from 'googleapis';
+import {Resource} from '@opentelemetry/resources';
+import {
+  AggregationTemporality,
+  DataPointType,
+  InstrumentType,
+} from '@opentelemetry/sdk-metrics';
 
 describe('MetricExporter', () => {
   beforeEach(() => {
@@ -246,6 +252,24 @@ describe('MetricExporter', () => {
       assert.strictEqual(metricDescriptors.callCount, 1);
       assert.strictEqual(timeSeries.callCount, 1);
       assert.deepStrictEqual(result.code, ExportResultCode.FAILED);
+    });
+
+    it('should handle metrics with no data points with success', async () => {
+      const resourceMetrics = await generateMetricsData();
+      // Clear out metrics array
+      resourceMetrics.scopeMetrics[0].metrics[0].dataPoints.length = 0;
+
+      const result = await new Promise<ExportResult>(resolve => {
+        exporter.export(resourceMetrics, result => {
+          resolve(result);
+        });
+      });
+
+      // Should still create the metric descriptor
+      assert.strictEqual(metricDescriptors.callCount, 1);
+      // But no timeseries to write
+      assert.strictEqual(timeSeries.callCount, 0);
+      assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
     });
 
     it('should enforce batch size limit on metrics', async () => {
