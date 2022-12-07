@@ -31,6 +31,9 @@ import {VERSION} from './version';
 
 const OT_REQUEST_HEADER = 'x-opentelemetry-outgoing-request';
 const TRACE_USER_AGENT = `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`;
+const OPTIONS: grpc.ClientOptions = {
+  'grpc.primary_user_agent': TRACE_USER_AGENT,
+};
 
 /**
  * Format and sends span information to Google Cloud Trace.
@@ -163,12 +166,15 @@ export class TraceExporter implements SpanExporter {
     );
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     const {google}: any = grpc.loadPackageDefinition(packageDefinition);
-    const traceService = google.devtools.cloudtrace.v2.TraceService;
+    const traceService: new (
+      ...args: ConstructorParameters<typeof grpc.Client>
+    ) => TraceService = google.devtools.cloudtrace.v2.TraceService;
     const sslCreds = grpc.credentials.createSsl();
     const callCreds = grpc.credentials.createFromGoogleCredential(creds);
     return new traceService(
       this._apiEndpoint,
-      grpc.credentials.combineChannelCredentials(sslCreds, callCreds)
+      grpc.credentials.combineChannelCredentials(sslCreds, callCreds),
+      OPTIONS
     );
   }
 }
