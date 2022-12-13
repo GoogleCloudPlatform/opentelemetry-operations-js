@@ -20,9 +20,14 @@ import {
 import {Detector, Resource} from '@opentelemetry/resources';
 import * as gce from './gce';
 import * as gke from './gke';
+import * as metadata from 'gcp-metadata';
 
 export class GcpDetector implements Detector {
   async detect(): Promise<Resource> {
+    if (!(await metadata.isAvailable())) {
+      return Resource.EMPTY;
+    }
+
     if (await gke.onGke()) {
       return await this._gkeResource();
     } else if (await gce.onGce()) {

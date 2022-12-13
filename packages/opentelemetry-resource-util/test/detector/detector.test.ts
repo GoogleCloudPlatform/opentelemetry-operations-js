@@ -23,11 +23,19 @@ describe('GcpDetector', () => {
   let envStub: NodeJS.ProcessEnv;
   beforeEach(() => {
     metadataStub = sinon.stub(metadata);
+    metadataStub.isAvailable.resolves(true);
+
     envStub = sinon.replace(process, 'env', {});
   });
 
   afterEach(() => {
     sinon.restore();
+  });
+
+  it('returns empty resource when metadata server is not available', async () => {
+    metadataStub.isAvailable.resolves(false);
+    const resource = await new GcpDetector().detect();
+    assert.deepStrictEqual(resource.attributes, {});
   });
 
   describe('detects a GKE resource', () => {
