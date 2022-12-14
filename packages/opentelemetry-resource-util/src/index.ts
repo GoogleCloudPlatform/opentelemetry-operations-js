@@ -232,3 +232,5 @@ function createMonitoredResource(
     labels,
   };
 }
+
+export {GcpDetector} from './detector/detector';
