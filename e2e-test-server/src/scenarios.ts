@@ -17,10 +17,12 @@ import {
   Tracer,
   BasicTracerProvider,
   BatchSpanProcessor,
+  TracerConfig,
 } from '@opentelemetry/sdk-trace-base';
-import {AlwaysOnSampler} from '@opentelemetry/core';
-import {Resource} from '@opentelemetry/resources';
+import {AlwaysOnSampler} from '@opentelemetry/sdk-trace-base';
+import {Resource, envDetector, detectResources} from '@opentelemetry/resources';
 import {TraceExporter} from '@google-cloud/opentelemetry-cloud-trace-exporter';
+import {GcpDetector} from '@google-cloud/opentelemetry-resource-util';
 import * as constants from './constants';
 import {context, SpanKind} from '@opentelemetry/api';
 import {AsyncHooksContextManager} from '@opentelemetry/context-async-hooks';
@@ -39,10 +41,14 @@ export interface Response {
 
 context.setGlobalContextManager(new AsyncHooksContextManager());
 
-async function withTracer<R>(f: (tracer: Tracer) => R): Promise<R> {
+async function withTracer<R>(
+  f: (tracer: Tracer) => R,
+  tracerConfig?: TracerConfig
+): Promise<R> {
   const tracerProvider = new BasicTracerProvider({
     sampler: new AlwaysOnSampler(),
     resource: Resource.EMPTY,
+    ...tracerConfig,
   });
   tracerProvider.addSpanProcessor(
     new BatchSpanProcessor(new TraceExporter({projectId: constants.PROJECT_ID}))
@@ -99,6 +105,24 @@ async function complexTrace(request: Request): Promise<Response> {
   });
 }
 
+async function detectResource(request: Request): Promise<Response> {
+  return await withTracer(
+    async (tracer: Tracer): Promise<Response> => {
+      const span = tracer.startSpan('resourceDetectionTrace', {
+        attributes: {[constants.TEST_ID]: request.testId},
+      });
+      const traceId = span.spanContext().traceId;
+      span.end();
+      return {statusCode: Status.OK, headers: {[constants.TRACE_ID]: traceId}};
+    },
+    {
+      resource: await detectResources({
+        detectors: [new GcpDetector(), envDetector],
+      }),
+    }
+  );
+}
+
 async function notImplementedHandler(): Promise<Response> {
   return {statusCode: Status.UNIMPLEMENTED};
 }
@@ -109,6 +133,7 @@ const SCENARIO_TO_HANDLER: {[scenario: string]: ScenarioHandler} = {
   '/health': health,
   '/basicTrace': basicTrace,
   '/complexTrace': complexTrace,
+  '/detectResource': detectResource,
 } as const;
 
 export function getScenarioHandler(scenario: string): ScenarioHandler {
