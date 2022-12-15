@@ -150,7 +150,7 @@ exports['MetricExporter snapshot tests Histogram - DOUBLE 1'] = [
       "description": "histogram description",
       "displayName": "myhistogram",
       "metricKind": "CUMULATIVE",
-      "valueType": "DOUBLE",
+      "valueType": "DISTRIBUTION",
       "unit": "{myunit}",
       "labels": [
         {
@@ -193,7 +193,7 @@ exports['MetricExporter snapshot tests Histogram - DOUBLE 1'] = [
             }
           },
           "metricKind": "CUMULATIVE",
-          "valueType": "DOUBLE",
+          "valueType": "DISTRIBUTION",
           "points": [
             {
               "value": {
@@ -254,7 +254,7 @@ exports['MetricExporter snapshot tests Histogram - INT 1'] = [
       "description": "histogram description",
       "displayName": "myhistogram",
       "metricKind": "CUMULATIVE",
-      "valueType": "INT64",
+      "valueType": "DISTRIBUTION",
       "unit": "{myunit}",
       "labels": [
         {
@@ -297,7 +297,7 @@ exports['MetricExporter snapshot tests Histogram - INT 1'] = [
             }
           },
           "metricKind": "CUMULATIVE",
-          "valueType": "INT64",
+          "valueType": "DISTRIBUTION",
           "points": [
             {
               "value": {
@@ -1015,7 +1015,7 @@ exports['MetricExporter snapshot tests reconfigure with views counter with histo
       "description": "instrument description",
       "displayName": "myrenamedhistogram",
       "metricKind": "CUMULATIVE",
-      "valueType": "DOUBLE",
+      "valueType": "DISTRIBUTION",
       "unit": "{myunit}",
       "labels": []
     },
@@ -1041,7 +1041,7 @@ exports['MetricExporter snapshot tests reconfigure with views counter with histo
             }
           },
           "metricKind": "CUMULATIVE",
-          "valueType": "DOUBLE",
+          "valueType": "DISTRIBUTION",
           "points": [
             {
               "value": {

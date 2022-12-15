@@ -98,6 +98,9 @@ function transformMetricKind(metric: MetricData): MetricKind {
 
 /** Transforms a OpenTelemetry ValueType to a GCM ValueType. */
 function transformValueType(metric: MetricData): ValueType {
+  if (metric.dataPointType === DataPointType.HISTOGRAM) {
+    return ValueType.DISTRIBUTION;
+  }
   const {valueType} = metric.descriptor;
   if (valueType === OTValueType.DOUBLE) {
     return ValueType.DOUBLE;
