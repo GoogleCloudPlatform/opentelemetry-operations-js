@@ -21,8 +21,12 @@ import {
 
 const AWS_ACCOUNT = 'aws_account';
 const AWS_EC2_INSTANCE = 'aws_ec2_instance';
+const CLOUD_FUNCTION = 'cloud_function';
+const CLOUD_RUN_REVISION = 'cloud_run_revision';
 const CLUSTER_NAME = 'cluster_name';
+const CONFIGURATION_NAME = 'configuration_name';
 const CONTAINER_NAME = 'container_name';
+const FUNCTION_NAME = 'function_name';
 const GCE_INSTANCE = 'gce_instance';
 const GENERIC_NODE = 'generic_node';
 const GENERIC_TASK = 'generic_task';
@@ -39,6 +43,8 @@ const NODE_ID = 'node_id';
 const NODE_NAME = 'node_name';
 const POD_NAME = 'pod_name';
 const REGION = 'region';
+const REVISION_NAME = 'revision_name';
+const SERVICE_NAME = 'service_name';
 const TASK_ID = 'task_id';
 const ZONE = 'zone';
 
@@ -109,6 +115,16 @@ const MAPPINGS = {
       ],
     },
     [AWS_ACCOUNT]: {otelKeys: [SemanticResourceAttributes.CLOUD_ACCOUNT_ID]},
+  },
+  [CLOUD_RUN_REVISION]: {
+    [LOCATION]: {otelKeys: [SemanticResourceAttributes.CLOUD_REGION]},
+    [SERVICE_NAME]: {otelKeys: [SemanticResourceAttributes.FAAS_NAME]},
+    [CONFIGURATION_NAME]: {otelKeys: [SemanticResourceAttributes.FAAS_NAME]},
+    [REVISION_NAME]: {otelKeys: [SemanticResourceAttributes.FAAS_VERSION]},
+  },
+  [CLOUD_FUNCTION]: {
+    [REGION]: {otelKeys: [SemanticResourceAttributes.CLOUD_REGION]},
+    [FUNCTION_NAME]: {otelKeys: [SemanticResourceAttributes.FAAS_NAME]},
   },
   [GENERIC_TASK]: {
     [LOCATION]: {
@@ -182,6 +198,10 @@ export function mapOtelResourceToMonitoredResource(
     }
   } else if (platform === CloudPlatformValues.AWS_EC2) {
     mr = createMonitoredResource(AWS_EC2_INSTANCE, attrs);
+  } else if (platform === CloudPlatformValues.GCP_CLOUD_RUN) {
+    mr = createMonitoredResource(CLOUD_RUN_REVISION, attrs);
+  } else if (platform === CloudPlatformValues.GCP_CLOUD_FUNCTIONS) {
+    mr = createMonitoredResource(CLOUD_FUNCTION, attrs);
   } else {
     // fallback to generic_task
     if (

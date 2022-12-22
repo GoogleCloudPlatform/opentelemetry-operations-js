@@ -145,6 +145,28 @@ describe('mapOtelResourceToMonitoredResource', () => {
     },
 
     {
+      title: 'should map to cloud_run_revision"',
+      otelAttributes: {
+        'cloud.platform': 'gcp_cloud_run',
+        'cloud.region': 'myregion',
+        'faas.id': 'myfaasid',
+        'faas.name': 'myfaasname',
+        'faas.version': 'myfaasversion',
+      },
+    },
+
+    {
+      title: 'should map to cloud_function"',
+      otelAttributes: {
+        'cloud.platform': 'gcp_cloud_functions',
+        'cloud.region': 'myregion',
+        'faas.id': 'myfaasid',
+        'faas.name': 'myfaasname',
+        'faas.version': 'myfaasversion',
+      },
+    },
+
+    {
       title: 'should map to generic_task',
       otelAttributes: {
         'cloud.availability_zone': 'myavailzone',
