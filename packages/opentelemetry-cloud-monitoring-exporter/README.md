@@ -9,27 +9,40 @@ OpenTelemetry Google Cloud Monitoring Exporter allows the user to send collected
 ## Installation
 
 ```bash
-npm install --save @opentelemetry/sdk-metrics-base
+npm install --save @opentelemetry/sdk-metrics
 npm install --save @google-cloud/opentelemetry-cloud-monitoring-exporter
 ```
 
 ## Usage
 
 ```js
-const { MeterProvider }  = require('@opentelemetry/sdk-metrics-base');
-const { MetricExporter } = require('@google-cloud/opentelemetry-cloud-monitoring-exporter');
+const { MeterProvider, PeriodicExportingMetricReader } = require("@opentelemetry/sdk-metrics");
+const { MetricExporter } = require("@google-cloud/opentelemetry-cloud-monitoring-exporter");
 
-const exporter = new MetricExporter();
-
+// Create MeterProvider
+const meterProvider = new MeterProvider();
 // Register the exporter
-const meter = new MeterProvider({
-  exporter,
-  interval: 60000,
-}).getMeter('example-meter');
+meterProvider.addMetricReader(
+  new PeriodicExportingMetricReader({
+	// Export metrics every 10 seconds. 5 seconds is the smallest sample period allowed by
+	// Cloud Monitoring.
+	exportIntervalMillis: 10_000,
+	exporter: new MetricExporter(),
+  })
+);
 
-// Now, start recording data
-const counter = meter.createCounter('metric_name');
-counter.add(10, { [key]: 'value' });
+// Create a meter
+const meter = meterProvider.getMeter("metrics-sample");
+
+// Create a counter instrument
+const counter = meter.createCounter("metric_name");
+// Record a measurement
+counter.add(10, { key: "value" });
+
+// Wait for the metric to be exported
+new Promise((resolve) => {
+  setTimeout(resolve, 11_000);
+});
 ```
 
 ##  Viewing your metrics:
