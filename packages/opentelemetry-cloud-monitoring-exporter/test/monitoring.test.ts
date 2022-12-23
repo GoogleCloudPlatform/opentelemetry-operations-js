@@ -23,12 +23,6 @@ import {emptyResourceMetrics, generateMetricsData} from './util';
 import {Attributes} from '@opentelemetry/api';
 
 import type {monitoring_v3} from 'googleapis';
-import {Resource} from '@opentelemetry/resources';
-import {
-  AggregationTemporality,
-  DataPointType,
-  InstrumentType,
-} from '@opentelemetry/sdk-metrics';
 
 describe('MetricExporter', () => {
   beforeEach(() => {
