@@ -29,12 +29,14 @@ export class GcpDetector implements Detector {
       return Resource.EMPTY;
     }
 
+    // Note the order of these if checks is significant with more specific resources coming
+    // first. E.g. Cloud Functions gen2 are executed in Cloud Run so it must be checked first.
     if (await gke.onGke()) {
       return await this._gkeResource();
-    } else if (await faas.onCloudRun()) {
-      return await this._cloudRunResource();
     } else if (await faas.onCloudFunctions()) {
       return await this._cloudFunctionsResource();
+    } else if (await faas.onCloudRun()) {
+      return await this._cloudRunResource();
     } else if (await gce.onGce()) {
       return await this._gceResource();
     }

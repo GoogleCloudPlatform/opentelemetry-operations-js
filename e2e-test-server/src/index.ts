@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import * as express from 'express';
+import * as functions from '@google-cloud/functions-framework';
 import {PubSub, Message as PubSubMessage} from '@google-cloud/pubsub';
 import {Status} from '@grpc/grpc-js/build/src/constants';
 
@@ -100,6 +101,29 @@ function pubSubPush() {
     });
 }
 
+/**
+ * Registers the Cloud Function entrypoint for Cloud Events following
+ * https://cloud.google.com/functions/docs/writing/write-event-driven-functions#cloudevent-example-nodejs
+ */
+function registerCloudFunction() {
+  functions.cloudEvent<PubSubPushPayload>(
+    'cloudFunctionHandler',
+    cloudEvent =>
+      new Promise<void>((resolve, reject) => {
+        logger.info('Received Cloud Event');
+        const payload = cloudEvent.data!;
+        const data = Buffer.from(payload.message?.data ?? '', 'base64');
+        const message: Message = {
+          attributes: payload.message.attributes,
+          data,
+          ack: resolve,
+          nack: reject,
+        };
+        return onRequestMessage(message);
+      })
+  );
+}
+
 async function onRequestMessage(message: Message): Promise<void> {
   const testId = message.attributes?.[constants.TEST_ID];
   if (testId === undefined) {
@@ -174,6 +198,13 @@ function main(): void {
     case constants.SubscriptionMode.PUSH:
       pubSubPush();
       logger.info('Starting PUSH subscription http server');
+      return;
+    case undefined:
+      // this happens for cloud function runs which rely on functions framework to provide the entrypoint
+      logger.info(
+        'Registering functions framework handler for Cloud Functions'
+      );
+      registerCloudFunction();
       return;
     default:
       constants.SUBSCRIPTION_MODE as never;

@@ -34,24 +34,26 @@ export const TEST_ID = 'test_id';
 export const TRACE_ID = 'trace_id';
 
 let subscriptionMode;
-switch (envOrThrow('SUBSCRIPTION_MODE')) {
+switch (process.env.SUBSCRIPTION_MODE) {
   case SubscriptionMode.PULL:
     subscriptionMode = SubscriptionMode.PULL;
     break;
   case SubscriptionMode.PUSH:
     subscriptionMode = SubscriptionMode.PUSH;
     break;
+  case undefined:
+    subscriptionMode = undefined;
+    break;
   default:
     throw new Error(
-      `SUBSCRIPTION_MODE must be ${SubscriptionMode.PUSH} or ${SubscriptionMode.PULL}`
+      `SUBSCRIPTION_MODE must be ${SubscriptionMode.PUSH}, ${SubscriptionMode.PULL}, or unset.`
     );
 }
 
-export const SUBSCRIPTION_MODE: SubscriptionMode = subscriptionMode;
+export const SUBSCRIPTION_MODE: SubscriptionMode | undefined = subscriptionMode;
 export const PROJECT_ID = envOrThrow('PROJECT_ID');
-export const REQUEST_SUBSCRIPTION_NAME = envOrThrow(
-  'REQUEST_SUBSCRIPTION_NAME'
-);
+export const REQUEST_SUBSCRIPTION_NAME =
+  process.env.REQUEST_SUBSCRIPTION_NAME ?? '';
 export const RESPONSE_TOPIC_NAME = envOrThrow('RESPONSE_TOPIC_NAME');
 export const PUSH_PORT =
   SUBSCRIPTION_MODE === SubscriptionMode.PUSH
