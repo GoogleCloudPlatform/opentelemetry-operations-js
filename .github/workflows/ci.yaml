@@ -8,15 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [10, 12, 14, 16]
+        node: [14, 16, 18, 19]
         include:
           # use latest npm by default
           - npm-version: latest
-          # overrides for node 10 and 12
-          - node: 10
-            npm-version: ^7
-          - node: 12
-            npm-version: ^8
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -30,7 +25,7 @@ jobs:
       - run: npx lerna bootstrap --no-ci
       - run: npm test
       - run: npm run codecov
-        if: matrix.node == 14
+        if: matrix.node == 19
 
   lint:
     runs-on: ubuntu-latest
@@ -38,7 +33,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 15
+          node-version: 19
       - run: npm install
       - run: npm run lint
 
@@ -51,9 +46,9 @@ jobs:
           for f in $(git ls-files "**package-lock.json")
           do
             lockfileVersion=$(jq ".lockfileVersion" $f)
-            if [ $lockfileVersion -ne 2 ]
+            if [ $lockfileVersion -lt 2 ]
             then
-              >&2 echo "package-lock.json files should have lockfileVersion 2, but $f has version $lockfileVersion"
+              >&2 echo "package-lock.json files should have at least lockfileVersion 2, but $f has version $lockfileVersion"
               exit 1
             fi
           done
