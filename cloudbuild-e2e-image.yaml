@@ -17,16 +17,32 @@ steps:
     id: build-test-server
     env:
       - DOCKER_BUILDKIT=1
-    args:
-      - build
-      - --tag=${_TEST_SERVER_IMAGE_NAME}:${SHORT_SHA}
-      - --tag=${_TEST_SERVER_IMAGE_NAME}:latest
-      - --build-arg=BUILDKIT_INLINE_CACHE=1
-      - --cache-from=${_TEST_SERVER_IMAGE_NAME}:latest
-      - --file=e2e-test-server/Dockerfile
-      - .
+      - _TEST_SERVER_IMAGE_NAME=${_TEST_SERVER_IMAGE_NAME}
+      - SHORT_SHA=${SHORT_SHA}
+    script: >
+      #!/bin/sh
 
-images: ["${_TEST_SERVER_IMAGE_NAME}"]
+      set -x
+
+      docker build
+      --target=build
+      --tag="${_TEST_SERVER_IMAGE_NAME}-build:latest"
+      --build-arg=BUILDKIT_INLINE_CACHE=1
+      --cache-from="${_TEST_SERVER_IMAGE_NAME}-build:latest"
+      --file=e2e-test-server/Dockerfile
+      .
+      
+      docker build
+      --tag="${_TEST_SERVER_IMAGE_NAME}:${SHORT_SHA}"
+      --tag="${_TEST_SERVER_IMAGE_NAME}:latest"
+      --build-arg=BUILDKIT_INLINE_CACHE=1
+      --cache-from="${_TEST_SERVER_IMAGE_NAME}:latest"
+      --file=e2e-test-server/Dockerfile
+      .
+
+images:
+  - ${_TEST_SERVER_IMAGE_NAME}
+  - ${_TEST_SERVER_IMAGE_NAME}-build
 logsBucket: gs://opentelemetry-ops-e2e-cloud-build-logs
 substitutions:
   _TEST_SERVER_IMAGE_NAME: gcr.io/${PROJECT_ID}/opentelemetry-operations-js-e2e-test-server

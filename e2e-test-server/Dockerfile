@@ -14,37 +14,41 @@
 
 # Build relative to root of repository i.e. `docker build --file Dockerfile --tag=$tag ..`
 
+#### Base image stage
 FROM node:19-alpine as node-base
 ENV SRC="/src"
-RUN npm install -g npm@^7
-USER node
 WORKDIR $SRC
 
-FROM node-base as build-base
-USER root
-RUN chown node:node $SRC
-USER node
-# copy local dependencies
-COPY --chown=node:node lerna.json package.json package-lock.json ./
-COPY --chown=node:node scripts/ scripts/
-COPY --chown=node:node packages/ packages/
-# Install dev tools in the root of the repo
-RUN npm install --ignore-scripts
-# copy package.json
-COPY --chown=node:node e2e-test-server/package.json e2e-test-server/package-lock.json e2e-test-server/
-# bootstrap without compile
-RUN npx lerna bootstrap --ignore-scripts
-# compile everything BUT e2e-test-server
-RUN npx lerna run compile --ignore @google-cloud/e2e-test-server
-# dereference lerna symlinks so we don't need to copy out the whole monorepo
-RUN TMPDIR=$(mktemp -d) && \
-    cp --dereference --recursive e2e-test-server/node_modules/@google-cloud $TMPDIR/ && \
-    rm -rf e2e-test-server/node_modules/@google-cloud && \
-    mv $TMPDIR/@google-cloud e2e-test-server/node_modules/@google-cloud
+#### Build stage
+# Workaround for docker not keep directory structure with glob COPY. This avoids invalidating
+# the cache.
+FROM node-base as packagejsons
+COPY packages/ packages-tmp/
+RUN mkdir packages/ && cd packages-tmp && cp --parents **/package*.json ../packages/
 
-FROM node-base
-COPY --from=build-base --chown=node:node $SRC/e2e-test-server $SRC/e2e-test-server/
-WORKDIR $SRC/e2e-test-server
-COPY --chown=node:node e2e-test-server/ ./
+#### Build stage
+FROM node-base as build
+# Install dev tools in the root of the repo
+COPY lerna.json package.json package-lock.json ./
+RUN npm install --ignore-scripts
+# Bootstrap local deps before compiling or copying in source
+COPY --from=packagejsons $SRC/packages/ packages/
+RUN npx lerna bootstrap --ignore-scripts
+# Copy in and build local deps
+COPY scripts/ scripts/
+COPY packages/ packages/
+RUN npx lerna run --no-private compile
+# Copy in e2e-test-server source and build server with the local source. Don't use lerna since
+# we don't want symlinks.
+WORKDIR $SRC/e2e-test-server/
+COPY e2e-test-server/package*.json ./
+RUN npm install --ignore-scripts ../packages/*
+COPY e2e-test-server/ .
+# compile and deletes unneeded dev deps
 RUN npm run compile
+
+#### Actual image stage
+FROM node-base
+USER node
+COPY --from=build --chown=node:node $SRC/e2e-test-server .
 ENTRYPOINT ["node", "build/src/index.js"]
