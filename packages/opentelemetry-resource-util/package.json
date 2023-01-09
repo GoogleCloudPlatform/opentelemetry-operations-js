@@ -49,7 +49,7 @@
     "@opentelemetry/resources": "1.8.0",
     "@opentelemetry/semantic-conventions": "1.8.0",
     "@types/mocha": "9.1.1",
-    "@types/node": "14.18.34",
+    "@types/node": "18.11.18",
     "@types/sinon": "^10.0.13",
     "bignumber.js": "^9.1.1",
     "codecov": "3.8.3",
