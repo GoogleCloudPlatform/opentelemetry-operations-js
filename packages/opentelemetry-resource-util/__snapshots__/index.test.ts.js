@@ -1,3 +1,23 @@
+exports['mapOtelResourceToMonitoredResource should map cloud_function to generic_task when not including unsupported resources" 1'] = {
+  "type": "generic_task",
+  "labels": {
+    "location": "myregion",
+    "namespace": "",
+    "job": "servicename",
+    "task_id": "serviceinstanceid"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map cloud_run_revision to generic_task when not including unsupported resources" 1'] = {
+  "type": "generic_task",
+  "labels": {
+    "location": "myregion",
+    "namespace": "",
+    "job": "servicename",
+    "task_id": "serviceinstanceid"
+  }
+}
+
 exports['mapOtelResourceToMonitoredResource should map empty resource to generic_node 1'] = {
   "type": "generic_node",
   "labels": {
@@ -22,6 +42,24 @@ exports['mapOtelResourceToMonitoredResource should map to aws_ec2_instance" 1'] 
     "instance_id": "myhostid",
     "region": "myavailzone",
     "aws_account": "myawsaccount"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to cloud_function" 1'] = {
+  "type": "cloud_function",
+  "labels": {
+    "region": "myregion",
+    "function_name": "myfaasname"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to cloud_run_revision" 1'] = {
+  "type": "cloud_run_revision",
+  "labels": {
+    "location": "myregion",
+    "service_name": "myfaasname",
+    "configuration_name": "myfaasname",
+    "revision_name": "myfaasversion"
   }
 }
 

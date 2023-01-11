@@ -20,6 +20,7 @@ import {
 import {Detector, Resource} from '@opentelemetry/resources';
 import * as gce from './gce';
 import * as gke from './gke';
+import * as faas from './faas';
 import * as metadata from 'gcp-metadata';
 
 export class GcpDetector implements Detector {
@@ -30,6 +31,10 @@ export class GcpDetector implements Detector {
 
     if (await gke.onGke()) {
       return await this._gkeResource();
+    } else if (await faas.onCloudRun()) {
+      return await this._cloudRunResource();
+    } else if (await faas.onCloudFunctions()) {
+      return await this._cloudFunctionsResource();
     } else if (await gce.onGce()) {
       return await this._gceResource();
     }
@@ -51,6 +56,40 @@ export class GcpDetector implements Detector {
         : Semconv.CLOUD_REGION]: zoneOrRegion.value,
       [Semconv.K8S_CLUSTER_NAME]: k8sClusterName,
       [Semconv.HOST_ID]: hostId,
+    });
+  }
+
+  private async _cloudRunResource(): Promise<Resource> {
+    const [faasName, faasVersion, faasId, faasCloudRegion] = await Promise.all([
+      faas.faasName(),
+      faas.faasVersion(),
+      faas.faasId(),
+      faas.faasCloudRegion(),
+    ]);
+
+    return new Resource({
+      [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_RUN,
+      [Semconv.FAAS_NAME]: faasName,
+      [Semconv.FAAS_VERSION]: faasVersion,
+      [Semconv.FAAS_ID]: faasId,
+      [Semconv.CLOUD_REGION]: faasCloudRegion,
+    });
+  }
+
+  private async _cloudFunctionsResource(): Promise<Resource> {
+    const [faasName, faasVersion, faasId, faasCloudRegion] = await Promise.all([
+      faas.faasName(),
+      faas.faasVersion(),
+      faas.faasId(),
+      faas.faasCloudRegion(),
+    ]);
+
+    return new Resource({
+      [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_FUNCTIONS,
+      [Semconv.FAAS_NAME]: faasName,
+      [Semconv.FAAS_VERSION]: faasVersion,
+      [Semconv.FAAS_ID]: faasId,
+      [Semconv.CLOUD_REGION]: faasCloudRegion,
     });
   }
 

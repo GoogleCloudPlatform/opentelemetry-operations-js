@@ -101,6 +101,48 @@ describe('GcpDetector', () => {
     });
   });
 
+  it('detects a Cloud Run resource', async () => {
+    envStub.K_CONFIGURATION = 'fake-configuration';
+    envStub.K_SERVICE = 'fake-service';
+    envStub.K_REVISION = 'fake-revision';
+    metadataStub.instance
+      .withArgs('id')
+      .resolves(12345)
+
+      .withArgs('region')
+      .resolves('projects/233510669999/regions/us-east4');
+
+    const resource = await new GcpDetector().detect();
+    assert.deepStrictEqual(resource.attributes, {
+      'cloud.platform': 'gcp_cloud_run',
+      'cloud.region': 'us-east4',
+      'faas.id': '12345',
+      'faas.name': 'fake-service',
+      'faas.version': 'fake-revision',
+    });
+  });
+
+  it('detects a Cloud Functions resource', async () => {
+    envStub.FUNCTION_TARGET = 'fake-function-target';
+    envStub.K_SERVICE = 'fake-service';
+    envStub.K_REVISION = 'fake-revision';
+    metadataStub.instance
+      .withArgs('id')
+      .resolves(12345)
+
+      .withArgs('region')
+      .resolves('projects/233510669999/regions/us-east4');
+
+    const resource = await new GcpDetector().detect();
+    assert.deepStrictEqual(resource.attributes, {
+      'cloud.platform': 'gcp_cloud_functions',
+      'cloud.region': 'us-east4',
+      'faas.id': '12345',
+      'faas.name': 'fake-service',
+      'faas.version': 'fake-revision',
+    });
+  });
+
   it('detects empty resource when nothing else can be detected', async () => {
     // gcp-metadata throws when it can't access the metadata server
     metadataStub.instance.rejects();
