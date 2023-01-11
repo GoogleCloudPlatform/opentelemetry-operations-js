@@ -1,3 +1,23 @@
+exports['mapOtelResourceToMonitoredResource should map cloud_function to generic_task when not including unsupported resources" 1'] = {
+  "type": "generic_task",
+  "labels": {
+    "location": "myregion",
+    "namespace": "",
+    "job": "servicename",
+    "task_id": "serviceinstanceid"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map cloud_run_revision to generic_task when not including unsupported resources" 1'] = {
+  "type": "generic_task",
+  "labels": {
+    "location": "myregion",
+    "namespace": "",
+    "job": "servicename",
+    "task_id": "serviceinstanceid"
+  }
+}
+
 exports['mapOtelResourceToMonitoredResource should map empty resource to generic_node 1'] = {
   "type": "generic_node",
   "labels": {

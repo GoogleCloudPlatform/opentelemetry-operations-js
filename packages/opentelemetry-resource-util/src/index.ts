@@ -175,10 +175,16 @@ export interface MonitoredResource {
  * https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/v1.8.0/internal/resourcemapping/resourcemapping.go#L51
  *
  * @param resource the OTel Resource
+ * @param includeUnsupportedResources if true, will return the most specific monitored resource
+ *   possible even if that resource does not support custom metrics. If false, will fallback to
+ *   generic resources which support custom metrics. See
+ *   https://cloud.google.com/monitoring/custom-metrics for more information on which resources
+ *   supporting custom metrics.
  * @returns the corresponding GCM MonitoredResource
  */
 export function mapOtelResourceToMonitoredResource(
-  resource: Resource
+  resource: Resource,
+  includeUnsupportedResources = false
 ): MonitoredResource {
   const attrs = resource.attributes;
   const platform = attrs[SemanticResourceAttributes.CLOUD_PLATFORM];
@@ -198,9 +204,17 @@ export function mapOtelResourceToMonitoredResource(
     }
   } else if (platform === CloudPlatformValues.AWS_EC2) {
     mr = createMonitoredResource(AWS_EC2_INSTANCE, attrs);
-  } else if (platform === CloudPlatformValues.GCP_CLOUD_RUN) {
+  }
+  // Cloud Run and Cloud Functions are not writeable for custom metrics yet
+  else if (
+    includeUnsupportedResources &&
+    platform === CloudPlatformValues.GCP_CLOUD_RUN
+  ) {
     mr = createMonitoredResource(CLOUD_RUN_REVISION, attrs);
-  } else if (platform === CloudPlatformValues.GCP_CLOUD_FUNCTIONS) {
+  } else if (
+    includeUnsupportedResources &&
+    platform === CloudPlatformValues.GCP_CLOUD_FUNCTIONS
+  ) {
     mr = createMonitoredResource(CLOUD_FUNCTION, attrs);
   } else {
     // fallback to generic_task
