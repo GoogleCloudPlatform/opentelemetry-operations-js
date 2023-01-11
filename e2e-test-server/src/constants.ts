@@ -53,3 +53,7 @@ export const REQUEST_SUBSCRIPTION_NAME = envOrThrow(
   'REQUEST_SUBSCRIPTION_NAME'
 );
 export const RESPONSE_TOPIC_NAME = envOrThrow('RESPONSE_TOPIC_NAME');
+export const PUSH_PORT =
+  SUBSCRIPTION_MODE === SubscriptionMode.PUSH
+    ? envOrThrow('PUSH_PORT')
+    : undefined;
