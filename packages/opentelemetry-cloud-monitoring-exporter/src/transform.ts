@@ -31,7 +31,7 @@ import {
   LabelDescriptor,
 } from './types';
 import * as path from 'path';
-import type {monitoring_v3} from 'googleapis';
+import type {monitoring_v3} from 'googleapis/build/src/apis/monitoring/v3';
 import {PreciseDate} from '@google-cloud/precise-date';
 
 /**

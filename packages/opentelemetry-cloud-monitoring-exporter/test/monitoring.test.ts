@@ -22,7 +22,7 @@ import {ExportResult, ExportResultCode} from '@opentelemetry/core';
 import {emptyResourceMetrics, generateMetricsData} from './util';
 import {Attributes} from '@opentelemetry/api';
 
-import type {monitoring_v3} from 'googleapis';
+import type {monitoring_v3} from 'googleapis/build/src/apis/monitoring/v3';
 
 describe('MetricExporter', () => {
   beforeEach(() => {

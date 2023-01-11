@@ -24,7 +24,8 @@ import {
 } from '@opentelemetry/core';
 import {ExporterOptions} from './external-types';
 import {GoogleAuth, JWT} from 'google-auth-library';
-import {google, monitoring_v3} from 'googleapis';
+import {monitoring} from 'googleapis/build/src/apis/monitoring';
+import type {monitoring_v3} from 'googleapis/build/src/apis/monitoring/v3';
 import {transformMetricDescriptor, createTimeSeries} from './transform';
 import {TimeSeries} from './types';
 import {partitionList} from './utils';
@@ -50,10 +51,6 @@ const OT_USER_AGENTS = [
 const OT_REQUEST_HEADER = {
   'x-opentelemetry-outgoing-request': 0x1,
 };
-google.options({
-  headers: OT_REQUEST_HEADER,
-  userAgentDirectives: OT_USER_AGENTS,
-});
 
 /**
  * Format and sends metrics information to Google Cloud Monitoring.
@@ -84,10 +81,12 @@ export class MetricExporter implements PushMetricExporter {
       scopes: ['https://www.googleapis.com/auth/cloud-platform'],
     });
 
-    this._monitoring = google.monitoring({
+    this._monitoring = monitoring({
       version: 'v3',
       rootUrl:
         'https://' + (options.apiEndpoint || 'monitoring.googleapis.com:443'),
+      headers: OT_REQUEST_HEADER,
+      userAgentDirectives: OT_USER_AGENTS,
     });
 
     // Start this async process as early as possible. It will be

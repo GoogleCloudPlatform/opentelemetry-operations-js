@@ -29,7 +29,7 @@ import * as sinon from 'sinon';
 import {MetricExporter} from '../src';
 import {generateMetricsData} from './util';
 
-import type {monitoring_v3} from 'googleapis';
+import type {monitoring_v3} from 'googleapis/build/src/apis/monitoring/v3';
 import type {AsyncFunc, Func} from 'mocha';
 
 const LABELS: Attributes = {
