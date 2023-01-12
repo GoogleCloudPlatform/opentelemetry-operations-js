@@ -31,6 +31,6 @@
     "node": ">=14"
   },
   "devDependencies": {
-    "lerna": "6.4.0"
+    "lerna": "6.4.1"
   }
 }
