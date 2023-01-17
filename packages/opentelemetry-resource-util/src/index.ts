@@ -27,6 +27,9 @@ const CLUSTER_NAME = 'cluster_name';
 const CONFIGURATION_NAME = 'configuration_name';
 const CONTAINER_NAME = 'container_name';
 const FUNCTION_NAME = 'function_name';
+const GAE_INSTANCE = 'gae_instance';
+const GAE_MODULE_ID = 'module_id';
+const GAE_VERSION_ID = 'version_id';
 const GCE_INSTANCE = 'gce_instance';
 const GENERIC_NODE = 'generic_node';
 const GENERIC_TASK = 'generic_task';
@@ -126,6 +129,17 @@ const MAPPINGS = {
     [REGION]: {otelKeys: [SemanticResourceAttributes.CLOUD_REGION]},
     [FUNCTION_NAME]: {otelKeys: [SemanticResourceAttributes.FAAS_NAME]},
   },
+  [GAE_INSTANCE]: {
+    [LOCATION]: {
+      otelKeys: [
+        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
+        SemanticResourceAttributes.CLOUD_REGION,
+      ],
+    },
+    [GAE_MODULE_ID]: {otelKeys: [SemanticResourceAttributes.FAAS_NAME]},
+    [GAE_VERSION_ID]: {otelKeys: [SemanticResourceAttributes.FAAS_VERSION]},
+    [INSTANCE_ID]: {otelKeys: [SemanticResourceAttributes.FAAS_ID]},
+  },
   [GENERIC_TASK]: {
     [LOCATION]: {
       otelKeys: [
@@ -202,6 +216,8 @@ export function mapOtelResourceToMonitoredResource(
     } else {
       mr = createMonitoredResource(K8S_CLUSTER, attrs);
     }
+  } else if (platform === CloudPlatformValues.GCP_APP_ENGINE) {
+    mr = createMonitoredResource(GAE_INSTANCE, attrs);
   } else if (platform === CloudPlatformValues.AWS_EC2) {
     mr = createMonitoredResource(AWS_EC2_INSTANCE, attrs);
   }

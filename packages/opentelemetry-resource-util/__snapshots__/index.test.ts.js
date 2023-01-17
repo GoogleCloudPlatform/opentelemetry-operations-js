@@ -63,6 +63,16 @@ exports['mapOtelResourceToMonitoredResource should map to cloud_run_revision" 1'
   }
 }
 
+exports['mapOtelResourceToMonitoredResource should map to gae_instance" 1'] = {
+  "type": "gae_instance",
+  "labels": {
+    "location": "myregion",
+    "module_id": "myfaasname",
+    "version_id": "myfaasversion",
+    "instance_id": "myfaasid"
+  }
+}
+
 exports['mapOtelResourceToMonitoredResource should map to gce_instance 1'] = {
   "type": "gce_instance",
   "labels": {

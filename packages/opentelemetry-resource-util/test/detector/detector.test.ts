@@ -143,6 +143,46 @@ describe('GcpDetector', () => {
     });
   });
 
+  it('detects a App Engine Standard resource', async () => {
+    envStub.GAE_ENV = 'standard';
+    envStub.GAE_SERVICE = 'fake-service';
+    envStub.GAE_VERSION = 'fake-version';
+    envStub.GAE_INSTANCE = 'fake-instance';
+    metadataStub.instance.withArgs('zone').resolves('us-east4-b');
+    metadataStub.instance
+      .withArgs('region')
+      .resolves('projects/233510669999/regions/us-east4');
+
+    const resource = await new GcpDetector().detect();
+    assert.deepStrictEqual(resource.attributes, {
+      'cloud.platform': 'gcp_app_engine',
+      'cloud.availability_zone': 'us-east4-b',
+      'cloud.region': 'us-east4',
+      'faas.id': 'fake-instance',
+      'faas.name': 'fake-service',
+      'faas.version': 'fake-version',
+    });
+  });
+
+  it('detects a App Engine Flex resource', async () => {
+    envStub.GAE_SERVICE = 'fake-service';
+    envStub.GAE_VERSION = 'fake-version';
+    envStub.GAE_INSTANCE = 'fake-instance';
+    metadataStub.instance
+      .withArgs('zone')
+      .resolves('projects/233510669999/zones/us-east4-b');
+
+    const resource = await new GcpDetector().detect();
+    assert.deepStrictEqual(resource.attributes, {
+      'cloud.platform': 'gcp_app_engine',
+      'cloud.availability_zone': 'us-east4-b',
+      'cloud.region': 'us-east4',
+      'faas.id': 'fake-instance',
+      'faas.name': 'fake-service',
+      'faas.version': 'fake-version',
+    });
+  });
+
   it('detects empty resource when nothing else can be detected', async () => {
     // gcp-metadata throws when it can't access the metadata server
     metadataStub.instance.rejects();
