@@ -201,6 +201,19 @@ describe('mapOtelResourceToMonitoredResource', () => {
     },
 
     {
+      title: 'should map to gae_instance"',
+      otelAttributes: {
+        'cloud.platform': 'gcp_app_engine',
+        'cloud.region': 'myregion',
+        'faas.id': 'myfaasid',
+        'faas.name': 'myfaasname',
+        'faas.version': 'myfaasversion',
+        'service.name': 'servicename',
+        'service.instance.id': 'serviceinstanceid',
+      },
+    },
+
+    {
       title: 'should map to generic_task',
       otelAttributes: {
         'cloud.availability_zone': 'myavailzone',
