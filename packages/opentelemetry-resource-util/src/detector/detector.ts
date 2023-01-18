@@ -21,6 +21,7 @@ import {Detector, Resource} from '@opentelemetry/resources';
 import * as gce from './gce';
 import * as gke from './gke';
 import * as faas from './faas';
+import * as gae from './gae';
 import * as metadata from 'gcp-metadata';
 
 export class GcpDetector implements Detector {
@@ -37,6 +38,8 @@ export class GcpDetector implements Detector {
       return await this._cloudFunctionsResource();
     } else if (await faas.onCloudRun()) {
       return await this._cloudRunResource();
+    } else if (await gae.onAppEngine()) {
+      return await this._gaeResource();
     } else if (await gce.onGce()) {
       return await this._gceResource();
     }
@@ -92,6 +95,32 @@ export class GcpDetector implements Detector {
       [Semconv.FAAS_VERSION]: faasVersion,
       [Semconv.FAAS_ID]: faasId,
       [Semconv.CLOUD_REGION]: faasCloudRegion,
+    });
+  }
+
+  private async _gaeResource(): Promise<Resource> {
+    let zone, region;
+    if (await gae.onAppEngineStandard()) {
+      [zone, region] = await Promise.all([
+        gae.standardAvailabilityZone(),
+        gae.standardCloudRegion(),
+      ]);
+    } else {
+      ({zone, region} = await gce.availabilityZoneAndRegion());
+    }
+    const [faasName, faasVersion, faasId] = await Promise.all([
+      gae.serviceName(),
+      gae.serviceVersion(),
+      gae.serviceInstance(),
+    ]);
+
+    return new Resource({
+      [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_APP_ENGINE,
+      [Semconv.FAAS_NAME]: faasName,
+      [Semconv.FAAS_VERSION]: faasVersion,
+      [Semconv.FAAS_ID]: faasId,
+      [Semconv.CLOUD_AVAILABILITY_ZONE]: zone,
+      [Semconv.CLOUD_REGION]: region,
     });
   }
 

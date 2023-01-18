@@ -75,6 +75,17 @@ function pubSubPush() {
 
   app
     .use(express.json())
+
+    // Health checks for GAE. See:
+    // https://cloud.google.com/appengine/docs/flexible/reference/app-yaml#updated_health_checks
+    // https://github.com/GoogleCloudPlatform/opentelemetry-operations-e2e-testing/blob/v0.16.0/tf/gae/gae.tf#L32-L38
+    .get('/alive', (_, res) => {
+      res.sendStatus(200);
+    })
+    .get('/ready', (_, res) => {
+      res.sendStatus(200);
+    })
+
     .post('/', (req, res) => {
       logger.info('Received push subscription request');
       const payload: PubSubPushPayload = req.body;
