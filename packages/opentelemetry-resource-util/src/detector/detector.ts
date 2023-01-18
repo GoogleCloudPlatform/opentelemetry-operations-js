@@ -15,6 +15,7 @@
 import {
   SemanticResourceAttributes as Semconv,
   CloudPlatformValues,
+  CloudProviderValues,
 } from '@opentelemetry/semantic-conventions';
 
 import {Detector, Resource} from '@opentelemetry/resources';
@@ -23,8 +24,12 @@ import * as gke from './gke';
 import * as faas from './faas';
 import * as gae from './gae';
 import * as metadata from 'gcp-metadata';
+import {Attributes} from '@opentelemetry/api';
 
 export class GcpDetector implements Detector {
+  // Cached project ID
+  private _project: string | undefined;
+
   async detect(): Promise<Resource> {
     if (!(await metadata.isAvailable())) {
       return Resource.EMPTY;
@@ -54,7 +59,7 @@ export class GcpDetector implements Detector {
       gke.hostId(),
     ]);
 
-    return new Resource({
+    return this._makeResource({
       [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_KUBERNETES_ENGINE,
       [zoneOrRegion.type === 'zone'
         ? Semconv.CLOUD_AVAILABILITY_ZONE
@@ -72,7 +77,7 @@ export class GcpDetector implements Detector {
       faas.faasCloudRegion(),
     ]);
 
-    return new Resource({
+    return this._makeResource({
       [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_RUN,
       [Semconv.FAAS_NAME]: faasName,
       [Semconv.FAAS_VERSION]: faasVersion,
@@ -89,7 +94,7 @@ export class GcpDetector implements Detector {
       faas.faasCloudRegion(),
     ]);
 
-    return new Resource({
+    return this._makeResource({
       [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_FUNCTIONS,
       [Semconv.FAAS_NAME]: faasName,
       [Semconv.FAAS_VERSION]: faasVersion,
@@ -114,7 +119,7 @@ export class GcpDetector implements Detector {
       gae.serviceInstance(),
     ]);
 
-    return new Resource({
+    return this._makeResource({
       [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_APP_ENGINE,
       [Semconv.FAAS_NAME]: faasName,
       [Semconv.FAAS_VERSION]: faasVersion,
@@ -132,13 +137,25 @@ export class GcpDetector implements Detector {
       gce.hostName(),
     ]);
 
-    return new Resource({
+    return await this._makeResource({
       [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_COMPUTE_ENGINE,
       [Semconv.CLOUD_AVAILABILITY_ZONE]: zoneAndRegion.zone,
       [Semconv.CLOUD_REGION]: zoneAndRegion.region,
       [Semconv.HOST_TYPE]: hostType,
       [Semconv.HOST_ID]: hostId,
       [Semconv.HOST_NAME]: hostName,
+    });
+  }
+
+  private async _makeResource(attrs: Attributes): Promise<Resource> {
+    if (!this._project) {
+      this._project = await metadata.project<string>('project-id');
+    }
+
+    return new Resource({
+      [Semconv.CLOUD_PROVIDER]: CloudProviderValues.GCP,
+      [Semconv.CLOUD_ACCOUNT_ID]: this._project,
+      ...attrs,
     });
   }
 }
