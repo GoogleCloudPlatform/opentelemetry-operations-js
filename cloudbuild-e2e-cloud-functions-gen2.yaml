@@ -24,16 +24,17 @@ steps:
       # bootstrap only the packages needed for e2e-test-server
       npx lerna bootstrap --scope=@google-cloud/e2e-test-server --include-dependencies
 
-      # build tarballs for the dependencies to include in the zip
-      dependencies=$(
-        npx lerna list --scope=@google-cloud/e2e-test-server --include-dependencies --json | jq '.[].location' | xargs
-      )
+      # builds a small self contained bundle with @vercel/ncc under dist/
       cd e2e-test-server
-      npm pack $dependencies
-      # install them to point package.json at the local tarballs
-      npm install --save *.tgz
+      # --external will avoid bundling functions-framework. Needed so we only have one copy of
+      # global variables in that package when GCF executes it.
+      npm run bundle -- --external @google-cloud/functions-framework
 
-      # zip it up into a source zip for Cloud Functions, excluding node_modules
+      # create a new fake package.json in dist/ and zip it up into a source zip for Cloud
+      # Functions
+      cd dist
+      npm init -y
+      npm install --save @google-cloud/functions-framework
       zip -r function-source.zip . -x "node_modules*"
 
   # Run the test
@@ -43,7 +44,7 @@ steps:
     env: ["PROJECT_ID=$PROJECT_ID"]
     args:
       - cloud-functions-gen2
-      - --functionsource=/workspace/e2e-test-server/function-source.zip
+      - --functionsource=/workspace/e2e-test-server/dist/function-source.zip
       - --runtime=nodejs16
       - --entrypoint=cloudFunctionHandler
 

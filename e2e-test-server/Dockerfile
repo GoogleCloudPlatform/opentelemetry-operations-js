@@ -26,14 +26,10 @@ RUN npm install --ignore-scripts
 COPY . ./
 # bootstrap only the packages needed for e2e test server
 RUN npx lerna@latest bootstrap --scope=@google-cloud/e2e-test-server --include-dependencies
-# dereference lerna symlinks so we don't need to copy out the whole monorepo
-RUN TMPDIR=$(mktemp -d) && \
-    cp --dereference --recursive e2e-test-server/node_modules/@google-cloud $TMPDIR/ && \
-    rm -rf e2e-test-server/node_modules/@google-cloud && \
-    mv $TMPDIR/@google-cloud e2e-test-server/node_modules/@google-cloud
-RUN npm prune --omit=dev
+# builds a small self contained bundle with @vercel/ncc under dist/
+RUN cd e2e-test-server && npm run bundle
 
 FROM node-base
 USER node
-COPY --from=build-base --chown=node:node $SRC/e2e-test-server ./
-ENTRYPOINT ["node", "build/src/index.js"]
+COPY --from=build-base --chown=node:node $SRC/e2e-test-server/dist ./
+ENTRYPOINT ["node", "index.js"]
