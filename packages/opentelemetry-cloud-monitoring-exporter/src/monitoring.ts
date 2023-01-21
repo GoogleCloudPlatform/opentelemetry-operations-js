@@ -25,7 +25,7 @@ import {
 import {ExporterOptions} from './external-types';
 import {GoogleAuth, JWT} from 'google-auth-library';
 import {monitoring} from 'googleapis/build/src/apis/monitoring';
-import type {monitoring_v3} from 'googleapis/build/src/apis/monitoring/v3';
+import type {monitoring_v3} from 'googleapis';
 import {transformMetricDescriptor, createTimeSeries} from './transform';
 import {TimeSeries} from './types';
 import {partitionList} from './utils';
