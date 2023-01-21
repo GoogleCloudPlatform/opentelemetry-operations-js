@@ -24,6 +24,7 @@ import {
 } from '@opentelemetry/core';
 import {ExporterOptions} from './external-types';
 import {GoogleAuth, JWT} from 'google-auth-library';
+// Import directly from this module instead of googleapis to improve bundler tree shaking
 import {monitoring} from 'googleapis/build/src/apis/monitoring';
 import type {monitoring_v3} from 'googleapis';
 import {transformMetricDescriptor, createTimeSeries} from './transform';
