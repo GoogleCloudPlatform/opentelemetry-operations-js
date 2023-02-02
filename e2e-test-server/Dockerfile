@@ -16,35 +16,20 @@
 
 FROM node:19-alpine as node-base
 ENV SRC="/src"
-RUN npm install -g npm@^7
-USER node
 WORKDIR $SRC
 
 FROM node-base as build-base
-USER root
-RUN chown node:node $SRC
-USER node
 # copy local dependencies
-COPY --chown=node:node lerna.json package.json package-lock.json ./
-COPY --chown=node:node scripts/ scripts/
-COPY --chown=node:node packages/ packages/
+COPY lerna.json package.json package-lock.json ./
 # Install dev tools in the root of the repo
 RUN npm install --ignore-scripts
-# copy package.json
-COPY --chown=node:node e2e-test-server/package.json e2e-test-server/package-lock.json e2e-test-server/
-# bootstrap without compile
-RUN npx lerna bootstrap --ignore-scripts
-# compile everything BUT e2e-test-server
-RUN npx lerna run compile --ignore @google-cloud/e2e-test-server
-# dereference lerna symlinks so we don't need to copy out the whole monorepo
-RUN TMPDIR=$(mktemp -d) && \
-    cp --dereference --recursive e2e-test-server/node_modules/@google-cloud $TMPDIR/ && \
-    rm -rf e2e-test-server/node_modules/@google-cloud && \
-    mv $TMPDIR/@google-cloud e2e-test-server/node_modules/@google-cloud
+COPY . ./
+# bootstrap only the packages needed for e2e test server
+RUN npx lerna@latest bootstrap --scope=@google-cloud/e2e-test-server --include-dependencies
+# builds a small self contained bundle with @vercel/ncc under dist/
+RUN cd e2e-test-server && npm run bundle
 
 FROM node-base
-COPY --from=build-base --chown=node:node $SRC/e2e-test-server $SRC/e2e-test-server/
-WORKDIR $SRC/e2e-test-server
-COPY --chown=node:node e2e-test-server/ ./
-RUN npm run compile
-ENTRYPOINT ["node", "build/src/index.js"]
+USER node
+COPY --from=build-base --chown=node:node $SRC/e2e-test-server/dist ./
+ENTRYPOINT ["node", "index.js"]

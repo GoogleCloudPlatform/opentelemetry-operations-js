@@ -205,7 +205,7 @@ function transformResourceToAttributes(
   resourceFilter?: RegExp,
   stringifyArrayAttributes?: boolean
 ): Attributes {
-  const monitoredResource = mapOtelResourceToMonitoredResource(resource);
+  const monitoredResource = mapOtelResourceToMonitoredResource(resource, true);
   const attributes: ot.SpanAttributes = {};
 
   if (resourceFilter) {
