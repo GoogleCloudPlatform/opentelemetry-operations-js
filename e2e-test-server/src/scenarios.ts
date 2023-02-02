@@ -25,8 +25,7 @@ import {
   TraceExporter,
   TraceExporterOptions,
 } from '@google-cloud/opentelemetry-cloud-trace-exporter';
-// TOOD(#518) remove full import path once it is expose in the package's root index.ts file
-import {GcpDetector} from '@google-cloud/opentelemetry-resource-util/build/src/detector/detector';
+import {GcpDetector} from '@google-cloud/opentelemetry-resource-util';
 import * as constants from './constants';
 import {context, SpanKind} from '@opentelemetry/api';
 import {AsyncHooksContextManager} from '@opentelemetry/context-async-hooks';
