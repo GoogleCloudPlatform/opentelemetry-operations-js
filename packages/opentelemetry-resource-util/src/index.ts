@@ -283,4 +283,5 @@ function createMonitoredResource(
   };
 }
 
-export {GcpDetector} from './detector/detector';
+// TODO(518): publicly expose the resource detector
+// export {GcpDetector} from './detector/detector';
