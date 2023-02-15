@@ -63,6 +63,22 @@ class GcmNock {
       return {};
     };
 
+    const metricDescriptorGetReplyCallback = function (
+      this: nock.ReplyFnContext,
+      uri: string,
+      _body: nock.Body
+    ): nock.ReplyBody {
+      const userAgent = this.req.headers['user-agent'];
+      calls.push({
+        uri,
+        body: {
+          timeSeries: [],
+        } as Body,
+        userAgent,
+      });
+      return {};
+    };
+
     nock('https://oauth2.googleapis.com:443')
       .persist()
       .post('/token')
@@ -72,7 +88,9 @@ class GcmNock {
       .post(/v3\/.+\/metricDescriptors/)
       .reply(200, replyCallback)
       .post(/v3\/projects\/.+\/timeSeries/)
-      .reply(200, replyCallback);
+      .reply(200, replyCallback)
+      .get(/v3\/projects\/.+\/metricDescriptors\/workload.googleapis.com\/.*/)
+      .reply(200, metricDescriptorGetReplyCallback);
   }
 
   /**
@@ -84,6 +102,7 @@ class GcmNock {
   snapshotCalls() {
     // Remove any dynamic parts of the metrics which can't be snapshot tested
     this.calls.forEach(call => {
+      console.warn(call);
       if ('timeSeries' in call.body) {
         call.body.timeSeries?.forEach(ts => {
           ts.points?.forEach(point => {
