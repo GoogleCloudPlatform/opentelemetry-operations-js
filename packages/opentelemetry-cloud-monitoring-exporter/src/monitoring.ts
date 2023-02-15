@@ -28,7 +28,7 @@ import {GoogleAuth, JWT} from 'google-auth-library';
 import {monitoring} from 'googleapis/build/src/apis/monitoring';
 import type {monitoring_v3} from 'googleapis';
 import {transformMetricDescriptor, createTimeSeries} from './transform';
-import {TimeSeries} from './types';
+import {MetricDescriptor, TimeSeries} from './types';
 import {partitionList} from './utils';
 import {diag} from '@opentelemetry/api';
 import {mapOtelResourceToMonitoredResource} from '@google-cloud/opentelemetry-resource-util';
@@ -212,16 +212,40 @@ export class MetricExporter implements PushMetricExporter {
     const descriptor = transformMetricDescriptor(metric, this._metricPrefix);
 
     try {
-      await this._monitoring.projects.metricDescriptors.create({
-        name: `projects/${this._projectId}`,
-        requestBody: descriptor,
-        auth: authClient,
-      });
-      diag.debug('sent metric descriptor', descriptor);
+      const descriptorName = `projects/${this._projectId}`;
+      const descriptorExists = await this.checkIfDescriptorExists(
+        descriptorName,
+        descriptor,
+        authClient
+      );
+      if (!descriptorExists) {
+        await this._monitoring.projects.metricDescriptors.create({
+          name: descriptorName,
+          requestBody: descriptor,
+          auth: authClient,
+        });
+        diag.debug('sent metric descriptor', descriptor);
+      }
       return true;
     } catch (e) {
       const err = asError(e);
       diag.error('Failed to create metric descriptor: %s', err.message);
+      return false;
+    }
+  }
+
+  private async checkIfDescriptorExists(
+    descriptorName: string,
+    descriptor: MetricDescriptor,
+    authClient: JWT
+  ) {
+    try {
+      await this._monitoring.projects.metricDescriptors.get({
+        name: `${descriptorName}/metricDescriptors/${descriptor.type}`,
+        auth: authClient,
+      });
+      return true;
+    } catch (error) {
       return false;
     }
   }
