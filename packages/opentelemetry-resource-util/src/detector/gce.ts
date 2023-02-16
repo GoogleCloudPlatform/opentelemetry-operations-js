@@ -22,7 +22,7 @@ import * as metadata from 'gcp-metadata';
 
 const MACHINE_TYPE_METADATA_ATTR = 'machine-type';
 const ID_METADATA_ATTR = 'id';
-const HOSTNAME_METADATA_ATTR = 'hostname';
+const HOST_NAME_METADATA_ATTR = 'name';
 const ZONE_METADATA_ATTR = 'zone';
 
 export async function onGce(): Promise<boolean> {
@@ -63,7 +63,7 @@ export async function hostId(): Promise<string> {
  * is true before calling this, or it may throw exceptions.
  */
 export async function hostName(): Promise<string> {
-  return metadata.instance<string>(HOSTNAME_METADATA_ATTR);
+  return metadata.instance<string>(HOST_NAME_METADATA_ATTR);
 }
 
 /**
