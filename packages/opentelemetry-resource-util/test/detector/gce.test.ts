@@ -75,10 +75,10 @@ describe('GCE', () => {
   });
 
   it('detects host name', async () => {
-    metadataStub.instance.withArgs('hostname').resolves('fake-hostname');
+    metadataStub.instance.withArgs('name').resolves('fake-name');
 
     const hostName = await gce.hostName();
-    assert.strictEqual(hostName, 'fake-hostname');
+    assert.strictEqual(hostName, 'fake-name');
   });
 
   describe('zone and region', () => {
