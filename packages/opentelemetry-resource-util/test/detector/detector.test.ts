@@ -89,8 +89,8 @@ describe('GcpDetector', () => {
       .withArgs('machine-type')
       .resolves('fake-machine-type')
 
-      .withArgs('hostname')
-      .resolves('fake-hostname')
+      .withArgs('name')
+      .resolves('fake-name')
 
       .withArgs('zone')
       .resolves('projects/233510669999/zones/us-east4-b');
@@ -103,7 +103,7 @@ describe('GcpDetector', () => {
       'cloud.provider': 'gcp',
       'cloud.region': 'us-east4',
       'host.id': '12345',
-      'host.name': 'fake-hostname',
+      'host.name': 'fake-name',
       'host.type': 'fake-machine-type',
     });
   });
