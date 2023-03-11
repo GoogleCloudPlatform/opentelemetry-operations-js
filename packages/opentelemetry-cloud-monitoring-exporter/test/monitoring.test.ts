@@ -101,38 +101,28 @@ describe('MetricExporter', () => {
       exporter = new MetricExporter({});
       resourceMetrics = await generateMetricsData();
 
-      metricDescriptorCreate = sinon.spy(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        async (
-          _request,
-          _params
-        ): GaxiosPromise<monitoring_v3.Schema$MetricDescriptor> => {
-          if (createMetricDesriptorShouldFail) {
-            throw new Error('fail');
-          }
-          return Promise.resolve(
-            {} as Partial<
-              GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
-            > as GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
-          );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      metricDescriptorCreate = sinon.spy(async (request, params) => {
+        if (createMetricDesriptorShouldFail) {
+          throw new Error('fail');
         }
-      );
-      metricDescriptorsGet = sinon.spy(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        async (
-          _request,
-          _params
-        ): GaxiosPromise<monitoring_v3.Schema$MetricDescriptor> => {
-          if (getMetricDesriptorShouldFail) {
-            throw new Error('fail');
-          }
-          return Promise.resolve(
-            {} as Partial<
-              GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
-            > as GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
-          );
+        return Promise.resolve(
+          {} as Partial<
+            GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+          > as GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+        );
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      metricDescriptorsGet = sinon.spy(async (_request, _params) => {
+        if (getMetricDesriptorShouldFail) {
+          throw new Error('fail');
         }
-      );
+        return Promise.resolve(
+          {} as Partial<
+            GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+          > as GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+        );
+      });
 
       sinon.replace(
         exporter['_monitoring'].projects.metricDescriptors,
