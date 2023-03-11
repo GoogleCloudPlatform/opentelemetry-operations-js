@@ -194,7 +194,7 @@ export class MetricExporter implements PushMetricExporter {
       return true;
     }
 
-    const res = await this._patchMetricDescriptorIfNeeded(metric);
+    const res = await this._createMetricDescriptorIfNeeded(metric);
     if (res) {
       this.createdMetricDescriptors.add(metric.descriptor.name);
       return true;
@@ -229,7 +229,7 @@ export class MetricExporter implements PushMetricExporter {
    * @param metric The OpenTelemetry MetricData.
    * @returns whether or not the descriptor was successfully created
    */
-  private async _patchMetricDescriptorIfNeeded(
+  private async _createMetricDescriptorIfNeeded(
     metric: MetricData
   ): Promise<boolean> {
     const authClient = await this._authorize();
