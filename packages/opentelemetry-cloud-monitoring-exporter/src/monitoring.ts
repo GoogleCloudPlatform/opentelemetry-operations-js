@@ -194,7 +194,7 @@ export class MetricExporter implements PushMetricExporter {
       return true;
     }
 
-    const res = await this._createMetricDescriptor(metric);
+    const res = await this._patchMetricDescriptorIfNeeded(metric);
     if (res) {
       this.createdMetricDescriptors.add(metric.descriptor.name);
       return true;
@@ -225,11 +225,13 @@ export class MetricExporter implements PushMetricExporter {
   }
 
   /**
-   * Calls CreateMetricDescriptor in the GCM API for the given InstrumentDescriptor
+   * Calls CreateMetricDescriptor in the GCM API for the given InstrumentDescriptor if needed
    * @param metric The OpenTelemetry MetricData.
    * @returns whether or not the descriptor was successfully created
    */
-  private async _createMetricDescriptor(metric: MetricData): Promise<boolean> {
+  private async _patchMetricDescriptorIfNeeded(
+    metric: MetricData
+  ): Promise<boolean> {
     const authClient = await this._authorize();
     const descriptor = transformMetricDescriptor(metric, this._metricPrefix);
     const projectIdPath = mountProjectIdPath(this._projectId as string);
