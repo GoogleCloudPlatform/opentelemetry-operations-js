@@ -102,7 +102,6 @@ class GcmNock {
   snapshotCalls() {
     // Remove any dynamic parts of the metrics which can't be snapshot tested
     this.calls.forEach(call => {
-      console.warn(call);
       if ('timeSeries' in call.body) {
         call.body.timeSeries?.forEach(ts => {
           ts.points?.forEach(point => {
