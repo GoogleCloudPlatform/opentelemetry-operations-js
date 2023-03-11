@@ -23,3 +23,7 @@ export function partitionList(list: TimeSeries[], chunkSize: number) {
   }
   return results;
 }
+
+export function mountProjectIdPath(projectId: string) {
+  return `projects/${projectId}`;
+}

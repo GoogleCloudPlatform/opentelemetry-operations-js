@@ -29,7 +29,7 @@ import {monitoring} from 'googleapis/build/src/apis/monitoring';
 import type {monitoring_v3} from 'googleapis';
 import {transformMetricDescriptor, createTimeSeries} from './transform';
 import {MetricDescriptor, TimeSeries} from './types';
-import {partitionList} from './utils';
+import {mountProjectIdPath, partitionList} from './utils';
 import {diag} from '@opentelemetry/api';
 import {mapOtelResourceToMonitoredResource} from '@google-cloud/opentelemetry-resource-util';
 
@@ -203,6 +203,28 @@ export class MetricExporter implements PushMetricExporter {
   }
 
   /**
+   * Returns true if a descriptor already exists within the requested GCP project id;
+   * @param descriptor The metric descriptor to check
+   * @param authClient The authenticated client to use to make the request
+   * @returns {boolean}
+   */
+  private async checkIfDescriptorExists(
+    descriptor: MetricDescriptor,
+    authClient: JWT
+  ) {
+    try {
+      const projectIdPath = mountProjectIdPath(this._projectId as string);
+      await this._monitoring.projects.metricDescriptors.get({
+        name: `${projectIdPath}/metricDescriptors/${descriptor.type}`,
+        auth: authClient,
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
    * Calls CreateMetricDescriptor in the GCM API for the given InstrumentDescriptor
    * @param metric The OpenTelemetry MetricData.
    * @returns whether or not the descriptor was successfully created
@@ -210,17 +232,16 @@ export class MetricExporter implements PushMetricExporter {
   private async _createMetricDescriptor(metric: MetricData): Promise<boolean> {
     const authClient = await this._authorize();
     const descriptor = transformMetricDescriptor(metric, this._metricPrefix);
+    const projectIdPath = mountProjectIdPath(this._projectId as string);
 
     try {
-      const descriptorName = `projects/${this._projectId}`;
       const descriptorExists = await this.checkIfDescriptorExists(
-        descriptorName,
         descriptor,
         authClient
       );
       if (!descriptorExists) {
         await this._monitoring.projects.metricDescriptors.create({
-          name: descriptorName,
+          name: projectIdPath,
           requestBody: descriptor,
           auth: authClient,
         });
@@ -230,22 +251,6 @@ export class MetricExporter implements PushMetricExporter {
     } catch (e) {
       const err = asError(e);
       diag.error('Failed to create metric descriptor: %s', err.message);
-      return false;
-    }
-  }
-
-  private async checkIfDescriptorExists(
-    descriptorName: string,
-    descriptor: MetricDescriptor,
-    authClient: JWT
-  ) {
-    try {
-      await this._monitoring.projects.metricDescriptors.get({
-        name: `${descriptorName}/metricDescriptors/${descriptor.type}`,
-        auth: authClient,
-      });
-      return true;
-    } catch (error) {
       return false;
     }
   }
