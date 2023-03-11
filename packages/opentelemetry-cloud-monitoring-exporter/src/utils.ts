@@ -23,7 +23,7 @@ export function partitionList(list: TimeSeries[], chunkSize: number) {
   }
   return results;
 }
-
+/** Mounts the GCP project id path */
 export function mountProjectIdPath(projectId: string) {
   return `projects/${projectId}`;
 }
