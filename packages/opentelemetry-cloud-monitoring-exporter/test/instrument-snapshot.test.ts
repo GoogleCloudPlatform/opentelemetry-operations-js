@@ -65,15 +65,12 @@ class GcmNock {
 
     const metricDescriptorGetReplyCallback = function (
       this: nock.ReplyFnContext,
-      uri: string,
-      _body: nock.Body
+      uri: string
     ): nock.ReplyBody {
       const userAgent = this.req.headers['user-agent'];
       calls.push({
         uri,
-        body: {
-          timeSeries: [],
-        } as Body,
+        body: {},
         userAgent,
       });
       return {};
