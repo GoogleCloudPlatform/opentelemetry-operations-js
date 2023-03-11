@@ -205,7 +205,7 @@ export class MetricExporter implements PushMetricExporter {
   /**
    * Returns true if a descriptor already exists within the requested GCP project id;
    * @param descriptor The metric descriptor to check
-   * @param authClient The authenticated client to use to make the request
+   * @param authClient The authenticated client which will be used to make the request
    * @returns {boolean}
    */
   private async checkIfDescriptorExists(
