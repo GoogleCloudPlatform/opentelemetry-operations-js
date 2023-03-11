@@ -210,10 +210,10 @@ export class MetricExporter implements PushMetricExporter {
    */
   private async checkIfDescriptorExists(
     descriptor: MetricDescriptor,
+    projectIdPath: string,
     authClient: JWT
   ) {
     try {
-      const projectIdPath = mountProjectIdPath(this._projectId as string);
       await this._monitoring.projects.metricDescriptors.get({
         name: `${projectIdPath}/metricDescriptors/${descriptor.type}`,
         auth: authClient,
@@ -239,6 +239,7 @@ export class MetricExporter implements PushMetricExporter {
     try {
       const descriptorExists = await this.checkIfDescriptorExists(
         descriptor,
+        projectIdPath,
         authClient
       );
       if (!descriptorExists) {
