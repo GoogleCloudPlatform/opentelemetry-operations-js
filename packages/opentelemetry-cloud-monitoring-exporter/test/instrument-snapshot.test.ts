@@ -87,7 +87,7 @@ class GcmNock {
       .post(/v3\/projects\/.+\/timeSeries/)
       .reply(200, replyCallback)
       .get(/v3\/projects\/.+\/metricDescriptors\/workload.googleapis.com\/.*/)
-      .reply(200, metricDescriptorGetReplyCallback);
+      .reply(404, metricDescriptorGetReplyCallback);
   }
 
   /**
