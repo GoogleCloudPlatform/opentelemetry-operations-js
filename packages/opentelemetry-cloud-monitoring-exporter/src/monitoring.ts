@@ -209,7 +209,7 @@ export class MetricExporter implements PushMetricExporter {
    * @param authClient The authenticated client which will be used to make the request
    * @returns {boolean}
    */
-  private async checkIfDescriptorExists(
+  private async _checkIfDescriptorExists(
     descriptor: MetricDescriptor,
     projectIdPath: string,
     authClient: JWT
