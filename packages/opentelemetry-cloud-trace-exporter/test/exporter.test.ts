@@ -188,6 +188,9 @@ describe('Google Cloud Trace Exporter', () => {
         status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
+        droppedAttributesCount: 0,
+        droppedEventsCount: 0,
+        droppedLinksCount: 0,
       };
 
       const result = await new Promise<ExportResult>(resolve => {
@@ -238,6 +241,9 @@ describe('Google Cloud Trace Exporter', () => {
         status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
+        droppedAttributesCount: 0,
+        droppedEventsCount: 0,
+        droppedLinksCount: 0,
       };
 
       await new Promise(resolve => {
@@ -278,6 +284,9 @@ describe('Google Cloud Trace Exporter', () => {
         status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
+        droppedAttributesCount: 0,
+        droppedEventsCount: 0,
+        droppedLinksCount: 0,
       };
 
       getClientShouldFail = true;
@@ -312,6 +321,9 @@ describe('Google Cloud Trace Exporter', () => {
         status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
+        droppedAttributesCount: 0,
+        droppedEventsCount: 0,
+        droppedLinksCount: 0,
       };
 
       batchWriteShouldFail = true;
@@ -344,6 +356,9 @@ describe('Google Cloud Trace Exporter', () => {
         status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
+        droppedAttributesCount: 0,
+        droppedEventsCount: 0,
+        droppedLinksCount: 0,
       };
 
       await exporter['_projectId'];
@@ -378,6 +393,9 @@ describe('Google Cloud Trace Exporter', () => {
         status: {code: types.SpanStatusCode.OK},
         resource: Resource.empty(),
         instrumentationLibrary: {name: 'default', version: '0.0.1'},
+        droppedAttributesCount: 0,
+        droppedEventsCount: 0,
+        droppedLinksCount: 0,
       };
 
       const result = await new Promise<ExportResult>(resolve => {
