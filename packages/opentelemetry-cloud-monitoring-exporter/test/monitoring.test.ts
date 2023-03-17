@@ -218,7 +218,7 @@ describe('MetricExporter', () => {
 
       assert.deepStrictEqual(
         metricDescriptorsGet.getCall(0).args[0].name,
-        `projects/${process.env.GCLOUD_PROJECT}/metricDescriptors/workload.googleapis.com/name`
+        `projects/not-real/metricDescriptors/workload.googleapis.com/name`
       );
     });
 
