@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {Attributes, AttributeValue} from '@opentelemetry/api';
-import {Resource} from '@opentelemetry/resources';
+import {IResource} from '@opentelemetry/resources';
 import {
   SemanticResourceAttributes,
   CloudPlatformValues,
@@ -197,7 +197,7 @@ export interface MonitoredResource {
  * @returns the corresponding GCM MonitoredResource
  */
 export function mapOtelResourceToMonitoredResource(
-  resource: Resource,
+  resource: IResource,
   includeUnsupportedResources = false
 ): MonitoredResource {
   const attrs = resource.attributes;

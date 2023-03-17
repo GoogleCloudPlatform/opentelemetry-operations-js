@@ -53,6 +53,9 @@ describe('transform', () => {
         cost: 112.12,
       }),
       instrumentationLibrary: {name: 'default', version: '0.0.1'},
+      droppedAttributesCount: 0,
+      droppedEventsCount: 0,
+      droppedLinksCount: 0,
     };
   });
 
