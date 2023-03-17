@@ -238,7 +238,7 @@ export class MetricExporter implements PushMetricExporter {
     const projectIdPath = mountProjectIdPath(this._projectId as string);
 
     try {
-      const descriptorExists = await this.checkIfDescriptorExists(
+      const descriptorExists = await this._checkIfDescriptorExists(
         descriptor,
         projectIdPath,
         authClient
