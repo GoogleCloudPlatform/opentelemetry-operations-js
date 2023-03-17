@@ -23,6 +23,9 @@ import {emptyResourceMetrics, generateMetricsData} from './util';
 import {Attributes} from '@opentelemetry/api';
 
 import type {monitoring_v3} from 'googleapis';
+import {describe} from 'mocha';
+import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
+import {GaxiosPromise} from 'googleapis/build/src/apis/monitoring';
 
 describe('MetricExporter', () => {
   beforeEach(() => {
@@ -63,37 +66,73 @@ describe('MetricExporter', () => {
 
   describe('export', () => {
     let exporter: MetricExporter;
-    let metricDescriptors: sinon.SinonSpy<
-      [monitoring_v3.Params$Resource$Projects$Metricdescriptors$Create, any],
-      Promise<any>
+    let metricDescriptorCreate: sinon.SinonSpy<
+      [
+        monitoring_v3.Params$Resource$Projects$Metricdescriptors$Create,
+        GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+      ],
+      GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+    >;
+    let metricDescriptorsGet: sinon.SinonSpy<
+      [
+        monitoring_v3.Params$Resource$Projects$Metricdescriptors$Get,
+        GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+      ],
+      GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
     >;
     let timeSeries: sinon.SinonSpy<
-      [monitoring_v3.Params$Resource$Projects$Timeseries$Create, any],
-      Promise<any>
+      [
+        monitoring_v3.Params$Resource$Projects$Timeseries$Create,
+        GaxiosPromise<monitoring_v3.Schema$Empty>
+      ],
+      Promise<monitoring_v3.Schema$Empty>
     >;
     let getClientShouldFail: boolean;
     let createTimeSeriesShouldFail: boolean;
     let createMetricDesriptorShouldFail: boolean;
+    let getMetricDesriptorShouldFail: boolean;
+    let resourceMetrics: ResourceMetrics;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       getClientShouldFail = false;
       createTimeSeriesShouldFail = false;
       createMetricDesriptorShouldFail = false;
+      getMetricDesriptorShouldFail = false;
       exporter = new MetricExporter({});
+      resourceMetrics = await generateMetricsData();
 
-      metricDescriptors = sinon.spy(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        async (request: any, params: any): Promise<any> => {
-          if (createMetricDesriptorShouldFail) {
-            throw new Error('fail');
-          }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      metricDescriptorCreate = sinon.spy(async (request, params) => {
+        if (createMetricDesriptorShouldFail) {
+          throw new Error('fail');
         }
-      );
+        return Promise.resolve(
+          {} as Partial<
+            GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+          > as GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+        );
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      metricDescriptorsGet = sinon.spy(async (_request, _params) => {
+        if (getMetricDesriptorShouldFail) {
+          throw new Error('fail');
+        }
+        return Promise.resolve(
+          {} as Partial<
+            GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+          > as GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+        );
+      });
 
       sinon.replace(
         exporter['_monitoring'].projects.metricDescriptors,
         'create',
-        metricDescriptors as any
+        metricDescriptorCreate as sinon.SinonSpy
+      );
+      sinon.replace(
+        exporter['_monitoring'].projects.metricDescriptors,
+        'get',
+        metricDescriptorsGet as sinon.SinonSpy
       );
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -170,6 +209,19 @@ describe('MetricExporter', () => {
       assert.strictEqual(unhandledPromiseRejectionEvent, false);
     });
 
+    it('should call Monitoring.projects.metricDescriptors.get() with the correct data', async () => {
+      await new Promise<ExportResult>(resolve => {
+        exporter.export(resourceMetrics, result => {
+          resolve(result);
+        });
+      });
+
+      assert.deepStrictEqual(
+        metricDescriptorsGet.getCall(0).args[0].name,
+        'projects/not-real/metricDescriptors/workload.googleapis.com/name'
+      );
+    });
+
     it('should export metrics', async () => {
       const resourceMetrics = await generateMetricsData();
       const result = await new Promise<ExportResult>(resolve => {
@@ -178,128 +230,148 @@ describe('MetricExporter', () => {
         });
       });
       assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
-      assert.deepStrictEqual(
-        metricDescriptors.getCall(0).args[0].requestBody!.type,
-        'workload.googleapis.com/name'
-      );
-
-      assert.strictEqual(metricDescriptors.callCount, 1);
+      assert.strictEqual(metricDescriptorCreate.callCount, 0);
       assert.strictEqual(timeSeries.callCount, 1);
     });
 
-    it('should skip metrics when MetricDescriptor creation fails', async () => {
-      const resourceMetrics = await generateMetricsData();
+    describe('when the metric descriptor was not created yet', () => {
+      beforeEach(() => {
+        getMetricDesriptorShouldFail = true;
+      });
 
-      createMetricDesriptorShouldFail = true;
-      const result = await new Promise<ExportResult>(resolve => {
-        exporter.export(resourceMetrics, result => {
-          resolve(result);
+      it('should export metrics', async () => {
+        resourceMetrics = await generateMetricsData();
+        const result = await new Promise<ExportResult>(resolve => {
+          exporter.export(resourceMetrics, result => {
+            resolve(result);
+          });
         });
+        assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+        assert.deepStrictEqual(
+          metricDescriptorCreate.getCall(0).args[0].requestBody!.type,
+          'workload.googleapis.com/name'
+        );
+        assert.strictEqual(metricDescriptorCreate.callCount, 1);
+        assert.strictEqual(timeSeries.callCount, 1);
       });
 
-      assert.strictEqual(metricDescriptors.callCount, 1);
-      assert.strictEqual(timeSeries.callCount, 0);
-      assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
-    });
+      it('should skip metrics when MetricDescriptor creation fails', async () => {
+        resourceMetrics = await generateMetricsData();
 
-    it('should skip MetricDescriptor creation when a metric has already been seen', async () => {
-      const resourceMetrics = await generateMetricsData();
-
-      let result = await new Promise<ExportResult>(resolve => {
-        exporter.export(resourceMetrics, result => {
-          resolve(result);
+        createMetricDesriptorShouldFail = true;
+        const result = await new Promise<ExportResult>(resolve => {
+          exporter.export(resourceMetrics, result => {
+            resolve(result);
+          });
         });
+
+        assert.strictEqual(metricDescriptorCreate.callCount, 1);
+        assert.strictEqual(timeSeries.callCount, 0);
+        assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
       });
 
-      assert.strictEqual(metricDescriptors.callCount, 1);
-      assert.strictEqual(timeSeries.callCount, 1);
-      assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
+      it('should skip MetricDescriptor creation when a metric has already been seen', async () => {
+        resourceMetrics = await generateMetricsData();
 
-      // Second time around, MetricDescriptors.create() should be skipped
-      metricDescriptors.resetHistory();
-      timeSeries.resetHistory();
-      result = await new Promise<ExportResult>(resolve => {
-        exporter.export(resourceMetrics, result => {
-          resolve(result);
+        let result = await new Promise<ExportResult>(resolve => {
+          exporter.export(resourceMetrics, result => {
+            resolve(result);
+          });
         });
-      });
 
-      assert.strictEqual(metricDescriptors.callCount, 0);
-      assert.strictEqual(timeSeries.callCount, 1);
-      assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
-    });
+        assert.strictEqual(metricDescriptorCreate.callCount, 1);
+        assert.strictEqual(timeSeries.callCount, 1);
+        assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
 
-    it('should return FAILED if there is an error sending TimeSeries', async () => {
-      const resourceMetrics = await generateMetricsData();
-
-      createTimeSeriesShouldFail = true;
-      const result = await new Promise<ExportResult>(resolve => {
-        exporter.export(resourceMetrics, result => {
-          resolve(result);
+        // Second time around, MetricDescriptorCreate.create() should be skipped
+        metricDescriptorCreate.resetHistory();
+        timeSeries.resetHistory();
+        result = await new Promise<ExportResult>(resolve => {
+          exporter.export(resourceMetrics, result => {
+            resolve(result);
+          });
         });
+
+        assert.strictEqual(metricDescriptorCreate.callCount, 0);
+        assert.strictEqual(timeSeries.callCount, 1);
+        assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
       });
 
-      assert.deepStrictEqual(
-        metricDescriptors.getCall(0).args[0].requestBody!.type,
-        'workload.googleapis.com/name'
-      );
-      assert.strictEqual(metricDescriptors.callCount, 1);
-      assert.strictEqual(timeSeries.callCount, 1);
-      assert.deepStrictEqual(result.code, ExportResultCode.FAILED);
-    });
+      it('should return FAILED if there is an error sending TimeSeries', async () => {
+        resourceMetrics = await generateMetricsData();
 
-    it('should handle metrics with no data points with success', async () => {
-      const resourceMetrics = await generateMetricsData();
-      // Clear out metrics array
-      resourceMetrics.scopeMetrics[0].metrics[0].dataPoints.length = 0;
-
-      const result = await new Promise<ExportResult>(resolve => {
-        exporter.export(resourceMetrics, result => {
-          resolve(result);
+        createTimeSeriesShouldFail = true;
+        const result = await new Promise<ExportResult>(resolve => {
+          exporter.export(resourceMetrics, result => {
+            resolve(result);
+          });
         });
+
+        assert.deepStrictEqual(
+          metricDescriptorCreate.getCall(0).args[0].requestBody!.type,
+          'workload.googleapis.com/name'
+        );
+        assert.strictEqual(metricDescriptorCreate.callCount, 1);
+        assert.strictEqual(timeSeries.callCount, 1);
+        assert.deepStrictEqual(result.code, ExportResultCode.FAILED);
       });
 
-      // Should still create the metric descriptor
-      assert.strictEqual(metricDescriptors.callCount, 1);
-      // But no timeseries to write
-      assert.strictEqual(timeSeries.callCount, 0);
-      assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
-    });
+      it('should handle metrics with no data points with success', async () => {
+        resourceMetrics = await generateMetricsData();
+        // Clear out metrics array
+        resourceMetrics.scopeMetrics[0].metrics[0].dataPoints.length = 0;
 
-    it('should enforce batch size limit on metrics', async () => {
-      const resourceMetrics = await generateMetricsData((_, meter) => {
-        const attributes: Attributes = {['keya']: 'value1', ['keyb']: 'value2'};
-
-        let nMetrics = 401;
-        while (nMetrics > 0) {
-          nMetrics -= 1;
-          const counter = meter.createCounter(`name${nMetrics.toString()}`);
-          counter.add(10, attributes);
-        }
-      });
-      const result = await new Promise<ExportResult>(resolve => {
-        exporter.export(resourceMetrics, result => {
-          resolve(result);
+        const result = await new Promise<ExportResult>(resolve => {
+          exporter.export(resourceMetrics, result => {
+            resolve(result);
+          });
         });
+
+        // Should still create the metric descriptor
+        assert.strictEqual(metricDescriptorCreate.callCount, 1);
+        // But no timeseries to write
+        assert.strictEqual(timeSeries.callCount, 0);
+        assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
       });
 
-      assert.deepStrictEqual(
-        metricDescriptors.getCall(0).args[0].requestBody!.type,
-        'workload.googleapis.com/name400'
-      );
-      assert.deepStrictEqual(
-        metricDescriptors.getCall(100).args[0].requestBody!.type,
-        'workload.googleapis.com/name300'
-      );
-      assert.deepStrictEqual(
-        metricDescriptors.getCall(400).args[0].requestBody!.type,
-        'workload.googleapis.com/name0'
-      );
+      it('should enforce batch size limit on metrics', async () => {
+        resourceMetrics = await generateMetricsData((_, meter) => {
+          const attributes: Attributes = {
+            ['keya']: 'value1',
+            ['keyb']: 'value2',
+          };
 
-      assert.strictEqual(metricDescriptors.callCount, 401);
-      assert.strictEqual(timeSeries.callCount, 3);
+          let nMetrics = 401;
+          while (nMetrics > 0) {
+            nMetrics -= 1;
+            const counter = meter.createCounter(`name${nMetrics.toString()}`);
+            counter.add(10, attributes);
+          }
+        });
+        const result = await new Promise<ExportResult>(resolve => {
+          exporter.export(resourceMetrics, result => {
+            resolve(result);
+          });
+        });
 
-      assert.strictEqual(result.code, ExportResultCode.SUCCESS);
+        assert.deepStrictEqual(
+          metricDescriptorCreate.getCall(0).args[0].requestBody!.type,
+          'workload.googleapis.com/name400'
+        );
+        assert.deepStrictEqual(
+          metricDescriptorCreate.getCall(100).args[0].requestBody!.type,
+          'workload.googleapis.com/name300'
+        );
+        assert.deepStrictEqual(
+          metricDescriptorCreate.getCall(400).args[0].requestBody!.type,
+          'workload.googleapis.com/name0'
+        );
+
+        assert.strictEqual(metricDescriptorCreate.callCount, 401);
+        assert.strictEqual(timeSeries.callCount, 3);
+
+        assert.strictEqual(result.code, ExportResultCode.SUCCESS);
+      });
     });
   });
 });
