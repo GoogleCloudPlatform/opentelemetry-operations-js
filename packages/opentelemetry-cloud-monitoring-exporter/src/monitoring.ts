@@ -266,7 +266,7 @@ export class MetricExporter implements PushMetricExporter {
 
     const authClient = await this._authorize();
     await this._monitoring.projects.timeSeries.create({
-      name: `projects/${this._projectId}`,
+      name: mountProjectIdPath(this._projectId as string),
       requestBody: {timeSeries},
       auth: authClient,
     });
