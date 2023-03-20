@@ -6,6 +6,7 @@
     "enabled": true
   },
   "labels": ["dependencies"],
+  "allowedPostUpgradeCommands": ["^npm run update-snapshot-tests$"],
   "packageRules": [
     {
       "matchPackageNames": ["typescript"],
