@@ -17,12 +17,7 @@
     },
     {
       "matchPackagePrefixes": ["@opentelemetry/"],
-      "groupName": "opentelemetry upstream",
-      "postUpgradeTasks": {
-        "commands": ["npm run update-snapshot-tests"],
-        "fileFilters": ["**/__snapshots__/**/*.js"],
-        "executionMode": "branch"
-      }
+      "groupName": "opentelemetry upstream"
     }
   ]
 }
