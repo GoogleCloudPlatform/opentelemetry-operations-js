@@ -1,4 +1,5 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:js-lib", "group:allNonMajor"],
   "dependencyDashboard": true,
   "lockFileMaintenance": {
@@ -16,7 +17,12 @@
     },
     {
       "matchPackagePrefixes": ["@opentelemetry/"],
-      "groupName": "opentelemetry upstream"
+      "groupName": "opentelemetry upstream",
+      "postUpgradeTasks": {
+        "commands": ["npm run update-snapshot-tests"],
+        "fileFilters": ["**/__snapshots__/**/*.js"],
+        "executionMode": "branch"
+      }
     }
   ]
 }
