@@ -86,12 +86,12 @@ function transformMetricKind(metric: MetricData): MetricKind {
       return MetricKind.GAUGE;
     case DataPointType.HISTOGRAM:
       return MetricKind.CUMULATIVE;
+    // TODO(#555)
+    case DataPointType.EXPONENTIAL_HISTOGRAM:
+      return MetricKind.UNSPECIFIED;
     default:
       exhaust(metric);
-      diag.info(
-        'Encountered unexpected data point type %s',
-        (metric as MetricData).dataPointType
-      );
+      // No logging needed as it will be done in transformPoints()
       return MetricKind.UNSPECIFIED;
   }
 }
@@ -187,11 +187,19 @@ function transformPoints(
           },
         },
       }));
+    // TODO(#555)
+    case DataPointType.EXPONENTIAL_HISTOGRAM:
+      diag.info(
+        'ExponentialHistogram is not yet supported, dropping %s points',
+        metric.dataPoints.length
+      );
+      break;
     default:
       exhaust(metric);
       diag.info(
-        'Encountered unexpected dataPointType=%s, dropping the point',
-        (metric as MetricData).dataPointType
+        'Encountered unexpected dataPointType=%s, dropping %s points',
+        (metric as MetricData).dataPointType,
+        (metric as MetricData).dataPoints.length
       );
       break;
   }
