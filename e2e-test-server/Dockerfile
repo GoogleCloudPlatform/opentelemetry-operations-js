@@ -19,13 +19,10 @@ ENV SRC="/src"
 WORKDIR $SRC
 
 FROM node-base as build-base
-# copy local dependencies
-COPY lerna.json package.json package-lock.json ./
-# Install dev tools in the root of the repo
-RUN npm install --ignore-scripts
 COPY . ./
-# bootstrap only the packages needed for e2e test server
-RUN npx lerna@latest bootstrap --scope=@google-cloud/e2e-test-server --include-dependencies
+# bootstrap and compile only the packages needed for e2e test server
+RUN npm install --workspace=./e2e-test-server
+RUN npx lerna@^6 run compile --scope=@google-cloud/e2e-test-server --include-dependencies
 # builds a small self contained bundle with @vercel/ncc under dist/
 RUN cd e2e-test-server && npm run bundle
 
