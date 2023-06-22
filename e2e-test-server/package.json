@@ -16,11 +16,11 @@
     "node": ">=14"
   },
   "scripts": {
-    "lint": "gts lint",
+    "lint": "gts-lint.mjs",
     "clean": "gts clean",
     "compile": "tsc",
-    "fix": "gts fix",
-    "prepare": "npm run compile",
+    "fix": "gts-fix.mjs",
+    "prepack": "npm run compile",
     "pretest": "npm run compile",
     "posttest": "npm run lint",
     "server": "node build/src/index.js",

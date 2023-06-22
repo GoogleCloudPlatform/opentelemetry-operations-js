@@ -6,14 +6,14 @@
   "types": "build/src/index.d.ts",
   "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
   "scripts": {
-    "lint": "gts lint",
+    "lint": "gts-lint.mjs",
     "codecov": "nyc report --reporter=json && codecov -f coverage/*.json -p ../../",
     "clean": "gts clean",
-    "precompile": "node ../../scripts/version-update.js",
+    "precompile": "version-update.js",
     "compile": "tsc",
-    "prepare": "npm run compile",
+    "prepack": "npm run compile",
     "test": "nyc ts-mocha -p tsconfig.json 'test/**/*.test.ts'",
-    "fix": "gts fix",
+    "fix": "gts-fix.mjs",
     "pretest": "npm run compile"
   },
   "keywords": [
@@ -39,6 +39,7 @@
     "registry": "https://wombat-dressing-room.appspot.com"
   },
   "devDependencies": {
+    "@google-cloud/ops-js-scripts": "^1.0.0",
     "@opentelemetry/api": "1.4.1",
     "@opentelemetry/core": "1.10.1",
     "@types/mocha": "10.0.1",
