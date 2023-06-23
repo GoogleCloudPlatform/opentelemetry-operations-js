@@ -21,8 +21,7 @@ jobs:
       # TODO: remove once node 14 is dropped
       - name: Upgrade to latest npm to support lockfile v2
         run: npm install -g npm@${{ matrix.npm-version }}
-      - run: npm install --ignore-scripts
-      - run: npx lerna bootstrap --no-ci
+      - run: npm install
       - run: npm test
       - run: npm run codecov
         if: matrix.node == 19
