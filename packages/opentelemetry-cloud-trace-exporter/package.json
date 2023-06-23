@@ -7,13 +7,13 @@
   "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
   "scripts": {
     "codecov": "nyc report --reporter=json && codecov -f coverage/*.json -p ../../",
-    "lint": "gts lint",
+    "lint": "gts-lint.mjs",
     "clean": "gts clean",
-    "precompile": "node ../../scripts/version-update.js",
+    "precompile": "version-update.js",
     "compile": "tsc",
-    "prepare": "npm run compile",
+    "prepack": "npm run compile",
     "test": "nyc ts-mocha -p tsconfig.json 'test/**/*.test.ts'",
-    "fix": "gts fix",
+    "fix": "gts-fix.mjs",
     "pretest": "npm run compile"
   },
   "keywords": [
@@ -39,20 +39,21 @@
     "registry": "https://wombat-dressing-room.appspot.com"
   },
   "devDependencies": {
+    "@google-cloud/ops-js-scripts": "^1.0.0",
     "@opentelemetry/api": "1.4.1",
     "@opentelemetry/core": "1.14.0",
     "@opentelemetry/resources": "1.14.0",
     "@opentelemetry/sdk-trace-base": "1.14.0",
     "@types/mocha": "10.0.1",
-    "@types/node": "14.18.38",
-    "@types/sinon": "10.0.13",
+    "@types/node": "14.18.51",
+    "@types/sinon": "10.0.15",
     "codecov": "3.8.3",
     "gcp-metadata": "5.2.0",
     "gts": "3.1.1",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
-    "rimraf": "4.4.0",
-    "sinon": "15.0.2",
+    "rimraf": "5.0.1",
+    "sinon": "15.2.0",
     "ts-mocha": "10.0.0",
     "typescript": "4.9.5"
   },

@@ -7,14 +7,14 @@
   "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
   "scripts": {
     "codecov": "nyc report --reporter=json && codecov -f coverage/*.json -p ../../",
-    "lint": "gts lint",
+    "lint": "gts-lint.mjs",
     "clean": "gts clean",
-    "precompile": "node ../../scripts/version-update.js",
+    "precompile": "version-update.js",
     "compile": "tsc",
-    "prepare": "npm run compile",
+    "prepack": "npm run compile",
     "test": "nyc ts-mocha -p tsconfig.json 'test/**/*.test.ts'",
     "update-snapshot-tests": "SNAPSHOT_UPDATE=1 npm run test",
-    "fix": "gts fix",
+    "fix": "gts-fix.mjs",
     "pretest": "npm run compile"
   },
   "keywords": [
@@ -45,18 +45,19 @@
     }
   },
   "devDependencies": {
+    "@google-cloud/ops-js-scripts": "^1.0.0",
     "@opentelemetry/api": "1.4.1",
     "@opentelemetry/resources": "1.14.0",
     "@opentelemetry/semantic-conventions": "1.14.0",
     "@types/mocha": "10.0.1",
-    "@types/node": "14.18.38",
-    "@types/sinon": "10.0.13",
+    "@types/node": "14.18.51",
+    "@types/sinon": "10.0.15",
     "bignumber.js": "9.1.1",
     "codecov": "3.8.3",
     "gts": "3.1.1",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
-    "sinon": "15.0.2",
+    "sinon": "15.2.0",
     "snap-shot-it": "7.9.10",
     "ts-mocha": "10.0.0",
     "typescript": "4.9.5"

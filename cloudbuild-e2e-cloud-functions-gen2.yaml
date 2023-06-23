@@ -17,12 +17,14 @@ steps:
   - name: node:16-alpine
     id: build
     script: |
+      set -x
+
       # install dev deps and tools for the monorepo
       apk add zip jq
-      npm install --ignore-scripts
 
-      # bootstrap only the packages needed for e2e-test-server
-      npx lerna bootstrap --scope=@google-cloud/e2e-test-server --include-dependencies
+      # bootstrap and compile only the packages needed for e2e test server
+      npm install --workspace=./e2e-test-server
+      npx lerna@^6 run compile --scope=@google-cloud/e2e-test-server --include-dependencies
 
       # builds a small self contained bundle with @vercel/ncc under dist/
       cd e2e-test-server
@@ -33,9 +35,8 @@ steps:
       # create a new fake package.json in dist/ and zip it up into a source zip for Cloud
       # Functions
       cd dist
-      npm init -y
-      npm install --save @google-cloud/functions-framework
-      zip -r function-source.zip . -x "node_modules*"
+      cp ../fake.package.json package.json
+      zip -qr function-source.zip .
 
   # Run the test
   - name: $_TEST_RUNNER_IMAGE

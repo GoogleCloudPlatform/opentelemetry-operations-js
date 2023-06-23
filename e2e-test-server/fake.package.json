@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "cloud-functions-dist",
+  "version": "1.0.0",
+  "description": "A fake package.json used for the zip bundle sent to Cloud Functions",
+  "main": "index.js",
+  "dependencies": {
+    "@google-cloud/functions-framework": "3.2.0"
+  }
+}
