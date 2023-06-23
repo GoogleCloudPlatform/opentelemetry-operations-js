@@ -40,8 +40,4 @@ Guidelines](https://opensource.google/conduct/).
 
 ## Running the tests
 
-The command `npm test` tests code the same way that our CI will test it.
-This is a convenience command for a number of steps, which can run separately if needed:
-
-- `npm run compile` compiles the code, checking for type errors.
-- `npm run bootstrap` Bootstrap the packages in the current Lerna repo. Installs all of their dependencies and links any cross-dependencies.
+After checking out the repo, run `npm install`. Then run `npm test` to test code the same way that our CI will test it.

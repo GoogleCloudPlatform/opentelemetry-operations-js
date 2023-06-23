@@ -24,7 +24,7 @@ steps:
 
       # bootstrap and compile only the packages needed for e2e test server
       npm install --workspace=./e2e-test-server
-      npx lerna@^6 run compile --scope=@google-cloud/e2e-test-server --include-dependencies
+      npx lerna@^7 run compile --scope=@google-cloud/e2e-test-server --include-dependencies
 
       # builds a small self contained bundle with @vercel/ncc under dist/
       cd e2e-test-server
