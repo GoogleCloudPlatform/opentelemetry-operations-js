@@ -34,28 +34,28 @@ async function detect(): Promise<Resource> {
   // Note the order of these if checks is significant with more specific resources coming
   // first. E.g. Cloud Functions gen2 are executed in Cloud Run so it must be checked first.
   if (await gke.onGke()) {
-    return await _gkeResource();
+    return await gkeResource();
   } else if (await faas.onCloudFunctions()) {
-    return await _cloudFunctionsResource();
+    return await cloudFunctionsResource();
   } else if (await faas.onCloudRun()) {
-    return await _cloudRunResource();
+    return await cloudRunResource();
   } else if (await gae.onAppEngine()) {
-    return await _gaeResource();
+    return await gaeResource();
   } else if (await gce.onGce()) {
-    return await _gceResource();
+    return await gceResource();
   }
 
   return Resource.EMPTY;
 }
 
-async function _gkeResource(): Promise<Resource> {
+async function gkeResource(): Promise<Resource> {
   const [zoneOrRegion, k8sClusterName, hostId] = await Promise.all([
     gke.availabilityZoneOrRegion(),
     gke.clusterName(),
     gke.hostId(),
   ]);
 
-  return await _makeResource({
+  return await makeResource({
     [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_KUBERNETES_ENGINE,
     [zoneOrRegion.type === 'zone'
       ? Semconv.CLOUD_AVAILABILITY_ZONE
@@ -65,7 +65,7 @@ async function _gkeResource(): Promise<Resource> {
   });
 }
 
-async function _cloudRunResource(): Promise<Resource> {
+async function cloudRunResource(): Promise<Resource> {
   const [faasName, faasVersion, faasId, faasCloudRegion] = await Promise.all([
     faas.faasName(),
     faas.faasVersion(),
@@ -73,7 +73,7 @@ async function _cloudRunResource(): Promise<Resource> {
     faas.faasCloudRegion(),
   ]);
 
-  return await _makeResource({
+  return await makeResource({
     [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_RUN,
     [Semconv.FAAS_NAME]: faasName,
     [Semconv.FAAS_VERSION]: faasVersion,
@@ -82,7 +82,7 @@ async function _cloudRunResource(): Promise<Resource> {
   });
 }
 
-async function _cloudFunctionsResource(): Promise<Resource> {
+async function cloudFunctionsResource(): Promise<Resource> {
   const [faasName, faasVersion, faasId, faasCloudRegion] = await Promise.all([
     faas.faasName(),
     faas.faasVersion(),
@@ -90,7 +90,7 @@ async function _cloudFunctionsResource(): Promise<Resource> {
     faas.faasCloudRegion(),
   ]);
 
-  return await _makeResource({
+  return await makeResource({
     [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_FUNCTIONS,
     [Semconv.FAAS_NAME]: faasName,
     [Semconv.FAAS_VERSION]: faasVersion,
@@ -99,7 +99,7 @@ async function _cloudFunctionsResource(): Promise<Resource> {
   });
 }
 
-async function _gaeResource(): Promise<Resource> {
+async function gaeResource(): Promise<Resource> {
   let zone, region;
   if (await gae.onAppEngineStandard()) {
     [zone, region] = await Promise.all([
@@ -115,7 +115,7 @@ async function _gaeResource(): Promise<Resource> {
     gae.serviceInstance(),
   ]);
 
-  return await _makeResource({
+  return await makeResource({
     [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_APP_ENGINE,
     [Semconv.FAAS_NAME]: faasName,
     [Semconv.FAAS_VERSION]: faasVersion,
@@ -125,7 +125,7 @@ async function _gaeResource(): Promise<Resource> {
   });
 }
 
-async function _gceResource(): Promise<Resource> {
+async function gceResource(): Promise<Resource> {
   const [zoneAndRegion, hostType, hostId, hostName] = await Promise.all([
     gce.availabilityZoneAndRegion(),
     gce.hostType(),
@@ -133,7 +133,7 @@ async function _gceResource(): Promise<Resource> {
     gce.hostName(),
   ]);
 
-  return await _makeResource({
+  return await makeResource({
     [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_COMPUTE_ENGINE,
     [Semconv.CLOUD_AVAILABILITY_ZONE]: zoneAndRegion.zone,
     [Semconv.CLOUD_REGION]: zoneAndRegion.region,
@@ -143,7 +143,7 @@ async function _gceResource(): Promise<Resource> {
   });
 }
 
-async function _makeResource(attrs: Attributes): Promise<Resource> {
+async function makeResource(attrs: Attributes): Promise<Resource> {
   const project = await metadata.project<string>('project-id');
 
   return new Resource({
