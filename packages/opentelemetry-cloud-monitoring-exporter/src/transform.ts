@@ -18,6 +18,7 @@ import {
   MetricData,
   DataPoint,
   DataPointType,
+  ExponentialHistogram,
 } from '@opentelemetry/sdk-metrics';
 import {ValueType as OTValueType, diag} from '@opentelemetry/api';
 import {MonitoredResource} from '@google-cloud/opentelemetry-resource-util';
@@ -30,6 +31,7 @@ import {
   ValueType,
   LabelDescriptor,
 } from './types';
+import {exp2, numbersToStrings} from './utils';
 import * as path from 'path';
 import type {monitoring_v3} from 'googleapis';
 import {PreciseDate} from '@google-cloud/precise-date';
@@ -85,10 +87,8 @@ function transformMetricKind(metric: MetricData): MetricKind {
     case DataPointType.GAUGE:
       return MetricKind.GAUGE;
     case DataPointType.HISTOGRAM:
-      return MetricKind.CUMULATIVE;
-    // TODO(#555)
     case DataPointType.EXPONENTIAL_HISTOGRAM:
-      return MetricKind.UNSPECIFIED;
+      return MetricKind.CUMULATIVE;
     default:
       exhaust(metric);
       // No logging needed as it will be done in transformPoints()
@@ -98,18 +98,34 @@ function transformMetricKind(metric: MetricData): MetricKind {
 
 /** Transforms a OpenTelemetry ValueType to a GCM ValueType. */
 function transformValueType(metric: MetricData): ValueType {
-  if (metric.dataPointType === DataPointType.HISTOGRAM) {
-    return ValueType.DISTRIBUTION;
+  const {
+    dataPointType,
+    descriptor: {valueType},
+  } = metric;
+
+  switch (dataPointType) {
+    case DataPointType.HISTOGRAM:
+    case DataPointType.EXPONENTIAL_HISTOGRAM:
+      return ValueType.DISTRIBUTION;
+    case DataPointType.GAUGE:
+    case DataPointType.SUM:
+      // handle below
+      break;
+    default:
+      exhaust(dataPointType);
+      // No logging needed as it will be done in transformPoints()
+      return ValueType.VALUE_TYPE_UNSPECIFIED;
   }
-  const {valueType} = metric.descriptor;
-  if (valueType === OTValueType.DOUBLE) {
-    return ValueType.DOUBLE;
-  } else if (valueType === OTValueType.INT) {
-    return ValueType.INT64;
-  } else {
-    exhaust(valueType);
-    diag.info('Encountered unexpected value type %s', valueType);
-    return ValueType.VALUE_TYPE_UNSPECIFIED;
+
+  switch (valueType) {
+    case OTValueType.DOUBLE:
+      return ValueType.DOUBLE;
+    case OTValueType.INT:
+      return ValueType.INT64;
+    default:
+      exhaust(valueType);
+      diag.info('Encountered unexpected value type %s', valueType);
+      return ValueType.VALUE_TYPE_UNSPECIFIED;
   }
 }
 
@@ -187,13 +203,17 @@ function transformPoints(
           },
         },
       }));
-    // TODO(#555)
     case DataPointType.EXPONENTIAL_HISTOGRAM:
-      diag.info(
-        'ExponentialHistogram is not yet supported, dropping %s points',
-        metric.dataPoints.length
-      );
-      break;
+      return metric.dataPoints.map(dataPoint => ({
+        metric: transformMetric(dataPoint, metric.descriptor, metricPrefix),
+        point: {
+          value: transformExponentialHistogramValue(dataPoint.value),
+          interval: {
+            startTime: new PreciseDate(dataPoint.startTime).toISOString(),
+            endTime: new PreciseDate(dataPoint.endTime).toISOString(),
+          },
+        },
+      }));
     default:
       exhaust(metric);
       diag.info(
@@ -231,7 +251,52 @@ function transformHistogramValue(
       bucketOptions: {
         explicitBuckets: {bounds: value.buckets.boundaries},
       },
-      bucketCounts: value.buckets.counts.map(count => count.toString()),
+      bucketCounts: numbersToStrings(value.buckets.counts),
+    },
+  };
+}
+
+function transformExponentialHistogramValue(
+  value: ExponentialHistogram
+): monitoring_v3.Schema$TypedValue {
+  // Adapated from reference impl in Go which has more explanatory comments
+  // https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/v1.8.0/exporter/collector/metrics.go#L582
+  const underflow =
+    value.zeroCount +
+    value.negative.bucketCounts.reduce((prev, current) => prev + current, 0);
+  const bucketCounts = [
+    underflow,
+    ...value.positive.bucketCounts,
+    0, // overflow bucket is always empty
+  ];
+
+  let bucketOptions: monitoring_v3.Schema$BucketOptions;
+  if (value.positive.bucketCounts.length === 0) {
+    bucketOptions = {
+      explicitBuckets: {bounds: []},
+    };
+  } else {
+    const growthFactor = exp2(exp2(-value.scale));
+    const scale = Math.pow(growthFactor, value.positive.offset);
+    bucketOptions = {
+      exponentialBuckets: {
+        growthFactor,
+        scale,
+        numFiniteBuckets: bucketCounts.length - 2,
+      },
+    };
+  }
+
+  const mean =
+    value.sum === undefined || value.count === 0 ? 0 : value.sum / value.count;
+
+  return {
+    distributionValue: {
+      // sumOfSquaredDeviation param not aggregated
+      count: value.count.toString(),
+      mean,
+      bucketOptions,
+      bucketCounts: numbersToStrings(bucketCounts),
     },
   };
 }

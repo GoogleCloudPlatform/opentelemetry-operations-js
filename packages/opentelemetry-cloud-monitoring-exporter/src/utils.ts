@@ -27,3 +27,20 @@ export function partitionList(list: TimeSeries[], chunkSize: number) {
 export function mountProjectIdPath(projectId: string) {
   return `projects/${projectId}`;
 }
+
+/**
+ * Returns the result of 2^value
+ */
+export function exp2(value: number): number {
+  return Math.pow(2, value);
+}
+
+/**
+ * Map array of numbers to strings
+ *
+ * @param values an array of numbers
+ * @returns a list of strings for those integers
+ */
+export function numbersToStrings(values: number[]): string[] {
+  return values.map(value => value.toString());
+}

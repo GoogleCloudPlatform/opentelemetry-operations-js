@@ -1098,6 +1098,261 @@ exports['MetricExporter snapshot tests normalizes label keys in metric and descr
   }
 ]
 
+exports['MetricExporter snapshot tests reconfigure with views ExponentialHistogram histogram with ExponentialHistogram view and only underflow observations 1'] = [
+  {
+    "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myexphist",
+    "body": {},
+    "userAgent": [
+      "opentelemetry-js/1.14.0 google-cloud-metric-exporter/0.16.0 google-api-nodejs-client/5.1.0 (gzip)"
+    ]
+  },
+  {
+    "uri": "/v3/projects/otel-starter-project/metricDescriptors",
+    "body": {
+      "type": "workload.googleapis.com/myexphist",
+      "description": "instrument description",
+      "displayName": "myexphist",
+      "metricKind": "CUMULATIVE",
+      "valueType": "DISTRIBUTION",
+      "unit": "{myunit}",
+      "labels": []
+    },
+    "userAgent": [
+      "opentelemetry-js/1.14.0 google-cloud-metric-exporter/0.16.0 google-api-nodejs-client/5.1.0 (gzip)"
+    ]
+  },
+  {
+    "uri": "/v3/projects/otel-starter-project/timeSeries",
+    "body": {
+      "timeSeries": [
+        {
+          "metric": {
+            "type": "workload.googleapis.com/myexphist",
+            "labels": {}
+          },
+          "resource": {
+            "type": "generic_node",
+            "labels": {
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
+            }
+          },
+          "metricKind": "CUMULATIVE",
+          "valueType": "DISTRIBUTION",
+          "points": [
+            {
+              "value": {
+                "distributionValue": {
+                  "count": "1",
+                  "mean": 0,
+                  "bucketOptions": {
+                    "explicitBuckets": {
+                      "bounds": []
+                    }
+                  },
+                  "bucketCounts": [
+                    "1",
+                    "0"
+                  ]
+                }
+              },
+              "interval": {
+                "startTime": "startTime",
+                "endTime": "endTime"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "userAgent": [
+      "opentelemetry-js/1.14.0 google-cloud-metric-exporter/0.16.0 google-api-nodejs-client/5.1.0 (gzip)"
+    ]
+  }
+]
+
+exports['MetricExporter snapshot tests reconfigure with views ExponentialHistogram histogram with ExponentialHistogram view and several observations 1'] = [
+  {
+    "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myexphist",
+    "body": {},
+    "userAgent": [
+      "opentelemetry-js/1.14.0 google-cloud-metric-exporter/0.16.0 google-api-nodejs-client/5.1.0 (gzip)"
+    ]
+  },
+  {
+    "uri": "/v3/projects/otel-starter-project/metricDescriptors",
+    "body": {
+      "type": "workload.googleapis.com/myexphist",
+      "description": "instrument description",
+      "displayName": "myexphist",
+      "metricKind": "CUMULATIVE",
+      "valueType": "DISTRIBUTION",
+      "unit": "{myunit}",
+      "labels": []
+    },
+    "userAgent": [
+      "opentelemetry-js/1.14.0 google-cloud-metric-exporter/0.16.0 google-api-nodejs-client/5.1.0 (gzip)"
+    ]
+  },
+  {
+    "uri": "/v3/projects/otel-starter-project/timeSeries",
+    "body": {
+      "timeSeries": [
+        {
+          "metric": {
+            "type": "workload.googleapis.com/myexphist",
+            "labels": {}
+          },
+          "resource": {
+            "type": "generic_node",
+            "labels": {
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
+            }
+          },
+          "metricKind": "CUMULATIVE",
+          "valueType": "DISTRIBUTION",
+          "points": [
+            {
+              "value": {
+                "distributionValue": {
+                  "count": "1001",
+                  "mean": 499.124325674332,
+                  "bucketOptions": {
+                    "exponentialBuckets": {
+                      "growthFactor": 1.0905077326652577,
+                      "scale": 0.11462550540058382,
+                      "numFiniteBuckets": 105
+                    }
+                  },
+                  "bucketCounts": [
+                    "1",
+                    "1",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "1",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "1",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "1",
+                    "0",
+                    "0",
+                    "1",
+                    "0",
+                    "1",
+                    "0",
+                    "1",
+                    "0",
+                    "1",
+                    "0",
+                    "1",
+                    "1",
+                    "1",
+                    "1",
+                    "1",
+                    "1",
+                    "1",
+                    "1",
+                    "2",
+                    "1",
+                    "2",
+                    "2",
+                    "2",
+                    "2",
+                    "3",
+                    "2",
+                    "3",
+                    "3",
+                    "4",
+                    "4",
+                    "4",
+                    "4",
+                    "5",
+                    "5",
+                    "6",
+                    "6",
+                    "7",
+                    "8",
+                    "8",
+                    "9",
+                    "10",
+                    "10",
+                    "12",
+                    "13",
+                    "13",
+                    "15",
+                    "17",
+                    "18",
+                    "19",
+                    "21",
+                    "24",
+                    "25",
+                    "27",
+                    "30",
+                    "33",
+                    "36",
+                    "39",
+                    "42",
+                    "47",
+                    "50",
+                    "55",
+                    "60",
+                    "66",
+                    "71",
+                    "78",
+                    "61",
+                    "0"
+                  ]
+                }
+              },
+              "interval": {
+                "startTime": "startTime",
+                "endTime": "endTime"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "userAgent": [
+      "opentelemetry-js/1.14.0 google-cloud-metric-exporter/0.16.0 google-api-nodejs-client/5.1.0 (gzip)"
+    ]
+  }
+]
+
 exports['MetricExporter snapshot tests reconfigure with views counter with histogram view 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myrenamedhistogram",

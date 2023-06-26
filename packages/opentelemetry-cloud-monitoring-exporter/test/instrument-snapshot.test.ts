@@ -290,6 +290,70 @@ describe('MetricExporter snapshot tests', () => {
       assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
       gcmNock.snapshotCalls();
     });
+
+    describe('ExponentialHistogram', () => {
+      it('histogram with ExponentialHistogram view and several observations', async () => {
+        const resourceMetrics = await generateMetricsData(
+          (_, meter) => {
+            const histogram = meter.createHistogram('myexphist', {
+              description: 'instrument description',
+              unit: '{myunit}',
+              valueType: ValueType.DOUBLE,
+            });
+
+            // negative value should underflow
+            histogram.record(-5);
+            // zero value should underflow
+            histogram.record(0);
+            // valid positive values
+            for (let i = 0.12345; i < 1000; ++i) {
+              histogram.record(i);
+            }
+          },
+          {
+            views: [
+              new View({
+                instrumentName: 'myexphist',
+                aggregation: Aggregation.ExponentialHistogram(),
+              }),
+            ],
+          }
+        );
+
+        const result = await callExporter(resourceMetrics);
+        assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+        gcmNock.snapshotCalls();
+      });
+
+      it('histogram with ExponentialHistogram view and only underflow observations', async () => {
+        const resourceMetrics = await generateMetricsData(
+          (_, meter) => {
+            const histogram = meter.createHistogram('myexphist', {
+              description: 'instrument description',
+              unit: '{myunit}',
+              valueType: ValueType.DOUBLE,
+            });
+
+            // negative value should underflow
+            histogram.record(-5);
+            // zero value should underflow
+            histogram.record(0);
+          },
+          {
+            views: [
+              new View({
+                instrumentName: 'myexphist',
+                aggregation: Aggregation.ExponentialHistogram(),
+              }),
+            ],
+          }
+        );
+
+        const result = await callExporter(resourceMetrics);
+        assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+        gcmNock.snapshotCalls();
+      });
+    });
   });
 });
 
