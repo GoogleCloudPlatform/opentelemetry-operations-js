@@ -26,158 +26,150 @@ import * as gae from './gae';
 import * as metadata from 'gcp-metadata';
 import {Attributes} from '@opentelemetry/api';
 
-export class GcpDetectorBase {
-  // Cached project ID
-  private _project: string | undefined;
-
-  protected async _detect(): Promise<Resource> {
-    if (!(await metadata.isAvailable())) {
-      return Resource.EMPTY;
-    }
-
-    // Note the order of these if checks is significant with more specific resources coming
-    // first. E.g. Cloud Functions gen2 are executed in Cloud Run so it must be checked first.
-    if (await gke.onGke()) {
-      return await this._gkeResource();
-    } else if (await faas.onCloudFunctions()) {
-      return await this._cloudFunctionsResource();
-    } else if (await faas.onCloudRun()) {
-      return await this._cloudRunResource();
-    } else if (await gae.onAppEngine()) {
-      return await this._gaeResource();
-    } else if (await gce.onGce()) {
-      return await this._gceResource();
-    }
-
+async function detect(): Promise<Resource> {
+  if (!(await metadata.isAvailable())) {
     return Resource.EMPTY;
   }
 
-  private async _gkeResource(): Promise<Resource> {
-    const [zoneOrRegion, k8sClusterName, hostId] = await Promise.all([
-      gke.availabilityZoneOrRegion(),
-      gke.clusterName(),
-      gke.hostId(),
+  // Note the order of these if checks is significant with more specific resources coming
+  // first. E.g. Cloud Functions gen2 are executed in Cloud Run so it must be checked first.
+  if (await gke.onGke()) {
+    return await _gkeResource();
+  } else if (await faas.onCloudFunctions()) {
+    return await _cloudFunctionsResource();
+  } else if (await faas.onCloudRun()) {
+    return await _cloudRunResource();
+  } else if (await gae.onAppEngine()) {
+    return await _gaeResource();
+  } else if (await gce.onGce()) {
+    return await _gceResource();
+  }
+
+  return Resource.EMPTY;
+}
+
+async function _gkeResource(): Promise<Resource> {
+  const [zoneOrRegion, k8sClusterName, hostId] = await Promise.all([
+    gke.availabilityZoneOrRegion(),
+    gke.clusterName(),
+    gke.hostId(),
+  ]);
+
+  return await _makeResource({
+    [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_KUBERNETES_ENGINE,
+    [zoneOrRegion.type === 'zone'
+      ? Semconv.CLOUD_AVAILABILITY_ZONE
+      : Semconv.CLOUD_REGION]: zoneOrRegion.value,
+    [Semconv.K8S_CLUSTER_NAME]: k8sClusterName,
+    [Semconv.HOST_ID]: hostId,
+  });
+}
+
+async function _cloudRunResource(): Promise<Resource> {
+  const [faasName, faasVersion, faasId, faasCloudRegion] = await Promise.all([
+    faas.faasName(),
+    faas.faasVersion(),
+    faas.faasId(),
+    faas.faasCloudRegion(),
+  ]);
+
+  return await _makeResource({
+    [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_RUN,
+    [Semconv.FAAS_NAME]: faasName,
+    [Semconv.FAAS_VERSION]: faasVersion,
+    [Semconv.FAAS_ID]: faasId,
+    [Semconv.CLOUD_REGION]: faasCloudRegion,
+  });
+}
+
+async function _cloudFunctionsResource(): Promise<Resource> {
+  const [faasName, faasVersion, faasId, faasCloudRegion] = await Promise.all([
+    faas.faasName(),
+    faas.faasVersion(),
+    faas.faasId(),
+    faas.faasCloudRegion(),
+  ]);
+
+  return await _makeResource({
+    [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_FUNCTIONS,
+    [Semconv.FAAS_NAME]: faasName,
+    [Semconv.FAAS_VERSION]: faasVersion,
+    [Semconv.FAAS_ID]: faasId,
+    [Semconv.CLOUD_REGION]: faasCloudRegion,
+  });
+}
+
+async function _gaeResource(): Promise<Resource> {
+  let zone, region;
+  if (await gae.onAppEngineStandard()) {
+    [zone, region] = await Promise.all([
+      gae.standardAvailabilityZone(),
+      gae.standardCloudRegion(),
     ]);
-
-    return this._makeResource({
-      [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_KUBERNETES_ENGINE,
-      [zoneOrRegion.type === 'zone'
-        ? Semconv.CLOUD_AVAILABILITY_ZONE
-        : Semconv.CLOUD_REGION]: zoneOrRegion.value,
-      [Semconv.K8S_CLUSTER_NAME]: k8sClusterName,
-      [Semconv.HOST_ID]: hostId,
-    });
+  } else {
+    ({zone, region} = await gce.availabilityZoneAndRegion());
   }
+  const [faasName, faasVersion, faasId] = await Promise.all([
+    gae.serviceName(),
+    gae.serviceVersion(),
+    gae.serviceInstance(),
+  ]);
 
-  private async _cloudRunResource(): Promise<Resource> {
-    const [faasName, faasVersion, faasId, faasCloudRegion] = await Promise.all([
-      faas.faasName(),
-      faas.faasVersion(),
-      faas.faasId(),
-      faas.faasCloudRegion(),
-    ]);
+  return await _makeResource({
+    [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_APP_ENGINE,
+    [Semconv.FAAS_NAME]: faasName,
+    [Semconv.FAAS_VERSION]: faasVersion,
+    [Semconv.FAAS_ID]: faasId,
+    [Semconv.CLOUD_AVAILABILITY_ZONE]: zone,
+    [Semconv.CLOUD_REGION]: region,
+  });
+}
 
-    return this._makeResource({
-      [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_RUN,
-      [Semconv.FAAS_NAME]: faasName,
-      [Semconv.FAAS_VERSION]: faasVersion,
-      [Semconv.FAAS_ID]: faasId,
-      [Semconv.CLOUD_REGION]: faasCloudRegion,
-    });
-  }
+async function _gceResource(): Promise<Resource> {
+  const [zoneAndRegion, hostType, hostId, hostName] = await Promise.all([
+    gce.availabilityZoneAndRegion(),
+    gce.hostType(),
+    gce.hostId(),
+    gce.hostName(),
+  ]);
 
-  private async _cloudFunctionsResource(): Promise<Resource> {
-    const [faasName, faasVersion, faasId, faasCloudRegion] = await Promise.all([
-      faas.faasName(),
-      faas.faasVersion(),
-      faas.faasId(),
-      faas.faasCloudRegion(),
-    ]);
+  return await _makeResource({
+    [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_COMPUTE_ENGINE,
+    [Semconv.CLOUD_AVAILABILITY_ZONE]: zoneAndRegion.zone,
+    [Semconv.CLOUD_REGION]: zoneAndRegion.region,
+    [Semconv.HOST_TYPE]: hostType,
+    [Semconv.HOST_ID]: hostId,
+    [Semconv.HOST_NAME]: hostName,
+  });
+}
 
-    return this._makeResource({
-      [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_FUNCTIONS,
-      [Semconv.FAAS_NAME]: faasName,
-      [Semconv.FAAS_VERSION]: faasVersion,
-      [Semconv.FAAS_ID]: faasId,
-      [Semconv.CLOUD_REGION]: faasCloudRegion,
-    });
-  }
+async function _makeResource(attrs: Attributes): Promise<Resource> {
+  const project = await metadata.project<string>('project-id');
 
-  private async _gaeResource(): Promise<Resource> {
-    let zone, region;
-    if (await gae.onAppEngineStandard()) {
-      [zone, region] = await Promise.all([
-        gae.standardAvailabilityZone(),
-        gae.standardCloudRegion(),
-      ]);
-    } else {
-      ({zone, region} = await gce.availabilityZoneAndRegion());
-    }
-    const [faasName, faasVersion, faasId] = await Promise.all([
-      gae.serviceName(),
-      gae.serviceVersion(),
-      gae.serviceInstance(),
-    ]);
-
-    return this._makeResource({
-      [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_APP_ENGINE,
-      [Semconv.FAAS_NAME]: faasName,
-      [Semconv.FAAS_VERSION]: faasVersion,
-      [Semconv.FAAS_ID]: faasId,
-      [Semconv.CLOUD_AVAILABILITY_ZONE]: zone,
-      [Semconv.CLOUD_REGION]: region,
-    });
-  }
-
-  private async _gceResource(): Promise<Resource> {
-    const [zoneAndRegion, hostType, hostId, hostName] = await Promise.all([
-      gce.availabilityZoneAndRegion(),
-      gce.hostType(),
-      gce.hostId(),
-      gce.hostName(),
-    ]);
-
-    return await this._makeResource({
-      [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_COMPUTE_ENGINE,
-      [Semconv.CLOUD_AVAILABILITY_ZONE]: zoneAndRegion.zone,
-      [Semconv.CLOUD_REGION]: zoneAndRegion.region,
-      [Semconv.HOST_TYPE]: hostType,
-      [Semconv.HOST_ID]: hostId,
-      [Semconv.HOST_NAME]: hostName,
-    });
-  }
-
-  private async _makeResource(attrs: Attributes): Promise<Resource> {
-    if (!this._project) {
-      this._project = await metadata.project<string>('project-id');
-    }
-
-    return new Resource({
-      [Semconv.CLOUD_PROVIDER]: CloudProviderValues.GCP,
-      [Semconv.CLOUD_ACCOUNT_ID]: this._project,
-      ...attrs,
-    });
-  }
+  return new Resource({
+    [Semconv.CLOUD_PROVIDER]: CloudProviderValues.GCP,
+    [Semconv.CLOUD_ACCOUNT_ID]: project,
+    ...attrs,
+  });
 }
 
 /**
  * Async Google Cloud resource detector which populates attributes based the on environment
  * this process is running in. If not on GCP, returns an empty resource.
  *
- * @deprecated Async resource detectors are deprecated. Please use {@link GcpDetectorSync}
- * instead.
+ * @deprecated Async resource detectors are deprecated. Please use {@link GcpDetectorSync} instead.
  */
-export class GcpDetector extends GcpDetectorBase implements Detector {
-  detect = this._detect;
+export class GcpDetector implements Detector {
+  detect = detect;
 }
 
 /**
  * Google Cloud resource detector which populates attributes based on the environment this
  * process is running in. If not on GCP, returns an empty resource.
  */
-export class GcpDetectorSync extends GcpDetectorBase implements DetectorSync {
+export class GcpDetectorSync implements DetectorSync {
   private async _asyncAttributes(): Promise<Attributes> {
-    return (await this._detect()).attributes;
+    return (await detect()).attributes;
   }
 
   detect(): Resource {
