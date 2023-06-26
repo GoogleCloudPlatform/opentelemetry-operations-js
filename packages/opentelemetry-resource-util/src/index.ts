@@ -283,4 +283,4 @@ function createMonitoredResource(
   };
 }
 
-export {GcpDetector} from './detector/detector';
+export {GcpDetector, GcpDetectorSync} from './detector/detector';

@@ -18,7 +18,7 @@ import {
   CloudProviderValues,
 } from '@opentelemetry/semantic-conventions';
 
-import {Detector, Resource} from '@opentelemetry/resources';
+import {Detector, DetectorSync, Resource} from '@opentelemetry/resources';
 import * as gce from './gce';
 import * as gke from './gke';
 import * as faas from './faas';
@@ -26,11 +26,11 @@ import * as gae from './gae';
 import * as metadata from 'gcp-metadata';
 import {Attributes} from '@opentelemetry/api';
 
-export class GcpDetector implements Detector {
+export class GcpDetectorBase {
   // Cached project ID
   private _project: string | undefined;
 
-  async detect(): Promise<Resource> {
+  protected async _detect(): Promise<Resource> {
     if (!(await metadata.isAvailable())) {
       return Resource.EMPTY;
     }
@@ -157,5 +157,30 @@ export class GcpDetector implements Detector {
       [Semconv.CLOUD_ACCOUNT_ID]: this._project,
       ...attrs,
     });
+  }
+}
+
+/**
+ * Async Google Cloud resource detector which populates attributes based the on environment
+ * this process is running in. If not on GCP, returns an empty resource.
+ *
+ * @deprecated Async resource detectors are deprecated. Please use {@link GcpDetectorSync}
+ * instead.
+ */
+export class GcpDetector extends GcpDetectorBase implements Detector {
+  detect = this._detect;
+}
+
+/**
+ * Google Cloud resource detector which populates attributes based on the environment this
+ * process is running in. If not on GCP, returns an empty resource.
+ */
+export class GcpDetectorSync extends GcpDetectorBase implements DetectorSync {
+  private async _asyncAttributes(): Promise<Attributes> {
+    return (await this._detect()).attributes;
+  }
+
+  detect(): Resource {
+    return new Resource({}, this._asyncAttributes());
   }
 }
