@@ -20,12 +20,16 @@ import {
   TracerConfig,
 } from '@opentelemetry/sdk-trace-base';
 import {AlwaysOnSampler} from '@opentelemetry/sdk-trace-base';
-import {Resource, envDetector, detectResources} from '@opentelemetry/resources';
+import {
+  Resource,
+  envDetector,
+  detectResourcesSync,
+} from '@opentelemetry/resources';
 import {
   TraceExporter,
   TraceExporterOptions,
 } from '@google-cloud/opentelemetry-cloud-trace-exporter';
-import {GcpDetector} from '@google-cloud/opentelemetry-resource-util';
+import {GcpDetectorSync} from '@google-cloud/opentelemetry-resource-util';
 import * as constants from './constants';
 import {context, SpanKind} from '@opentelemetry/api';
 import {AsyncHooksContextManager} from '@opentelemetry/context-async-hooks';
@@ -128,8 +132,8 @@ async function detectResource(request: Request): Promise<Response> {
     },
     {
       tracerConfig: {
-        resource: await detectResources({
-          detectors: [new GcpDetector(), envDetector],
+        resource: detectResourcesSync({
+          detectors: [new GcpDetectorSync(), envDetector],
         }),
       },
       exporterConfig: {
