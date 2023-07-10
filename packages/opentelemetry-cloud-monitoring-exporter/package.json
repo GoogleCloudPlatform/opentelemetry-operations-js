@@ -70,7 +70,7 @@
     "@google-cloud/precise-date": "^3.0.1",
     "@opentelemetry/semantic-conventions": "^1.0.0",
     "google-auth-library": "^7.0.0",
-    "googleapis": "^97.0.0"
+    "googleapis": "^121.0.0"
   },
   "peerDependencies": {
     "@opentelemetry/api": "^1.0.0",
