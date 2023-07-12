@@ -30,7 +30,7 @@
     "node": ">=14"
   },
   "devDependencies": {
-    "lerna": "7.1.1"
+    "lerna": "7.1.3"
   },
   "workspaces": [
     "packages/*",
