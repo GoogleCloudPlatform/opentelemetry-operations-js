@@ -67,8 +67,8 @@ describe('FaaS (Cloud Run/Functions)', () => {
     it('as a number', async () => {
       metadataStub.instance.withArgs('id').resolves(12345);
 
-      const faasId = await faas.faasId();
-      assert.strictEqual(faasId, '12345');
+      const faasInstance = await faas.faasInstance();
+      assert.strictEqual(faasInstance, '12345');
     });
 
     it('as a BigNumber', async () => {
@@ -76,8 +76,8 @@ describe('FaaS (Cloud Run/Functions)', () => {
         .withArgs('id')
         .resolves(new BigNumber('2459451723172637654'));
 
-      const faasId = await faas.faasId();
-      assert.strictEqual(faasId, '2459451723172637654');
+      const faasInstance = await faas.faasInstance();
+      assert.strictEqual(faasInstance, '2459451723172637654');
     });
   });
 

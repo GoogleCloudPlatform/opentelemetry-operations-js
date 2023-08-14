@@ -149,7 +149,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
       otelAttributes: {
         'cloud.platform': 'gcp_cloud_run',
         'cloud.region': 'myregion',
-        'faas.id': 'myfaasid',
+        'faas.instance': 'myfaasid',
         'faas.name': 'myfaasname',
         'faas.version': 'myfaasversion',
         'service.name': 'servicename',
@@ -163,7 +163,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
       otelAttributes: {
         'cloud.platform': 'gcp_cloud_run',
         'cloud.region': 'myregion',
-        'faas.id': 'myfaasid',
+        'faas.instance': 'myfaasid',
         'faas.name': 'myfaasname',
         'faas.version': 'myfaasversion',
         'service.name': 'servicename',
@@ -177,7 +177,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
       otelAttributes: {
         'cloud.platform': 'gcp_cloud_functions',
         'cloud.region': 'myregion',
-        'faas.id': 'myfaasid',
+        'faas.instance': 'myfaasid',
         'faas.name': 'myfaasname',
         'faas.version': 'myfaasversion',
         'service.name': 'servicename',
@@ -191,7 +191,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
       otelAttributes: {
         'cloud.platform': 'gcp_cloud_functions',
         'cloud.region': 'myregion',
-        'faas.id': 'myfaasid',
+        'faas.instance': 'myfaasid',
         'faas.name': 'myfaasname',
         'faas.version': 'myfaasversion',
         'service.name': 'servicename',
@@ -205,7 +205,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
       otelAttributes: {
         'cloud.platform': 'gcp_app_engine',
         'cloud.region': 'myregion',
-        'faas.id': 'myfaasid',
+        'faas.instance': 'myfaasid',
         'faas.name': 'myfaasname',
         'faas.version': 'myfaasversion',
         'service.name': 'servicename',
