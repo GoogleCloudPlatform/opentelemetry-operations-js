@@ -55,7 +55,7 @@ export async function faasVersion(): Promise<string> {
  * onCloudRun()} or {@link onCloudFunctions()} is true before calling this, or it may throw
  * exceptions.
  */
-export async function faasId(): Promise<string> {
+export async function faasInstance(): Promise<string> {
   // May be a bignumber.js BigNumber which can just be converted with toString(). See
   // https://github.com/googleapis/gcp-metadata#take-care-with-large-number-valued-properties
   const id = await metadata.instance<number | Object>(ID_METADATA_ATTR);

@@ -138,7 +138,7 @@ const MAPPINGS = {
     },
     [GAE_MODULE_ID]: {otelKeys: [SemanticResourceAttributes.FAAS_NAME]},
     [GAE_VERSION_ID]: {otelKeys: [SemanticResourceAttributes.FAAS_VERSION]},
-    [INSTANCE_ID]: {otelKeys: [SemanticResourceAttributes.FAAS_ID]},
+    [INSTANCE_ID]: {otelKeys: [SemanticResourceAttributes.FAAS_INSTANCE]},
   },
   [GENERIC_TASK]: {
     [LOCATION]: {
