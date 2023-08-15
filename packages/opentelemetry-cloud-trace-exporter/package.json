@@ -48,7 +48,7 @@
     "@types/node": "14.18.54",
     "@types/sinon": "10.0.16",
     "codecov": "3.8.3",
-    "gcp-metadata": "5.3.0",
+    "gcp-metadata": "6.0.0",
     "gts": "3.1.1",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
