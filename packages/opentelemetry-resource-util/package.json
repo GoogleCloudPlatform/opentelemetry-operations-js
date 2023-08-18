@@ -67,6 +67,6 @@
     "@opentelemetry/semantic-conventions": "^1.0.0"
   },
   "dependencies": {
-    "gcp-metadata": "^5.0.1"
+    "gcp-metadata": "^6.0.0"
   }
 }
