@@ -14,7 +14,7 @@
 
 # Build relative to root of repository i.e. `docker build --file Dockerfile --tag=$tag ..`
 
-FROM node:19-alpine as node-base
+FROM node:20-alpine as node-base
 ENV SRC="/src"
 WORKDIR $SRC
 
