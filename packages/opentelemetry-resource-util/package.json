@@ -47,8 +47,8 @@
   "devDependencies": {
     "@google-cloud/ops-js-scripts": "^1.0.0",
     "@opentelemetry/api": "1.4.1",
-    "@opentelemetry/resources": "1.15.0",
-    "@opentelemetry/semantic-conventions": "1.15.0",
+    "@opentelemetry/resources": "1.15.2",
+    "@opentelemetry/semantic-conventions": "1.15.2",
     "@types/mocha": "10.0.1",
     "@types/node": "14.18.54",
     "@types/sinon": "10.0.16",
@@ -67,6 +67,6 @@
     "@opentelemetry/semantic-conventions": "^1.0.0"
   },
   "dependencies": {
-    "gcp-metadata": "^5.0.1"
+    "gcp-metadata": "^6.0.0"
   }
 }
