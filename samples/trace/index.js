@@ -45,7 +45,7 @@ provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
 
 // Initialize the OpenTelemetry APIs to use the
 // NodeTracerProvider bindings
-opentelemetry.trace.setGlobalTracerProvider(provider);
+provider.register()
 const tracer = opentelemetry.trace.getTracer("basic");
 
 // Create a span.
