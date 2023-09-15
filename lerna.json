@@ -1,5 +1,5 @@
 {
-  "packages": ["packages/*", "samples/*", "e2e-test-server"],
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
   "ignoreChanges": ["**/test/**", "**/*.md", "**/package-lock.json"],
   "version": "independent",
   "command": {

@@ -1,0 +1,16 @@
+{
+  "name": "@google-cloud/ops-js-scripts",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Local only scripts which are used in this repo as tooling",
+  "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
+  "scripts": {},
+  "directories": {
+    "bin": "."
+  },
+  "author": "Google Inc.",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "execa": "^8.0.0"
+  }
+}

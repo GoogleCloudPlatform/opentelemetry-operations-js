@@ -4,15 +4,14 @@
   "description": "OpenTelemetry is a distributed tracing and stats collection framework.",
   "scripts": {
     "clean": "lerna run clean",
-    "postinstall": "npm run bootstrap",
     "precompile": "tsc --version",
     "compile": "lerna run compile",
     "codecov": "lerna run codecov",
     "test": "lerna run test",
-    "bootstrap": "lerna bootstrap",
     "lint": "lerna run lint",
     "fix": "lerna run fix",
-    "create-release-tags": "node scripts/create-release-tags.js"
+    "create-release-tags": "create-release-tags.js",
+    "update-snapshot-tests": "lerna run update-snapshot-tests"
   },
   "repository": "https://github.com/GoogleCloudPlatform/opentelemetry-operations-js",
   "keywords": [
@@ -28,9 +27,15 @@
   "author": "Google Inc.",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=10"
+    "node": ">=14"
   },
   "devDependencies": {
-    "lerna": "4.0.0"
-  }
+    "lerna": "7.2.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "samples/*",
+    "e2e-test-server",
+    "scripts"
+  ]
 }

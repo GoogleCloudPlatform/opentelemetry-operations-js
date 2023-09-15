@@ -20,9 +20,16 @@ import {
   TracerConfig,
 } from '@opentelemetry/sdk-trace-base';
 import {AlwaysOnSampler} from '@opentelemetry/sdk-trace-base';
-import {Resource, envDetector, detectResources} from '@opentelemetry/resources';
-import {TraceExporter} from '@google-cloud/opentelemetry-cloud-trace-exporter';
-import {GcpDetector} from '@google-cloud/opentelemetry-resource-util';
+import {
+  Resource,
+  envDetector,
+  detectResourcesSync,
+} from '@opentelemetry/resources';
+import {
+  TraceExporter,
+  TraceExporterOptions,
+} from '@google-cloud/opentelemetry-cloud-trace-exporter';
+import {GcpDetectorSync} from '@google-cloud/opentelemetry-resource-util';
 import * as constants from './constants';
 import {context, SpanKind} from '@opentelemetry/api';
 import {AsyncHooksContextManager} from '@opentelemetry/context-async-hooks';
@@ -43,15 +50,23 @@ context.setGlobalContextManager(new AsyncHooksContextManager());
 
 async function withTracer<R>(
   f: (tracer: Tracer) => R,
-  tracerConfig?: TracerConfig
+  options: {
+    tracerConfig?: TracerConfig;
+    exporterConfig?: TraceExporterOptions;
+  } = {}
 ): Promise<R> {
   const tracerProvider = new BasicTracerProvider({
     sampler: new AlwaysOnSampler(),
     resource: Resource.EMPTY,
-    ...tracerConfig,
+    ...options.tracerConfig,
   });
   tracerProvider.addSpanProcessor(
-    new BatchSpanProcessor(new TraceExporter({projectId: constants.PROJECT_ID}))
+    new BatchSpanProcessor(
+      new TraceExporter({
+        projectId: constants.PROJECT_ID,
+        ...options.exporterConfig,
+      })
+    )
   );
 
   try {
@@ -116,9 +131,16 @@ async function detectResource(request: Request): Promise<Response> {
       return {statusCode: Status.OK, headers: {[constants.TRACE_ID]: traceId}};
     },
     {
-      resource: await detectResources({
-        detectors: [new GcpDetector(), envDetector],
-      }),
+      tracerConfig: {
+        resource: detectResourcesSync({
+          detectors: [new GcpDetectorSync(), envDetector],
+        }),
+      },
+      exporterConfig: {
+        // Pass through all resource labels as /detectResource scenario checks for OTel
+        // semantic convention attributes to be present.
+        resourceFilter: /.*/,
+      },
     }
   );
 }

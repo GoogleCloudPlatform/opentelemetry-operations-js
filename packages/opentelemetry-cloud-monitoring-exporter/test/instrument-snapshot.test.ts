@@ -63,6 +63,19 @@ class GcmNock {
       return {};
     };
 
+    const metricDescriptorGetReplyCallback = function (
+      this: nock.ReplyFnContext,
+      uri: string
+    ): nock.ReplyBody {
+      const userAgent = this.req.headers['user-agent'];
+      calls.push({
+        uri,
+        body: {},
+        userAgent,
+      });
+      return {};
+    };
+
     nock('https://oauth2.googleapis.com:443')
       .persist()
       .post('/token')
@@ -72,7 +85,9 @@ class GcmNock {
       .post(/v3\/.+\/metricDescriptors/)
       .reply(200, replyCallback)
       .post(/v3\/projects\/.+\/timeSeries/)
-      .reply(200, replyCallback);
+      .reply(200, replyCallback)
+      .get(/v3\/projects\/.+\/metricDescriptors\/workload.googleapis.com\/.*/)
+      .reply(404, metricDescriptorGetReplyCallback);
   }
 
   /**
@@ -274,6 +289,70 @@ describe('MetricExporter snapshot tests', () => {
       const result = await callExporter(resourceMetrics);
       assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
       gcmNock.snapshotCalls();
+    });
+
+    describe('ExponentialHistogram', () => {
+      it('histogram with ExponentialHistogram view and several observations', async () => {
+        const resourceMetrics = await generateMetricsData(
+          (_, meter) => {
+            const histogram = meter.createHistogram('myexphist', {
+              description: 'instrument description',
+              unit: '{myunit}',
+              valueType: ValueType.DOUBLE,
+            });
+
+            // negative value should underflow
+            histogram.record(-5);
+            // zero value should underflow
+            histogram.record(0);
+            // valid positive values
+            for (let i = 0.12345; i < 1000; ++i) {
+              histogram.record(i);
+            }
+          },
+          {
+            views: [
+              new View({
+                instrumentName: 'myexphist',
+                aggregation: Aggregation.ExponentialHistogram(),
+              }),
+            ],
+          }
+        );
+
+        const result = await callExporter(resourceMetrics);
+        assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+        gcmNock.snapshotCalls();
+      });
+
+      it('histogram with ExponentialHistogram view and only underflow observations', async () => {
+        const resourceMetrics = await generateMetricsData(
+          (_, meter) => {
+            const histogram = meter.createHistogram('myexphist', {
+              description: 'instrument description',
+              unit: '{myunit}',
+              valueType: ValueType.DOUBLE,
+            });
+
+            // negative value should underflow
+            histogram.record(-5);
+            // zero value should underflow
+            histogram.record(0);
+          },
+          {
+            views: [
+              new View({
+                instrumentName: 'myexphist',
+                aggregation: Aggregation.ExponentialHistogram(),
+              }),
+            ],
+          }
+        );
+
+        const result = await callExporter(resourceMetrics);
+        assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+        gcmNock.snapshotCalls();
+      });
     });
   });
 });

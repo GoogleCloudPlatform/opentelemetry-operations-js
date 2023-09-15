@@ -40,7 +40,7 @@ are not, re-run the command without `--conventional-commits` and lerna will
 interactively ask you to input the correct bumps. You may need to do this when
 first releasing a 0.X package as 1.0.0.
 
-## Run `npm install`
+## Run `npm install && npm run compile`
 
 Don't forget this step! This will build everything and regenerate the
 `src/version.ts` files in each subpackage.
