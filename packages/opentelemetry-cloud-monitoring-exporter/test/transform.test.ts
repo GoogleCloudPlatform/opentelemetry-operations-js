@@ -27,6 +27,44 @@ const {normalizeLabelKey} = _TEST_ONLY;
 
 describe('transform', () => {
   let diagSpy: sinon.SinonSpiedInstance<DiagAPI>;
+  const expected = [
+    {
+      metric: {
+        labels: {},
+        type: 'workload.googleapis.com/foohist',
+      },
+      metricKind: 'CUMULATIVE',
+      points: [
+        {
+          interval: {
+            endTime: '2023-06-18T15:43:40.680000000Z',
+            startTime: '2023-06-18T15:43:40.679000000Z',
+          },
+          // Should match
+          // https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/v0.39.0/exporter/collector/integrationtest/testdata/fixtures/metrics/exponential_histogram_metrics_expect.json#L180-L198
+          value: {
+            distributionValue: {
+              count: '7',
+              mean: 1.7857142857142858,
+              bucketOptions: {
+                exponentialBuckets: {
+                  numFiniteBuckets: 3,
+                  growthFactor: 4,
+                  scale: 0.25,
+                },
+              },
+              bucketCounts: ['2', '1', '3', '1', '0'],
+            },
+          },
+        },
+      ],
+      resource: {
+        labels: {},
+        type: '',
+      },
+      valueType: 'DISTRIBUTION',
+    },
+  ];
 
   beforeEach(() => {
     diagSpy = sinon.spy(diag);
@@ -76,7 +114,7 @@ describe('transform', () => {
     });
 
     /**
-     * This example is adapted from the collector fixture test
+     * These examples are adapted from the collector fixture test
      * https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/v0.39.0/exporter/collector/integrationtest/testdata/fixtures/metrics/exponential_histogram_metrics.json
      * to ensure they map the point the same way
      */
@@ -115,51 +153,58 @@ describe('transform', () => {
           },
         ],
       };
-
       assert.deepStrictEqual(
         createTimeSeries(
           data,
           {labels: {}, type: ''},
           'workload.googleapis.com'
         ),
-        [
+        expected
+      );
+    });
+
+    it('should map ExponentialHistogram when timestamps contain decimals', () => {
+      // Based on
+      // https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/v0.39.0/exporter/collector/integrationtest/testdata/fixtures/metrics/exponential_histogram_metrics.json#L150-L166
+      const badTimestamps: ExponentialHistogramMetricData = {
+        descriptor: {
+          name: 'foohist',
+          type: InstrumentType.HISTOGRAM,
+          description: 'Some small exponential histogram',
+          unit: '',
+          valueType: ValueType.DOUBLE,
+        },
+        aggregationTemporality: 1,
+        dataPointType: 1,
+        dataPoints: [
           {
-            metric: {
-              labels: {},
-              type: 'workload.googleapis.com/foohist',
-            },
-            metricKind: 'CUMULATIVE',
-            points: [
-              {
-                interval: {
-                  endTime: '2023-06-18T15:43:40.680000000Z',
-                  startTime: '2023-06-18T15:43:40.679000000Z',
-                },
-                // Should match
-                // https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/v0.39.0/exporter/collector/integrationtest/testdata/fixtures/metrics/exponential_histogram_metrics_expect.json#L180-L198
-                value: {
-                  distributionValue: {
-                    count: '7',
-                    mean: 1.7857142857142858,
-                    bucketOptions: {
-                      exponentialBuckets: {
-                        numFiniteBuckets: 3,
-                        growthFactor: 4,
-                        scale: 0.25,
-                      },
-                    },
-                    bucketCounts: ['2', '1', '3', '1', '0'],
-                  },
-                },
+            attributes: {},
+            startTime: [1687103019.999997, 679000000.000006],
+            endTime: [1687103020.0000123, 679999999.99999],
+            value: {
+              count: 7,
+              sum: 12.5,
+              scale: -1,
+              zeroCount: 1,
+              positive: {
+                offset: -1,
+                bucketCounts: [1, 3, 1],
               },
-            ],
-            resource: {
-              labels: {},
-              type: '',
+              negative: {
+                bucketCounts: [1],
+                offset: 0,
+              },
             },
-            valueType: 'DISTRIBUTION',
           },
-        ]
+        ],
+      };
+      assert.deepStrictEqual(
+        createTimeSeries(
+          badTimestamps,
+          {labels: {}, type: ''},
+          'workload.googleapis.com'
+        ),
+        expected
       );
     });
   });

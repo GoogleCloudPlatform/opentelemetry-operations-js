@@ -20,7 +20,7 @@ import {
   DataPointType,
   ExponentialHistogram,
 } from '@opentelemetry/sdk-metrics';
-import {ValueType as OTValueType, diag} from '@opentelemetry/api';
+import {HrTime, ValueType as OTValueType, diag} from '@opentelemetry/api';
 import {MonitoredResource} from '@google-cloud/opentelemetry-resource-util';
 import {
   MetricDescriptor,
@@ -165,65 +165,103 @@ function transformMetric<T>(
 }
 
 /**
- * Transform timeseries's point, so that metric can be uploaded to GCM.
+ * Transform timeseries' point, so that metric can be uploaded to GCM.
  */
 function transformPoints(
   metric: MetricData,
   metricPrefix: string
 ): {point: Point; metric: Metric}[] {
-  switch (metric.dataPointType) {
-    case DataPointType.SUM:
-    case DataPointType.GAUGE:
-      return metric.dataPoints.map(dataPoint => ({
-        metric: transformMetric(dataPoint, metric.descriptor, metricPrefix),
-        point: {
-          value: transformNumberValue(
-            metric.descriptor.valueType,
-            dataPoint.value
-          ),
-          interval: {
-            // Add start time for non-gauge points
-            ...(metric.dataPointType === DataPointType.SUM && metric.isMonotonic
-              ? {
-                  startTime: new PreciseDate(dataPoint.startTime).toISOString(),
-                }
-              : null),
-            endTime: new PreciseDate(dataPoint.endTime).toISOString(),
-          },
-        },
-      }));
-    case DataPointType.HISTOGRAM:
-      return metric.dataPoints.map(dataPoint => ({
-        metric: transformMetric(dataPoint, metric.descriptor, metricPrefix),
-        point: {
-          value: transformHistogramValue(dataPoint.value),
-          interval: {
-            startTime: new PreciseDate(dataPoint.startTime).toISOString(),
-            endTime: new PreciseDate(dataPoint.endTime).toISOString(),
-          },
-        },
-      }));
-    case DataPointType.EXPONENTIAL_HISTOGRAM:
-      return metric.dataPoints.map(dataPoint => ({
-        metric: transformMetric(dataPoint, metric.descriptor, metricPrefix),
-        point: {
-          value: transformExponentialHistogramValue(dataPoint.value),
-          interval: {
-            startTime: new PreciseDate(dataPoint.startTime).toISOString(),
-            endTime: new PreciseDate(dataPoint.endTime).toISOString(),
-          },
-        },
-      }));
-    default:
-      exhaust(metric);
-      diag.info(
-        'Encountered unexpected dataPointType=%s, dropping %s points',
-        (metric as MetricData).dataPointType,
-        (metric as MetricData).dataPoints.length
-      );
-      break;
+  try {
+    switch (metric.dataPointType) {
+      case DataPointType.SUM:
+      case DataPointType.GAUGE:
+        return metric.dataPoints.map(dataPoint => {
+          const {safeStartTime, safeEndTime} = validateMetricTimes(dataPoint);
+          return {
+            metric: transformMetric(dataPoint, metric.descriptor, metricPrefix),
+            point: {
+              value: transformNumberValue(
+                metric.descriptor.valueType,
+                dataPoint.value
+              ),
+              interval: {
+                // Add start time for non-gauge points
+                ...(metric.dataPointType === DataPointType.SUM &&
+                metric.isMonotonic
+                  ? {
+                      startTime: new PreciseDate(safeStartTime).toISOString(),
+                    }
+                  : null),
+                endTime: new PreciseDate(safeEndTime).toISOString(),
+              },
+            },
+          };
+        });
+      case DataPointType.HISTOGRAM:
+        return metric.dataPoints.map(dataPoint => {
+          const {safeStartTime, safeEndTime} = validateMetricTimes(dataPoint);
+          return {
+            metric: transformMetric(dataPoint, metric.descriptor, metricPrefix),
+            point: {
+              value: transformHistogramValue(dataPoint.value),
+              interval: {
+                startTime: new PreciseDate(safeStartTime).toISOString(),
+                endTime: new PreciseDate(safeEndTime).toISOString(),
+              },
+            },
+          };
+        });
+      case DataPointType.EXPONENTIAL_HISTOGRAM:
+        return metric.dataPoints.map(dataPoint => {
+          const {safeStartTime, safeEndTime} = validateMetricTimes(dataPoint);
+          return {
+            metric: transformMetric(dataPoint, metric.descriptor, metricPrefix),
+            point: {
+              value: transformExponentialHistogramValue(dataPoint.value),
+              interval: {
+                startTime: new PreciseDate(safeStartTime).toISOString(),
+                endTime: new PreciseDate(safeEndTime).toISOString(),
+              },
+            },
+          };
+        });
+      default:
+        exhaust(metric);
+        diag.info(
+          'Encountered unexpected dataPointType=%s, dropping %s points',
+          (metric as MetricData).dataPointType,
+          (metric as MetricData).dataPoints.length
+        );
+        break;
+    }
+  } catch (e) {
+    diag.warn(
+      'Invalid dataPoint encountered, dropping %s points',
+      (metric as MetricData).dataPoints.length
+    );
   }
   return [];
+}
+
+/**
+ * Returns the start and end times from the DataPoint with the second and
+ * nanosecond timestamps rounded to the nearest integer. This prevents
+ * errors in downstream processing when an integer timestamp value inadvertently
+ * gets a decimal component due to numeric precision issues in integer math.
+ */
+function validateMetricTimes<T>(dataPoint: DataPoint<T>): {
+  safeStartTime: HrTime;
+  safeEndTime: HrTime;
+} {
+  const safeStartTime: HrTime = [
+    Math.round(dataPoint.startTime[0]),
+    Math.round(dataPoint.startTime[1]),
+  ];
+  const safeEndTime: HrTime = [
+    Math.round(dataPoint.endTime[0]),
+    Math.round(dataPoint.endTime[1]),
+  ];
+  return {safeStartTime, safeEndTime};
 }
 
 /** Transforms a OpenTelemetry Point's value to a GCM Point value. */
