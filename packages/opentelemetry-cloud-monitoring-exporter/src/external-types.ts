@@ -47,6 +47,12 @@ export interface ExporterOptions {
    * monitoring.googleapis.com:443.
    */
   apiEndpoint?: string;
+  /**
+   * Assume all metric descriptors have already been created and publish
+   * metrics without checking. This can prevent hitting a rate limit in Google
+   * when a large number of clients are all started up at the same time.
+   */
+  skipDescriptorCheck?: boolean;
 }
 
 export interface Credentials {
