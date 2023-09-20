@@ -60,7 +60,7 @@ export class MetricExporter implements PushMetricExporter {
   private _projectId: string | void | Promise<string | void>;
   private readonly _metricPrefix: string;
   private readonly _auth: GoogleAuth;
-  private readonly skipMetricDescriptorCheck: boolean;
+  private readonly _disableCreateMetricDescriptors: boolean;
 
   static readonly DEFAULT_METRIC_PREFIX: string = 'workload.googleapis.com';
 
@@ -74,7 +74,8 @@ export class MetricExporter implements PushMetricExporter {
 
   constructor(options: ExporterOptions = {}) {
     this._metricPrefix = options.prefix ?? MetricExporter.DEFAULT_METRIC_PREFIX;
-    this.skipMetricDescriptorCheck = !!options.skipDescriptorCheck;
+    this._disableCreateMetricDescriptors =
+      !!options.disableCreateMetricDescriptors;
 
     this._auth = new GoogleAuth({
       credentials: options.credentials,
@@ -148,7 +149,7 @@ export class MetricExporter implements PushMetricExporter {
     for (const scopeMetric of resourceMetrics.scopeMetrics) {
       for (const metric of scopeMetric.metrics) {
         const isRegistered =
-          this.skipMetricDescriptorCheck ||
+          this._disableCreateMetricDescriptors ||
           (await this._registerMetricDescriptor(metric));
         if (isRegistered) {
           timeSeries.push(

@@ -52,7 +52,7 @@ export interface ExporterOptions {
    * metrics without checking. This can prevent hitting a rate limit in Google
    * when a large number of clients are all started up at the same time.
    */
-  skipDescriptorCheck?: boolean;
+  disableCreateMetricDescriptors?: boolean;
 }
 
 export interface Credentials {

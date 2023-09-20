@@ -300,9 +300,9 @@ describe('MetricExporter', () => {
         assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
       });
 
-      it('should skip fetching the MetricDescriptors when skipDescriptorCheck is set', async () => {
+      it('should skip fetching the MetricDescriptors when disableCreateMetricDescriptors is set', async () => {
         const exporterSkipDescriptorCreate = new MetricExporter({
-          skipDescriptorCheck: true,
+          disableCreateMetricDescriptors: true,
         });
         sinon.replace(
           exporterSkipDescriptorCreate['_monitoring'].projects
