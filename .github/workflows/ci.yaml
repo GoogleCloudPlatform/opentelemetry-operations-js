@@ -10,17 +10,20 @@ jobs:
       matrix:
         node: [14, 16, 18, 19]
         include:
-          # use latest npm by default
-          - npm-version: latest
+          - node: 14
+            npm-version: ^7
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-      - run: node --version
       # TODO: remove once node 14 is dropped
-      - name: Upgrade to latest npm to support lockfile v2
+      - name: Install npm@${{ matrix.npm-version }}
+        if: matrix.npm-version
         run: npm install -g npm@${{ matrix.npm-version }}
+      - run: |
+          node --version
+          npm --version
       - run: npm install
       - run: npm test
       - run: npm run codecov
