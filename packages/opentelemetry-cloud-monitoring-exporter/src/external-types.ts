@@ -48,9 +48,11 @@ export interface ExporterOptions {
    */
   apiEndpoint?: string;
   /**
-   * Assume all metric descriptors have already been created and publish
-   * metrics without checking. This can prevent hitting a rate limit in Google
-   * when a large number of clients are all started up at the same time.
+   * Disable calling CreateMetricDescriptor before sending time series to Cloud Monitoring.
+   * Metric descriptors will be
+   * {@link https://cloud.google.com/monitoring/custom-metrics/creating-metrics#auto-creation | auto-created}
+   * if needed, but may be missing descriptions. This can prevent hitting a rate limit in
+   * Cloud Monitoring when a large number of clients are all started up at the same time.
    */
   disableCreateMetricDescriptors?: boolean;
 }
