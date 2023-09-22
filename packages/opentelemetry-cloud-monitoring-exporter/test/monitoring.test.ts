@@ -279,12 +279,14 @@ describe('MetricExporter', () => {
           });
         });
 
+        assert.strictEqual(metricDescriptorsGet.callCount, 1);
         assert.strictEqual(metricDescriptorCreate.callCount, 1);
         assert.strictEqual(timeSeries.callCount, 1);
         assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
 
         // Second time around, MetricDescriptorCreate.create() should be skipped
         metricDescriptorCreate.resetHistory();
+        metricDescriptorsGet.resetHistory();
         timeSeries.resetHistory();
         result = await new Promise<ExportResult>(resolve => {
           exporter.export(resourceMetrics, result => {
@@ -292,6 +294,53 @@ describe('MetricExporter', () => {
           });
         });
 
+        assert.strictEqual(metricDescriptorsGet.callCount, 0);
+        assert.strictEqual(metricDescriptorCreate.callCount, 0);
+        assert.strictEqual(timeSeries.callCount, 1);
+        assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
+      });
+
+      it('should skip fetching the MetricDescriptors when disableCreateMetricDescriptors is set', async () => {
+        const exporterSkipDescriptorCreate = new MetricExporter({
+          disableCreateMetricDescriptors: true,
+        });
+        sinon.replace(
+          exporterSkipDescriptorCreate['_monitoring'].projects
+            .metricDescriptors,
+          'create',
+          metricDescriptorCreate as sinon.SinonSpy
+        );
+        sinon.replace(
+          exporterSkipDescriptorCreate['_monitoring'].projects
+            .metricDescriptors,
+          'get',
+          metricDescriptorsGet as sinon.SinonSpy
+        );
+        sinon.replace(
+          exporterSkipDescriptorCreate['_monitoring'].projects.timeSeries,
+          'create',
+          timeSeries as any
+        );
+        sinon.replace(
+          exporterSkipDescriptorCreate['_auth'],
+          'getClient',
+          () => {
+            if (getClientShouldFail) {
+              throw new Error('fail');
+            }
+            return {} as any;
+          }
+        );
+
+        resourceMetrics = await generateMetricsData();
+
+        const result = await new Promise<ExportResult>(resolve => {
+          exporterSkipDescriptorCreate.export(resourceMetrics, result => {
+            resolve(result);
+          });
+        });
+
+        assert.strictEqual(metricDescriptorsGet.callCount, 0);
         assert.strictEqual(metricDescriptorCreate.callCount, 0);
         assert.strictEqual(timeSeries.callCount, 1);
         assert.deepStrictEqual(result.code, ExportResultCode.SUCCESS);
