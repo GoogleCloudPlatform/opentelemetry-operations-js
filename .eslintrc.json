@@ -1,0 +1,7 @@
+{
+  "extends": "./node_modules/gts/",
+  "ignorePatterns": [
+    "build/",
+    "__snapshots__/"
+  ]
+}
