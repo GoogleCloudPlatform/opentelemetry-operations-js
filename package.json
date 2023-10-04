@@ -37,5 +37,9 @@
     "samples/*",
     "e2e-test-server",
     "scripts"
-  ]
+  ],
+  "overrides": {
+    "nx": "16.7.2",
+    "@nx/devkit": "16.7.2"
+  }
 }
