@@ -7,14 +7,14 @@
   "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
   "scripts": {
     "codecov": "nyc report --reporter=json && codecov -f coverage/*.json -p ../../",
-    "lint": "gts-lint.mjs",
+    "lint": "gts lint",
     "clean": "gts clean",
     "precompile": "version-update.js",
     "compile": "tsc",
     "prepack": "npm run compile",
     "test": "nyc ts-mocha -p tsconfig.json 'test/**/*.test.ts'",
     "update-snapshot-tests": "SNAPSHOT_UPDATE=1 npm run test",
-    "fix": "gts-fix.mjs",
+    "fix": "gts fix",
     "pretest": "npm run compile"
   },
   "keywords": [
@@ -54,7 +54,7 @@
     "@types/sinon": "10.0.18",
     "bignumber.js": "9.1.2",
     "codecov": "3.8.3",
-    "gts": "3.1.1",
+    "gts": "5.1.0",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
     "sinon": "16.0.0",

@@ -69,21 +69,21 @@ describe('MetricExporter', () => {
     let metricDescriptorCreate: sinon.SinonSpy<
       [
         monitoring_v3.Params$Resource$Projects$Metricdescriptors$Create,
-        GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+        GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>,
       ],
       GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
     >;
     let metricDescriptorsGet: sinon.SinonSpy<
       [
         monitoring_v3.Params$Resource$Projects$Metricdescriptors$Get,
-        GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+        GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>,
       ],
       GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
     >;
     let timeSeries: sinon.SinonSpy<
       [
         monitoring_v3.Params$Resource$Projects$Timeseries$Create,
-        GaxiosPromise<monitoring_v3.Schema$Empty>
+        GaxiosPromise<monitoring_v3.Schema$Empty>,
       ],
       Promise<monitoring_v3.Schema$Empty>
     >;
