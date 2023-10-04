@@ -16,10 +16,10 @@
     "node": ">=14"
   },
   "scripts": {
-    "lint": "gts-lint.mjs",
+    "lint": "gts lint",
     "clean": "gts clean",
     "compile": "tsc",
-    "fix": "gts-fix.mjs",
+    "fix": "gts fix",
     "prepack": "npm run compile",
     "pretest": "npm run compile",
     "posttest": "npm run lint",
