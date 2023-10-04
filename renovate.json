@@ -18,6 +18,10 @@
     {
       "matchPackagePrefixes": ["@opentelemetry/"],
       "groupName": "opentelemetry upstream"
+    },
+    {
+      "matchPackagePrefixes": ["@nx/", "nx"],
+      "groupName": "nx"
     }
   ]
 }
