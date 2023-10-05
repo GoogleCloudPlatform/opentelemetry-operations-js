@@ -189,13 +189,22 @@ export interface MonitoredResource {
  * https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/v1.8.0/internal/resourcemapping/resourcemapping.go#L51
  *
  * @param resource the OTel Resource
- * @param includeUnsupportedResources if true, will return the most specific monitored resource
- *   possible even if that resource does not support custom metrics. If false, will fallback to
- *   generic resources which support custom metrics. See
- *   https://cloud.google.com/monitoring/custom-metrics for more information on which resources
- *   supporting custom metrics.
  * @returns the corresponding GCM MonitoredResource
  */
+export function mapOtelResourceToMonitoredResource(
+  resource: IResource
+): MonitoredResource;
+/**
+ * @deprecated This overload is deprecated, do not pass the includeUnsupportedResources boolean
+ * parameter. It will be removed in the next major version release.
+ *
+ * @param resource the OTel Resource
+ * @returns the corresponding GCM MonitoredResource
+ */
+export function mapOtelResourceToMonitoredResource(
+  resource: IResource,
+  includeUnsupportedResources: boolean | undefined
+): MonitoredResource;
 export function mapOtelResourceToMonitoredResource(
   resource: IResource,
   includeUnsupportedResources = false
