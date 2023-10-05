@@ -125,7 +125,7 @@ describe('GcpDetector', () => {
       'cloud.platform': 'gcp_cloud_run',
       'cloud.provider': 'gcp',
       'cloud.region': 'us-east4',
-      'faas.instance': '12345',
+      'faas.id': '12345',
       'faas.name': 'fake-service',
       'faas.version': 'fake-revision',
     });
@@ -148,7 +148,7 @@ describe('GcpDetector', () => {
       'cloud.platform': 'gcp_cloud_functions',
       'cloud.provider': 'gcp',
       'cloud.region': 'us-east4',
-      'faas.instance': '12345',
+      'faas.id': '12345',
       'faas.name': 'fake-service',
       'faas.version': 'fake-revision',
     });
@@ -171,7 +171,7 @@ describe('GcpDetector', () => {
       'cloud.platform': 'gcp_app_engine',
       'cloud.provider': 'gcp',
       'cloud.region': 'us-east4',
-      'faas.instance': 'fake-instance',
+      'faas.id': 'fake-instance',
       'faas.name': 'fake-service',
       'faas.version': 'fake-version',
     });
@@ -192,7 +192,7 @@ describe('GcpDetector', () => {
       'cloud.platform': 'gcp_app_engine',
       'cloud.provider': 'gcp',
       'cloud.region': 'us-east4',
-      'faas.instance': 'fake-instance',
+      'faas.id': 'fake-instance',
       'faas.name': 'fake-service',
       'faas.version': 'fake-version',
     });
@@ -320,7 +320,7 @@ describe('GcpDetectorSync', () => {
       'cloud.platform': 'gcp_cloud_run',
       'cloud.provider': 'gcp',
       'cloud.region': 'us-east4',
-      'faas.instance': '12345',
+      'faas.id': '12345',
       'faas.name': 'fake-service',
       'faas.version': 'fake-revision',
     });
@@ -344,7 +344,7 @@ describe('GcpDetectorSync', () => {
       'cloud.platform': 'gcp_cloud_functions',
       'cloud.provider': 'gcp',
       'cloud.region': 'us-east4',
-      'faas.instance': '12345',
+      'faas.id': '12345',
       'faas.name': 'fake-service',
       'faas.version': 'fake-revision',
     });
@@ -368,7 +368,7 @@ describe('GcpDetectorSync', () => {
       'cloud.platform': 'gcp_app_engine',
       'cloud.provider': 'gcp',
       'cloud.region': 'us-east4',
-      'faas.instance': 'fake-instance',
+      'faas.id': 'fake-instance',
       'faas.name': 'fake-service',
       'faas.version': 'fake-version',
     });
@@ -390,7 +390,7 @@ describe('GcpDetectorSync', () => {
       'cloud.platform': 'gcp_app_engine',
       'cloud.provider': 'gcp',
       'cloud.region': 'us-east4',
-      'faas.instance': 'fake-instance',
+      'faas.id': 'fake-instance',
       'faas.name': 'fake-service',
       'faas.version': 'fake-version',
     });

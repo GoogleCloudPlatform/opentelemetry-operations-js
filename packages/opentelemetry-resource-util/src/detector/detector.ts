@@ -66,37 +66,35 @@ async function gkeResource(): Promise<Resource> {
 }
 
 async function cloudRunResource(): Promise<Resource> {
-  const [faasName, faasVersion, faasInstance, faasCloudRegion] =
-    await Promise.all([
-      faas.faasName(),
-      faas.faasVersion(),
-      faas.faasInstance(),
-      faas.faasCloudRegion(),
-    ]);
+  const [faasName, faasVersion, faasId, faasCloudRegion] = await Promise.all([
+    faas.faasName(),
+    faas.faasVersion(),
+    faas.faasId(),
+    faas.faasCloudRegion(),
+  ]);
 
   return await makeResource({
     [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_RUN,
     [Semconv.FAAS_NAME]: faasName,
     [Semconv.FAAS_VERSION]: faasVersion,
-    [Semconv.FAAS_INSTANCE]: faasInstance,
+    [Semconv.FAAS_ID]: faasId,
     [Semconv.CLOUD_REGION]: faasCloudRegion,
   });
 }
 
 async function cloudFunctionsResource(): Promise<Resource> {
-  const [faasName, faasVersion, faasInstance, faasCloudRegion] =
-    await Promise.all([
-      faas.faasName(),
-      faas.faasVersion(),
-      faas.faasInstance(),
-      faas.faasCloudRegion(),
-    ]);
+  const [faasName, faasVersion, faasId, faasCloudRegion] = await Promise.all([
+    faas.faasName(),
+    faas.faasVersion(),
+    faas.faasId(),
+    faas.faasCloudRegion(),
+  ]);
 
   return await makeResource({
     [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_FUNCTIONS,
     [Semconv.FAAS_NAME]: faasName,
     [Semconv.FAAS_VERSION]: faasVersion,
-    [Semconv.FAAS_INSTANCE]: faasInstance,
+    [Semconv.FAAS_ID]: faasId,
     [Semconv.CLOUD_REGION]: faasCloudRegion,
   });
 }
@@ -111,7 +109,7 @@ async function gaeResource(): Promise<Resource> {
   } else {
     ({zone, region} = await gce.availabilityZoneAndRegion());
   }
-  const [faasName, faasVersion, faasInstance] = await Promise.all([
+  const [faasName, faasVersion, faasId] = await Promise.all([
     gae.serviceName(),
     gae.serviceVersion(),
     gae.serviceInstance(),
@@ -121,7 +119,7 @@ async function gaeResource(): Promise<Resource> {
     [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_APP_ENGINE,
     [Semconv.FAAS_NAME]: faasName,
     [Semconv.FAAS_VERSION]: faasVersion,
-    [Semconv.FAAS_INSTANCE]: faasInstance,
+    [Semconv.FAAS_ID]: faasId,
     [Semconv.CLOUD_AVAILABILITY_ZONE]: zone,
     [Semconv.CLOUD_REGION]: region,
   });
