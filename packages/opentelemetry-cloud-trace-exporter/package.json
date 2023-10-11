@@ -55,7 +55,7 @@
     "rimraf": "5.0.5",
     "sinon": "16.1.0",
     "ts-mocha": "10.0.0",
-    "typescript": "4.9.5"
+    "typescript": "5.2.2"
   },
   "dependencies": {
     "@google-cloud/opentelemetry-resource-util": "^2.1.0",
