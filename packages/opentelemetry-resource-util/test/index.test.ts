@@ -149,7 +149,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
       otelAttributes: {
         'cloud.platform': 'gcp_cloud_run',
         'cloud.region': 'myregion',
-        'faas.instance': 'myfaasid',
+        'faas.instance': 'myfaasinstance',
         'faas.name': 'myfaasname',
         'faas.version': 'myfaasversion',
         'service.name': 'servicename',
@@ -163,10 +163,11 @@ describe('mapOtelResourceToMonitoredResource', () => {
       otelAttributes: {
         'cloud.platform': 'gcp_cloud_run',
         'cloud.region': 'myregion',
-        'faas.instance': 'myfaasid',
+        'faas.instance': 'myfaasinstance',
         'faas.name': 'myfaasname',
         'faas.version': 'myfaasversion',
         'service.name': 'servicename',
+        'service.namespace': 'servicens',
         'service.instance.id': 'serviceinstanceid',
       },
       includeUnsupportedResources: false,
@@ -177,7 +178,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
       otelAttributes: {
         'cloud.platform': 'gcp_cloud_functions',
         'cloud.region': 'myregion',
-        'faas.instance': 'myfaasid',
+        'faas.instance': 'myfaasinstance',
         'faas.name': 'myfaasname',
         'faas.version': 'myfaasversion',
         'service.name': 'servicename',
@@ -191,10 +192,11 @@ describe('mapOtelResourceToMonitoredResource', () => {
       otelAttributes: {
         'cloud.platform': 'gcp_cloud_functions',
         'cloud.region': 'myregion',
-        'faas.instance': 'myfaasid',
+        'faas.instance': 'myfaasinstance',
         'faas.name': 'myfaasname',
         'faas.version': 'myfaasversion',
         'service.name': 'servicename',
+        'service.namespace': 'servicens',
         'service.instance.id': 'serviceinstanceid',
       },
       includeUnsupportedResources: false,
@@ -205,7 +207,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
       otelAttributes: {
         'cloud.platform': 'gcp_app_engine',
         'cloud.region': 'myregion',
-        'faas.instance': 'myfaasid',
+        'faas.instance': 'myfaasinstance',
         'faas.name': 'myfaasname',
         'faas.version': 'myfaasversion',
         'service.name': 'servicename',
@@ -219,6 +221,16 @@ describe('mapOtelResourceToMonitoredResource', () => {
         'cloud.availability_zone': 'myavailzone',
         'service.namespace': 'servicens',
         'service.name': 'servicename',
+        'service.instance.id': 'serviceinstanceid',
+      },
+    },
+    {
+      title:
+        'should map to generic_task with unknown_service* if no better match found',
+      otelAttributes: {
+        'cloud.availability_zone': 'myavailzone',
+        'service.namespace': 'servicens',
+        'service.name': 'unknown_service:node',
         'service.instance.id': 'serviceinstanceid',
       },
     },
@@ -239,6 +251,36 @@ describe('mapOtelResourceToMonitoredResource', () => {
         'service.namespace': 'servicens',
         'service.name': 'servicename',
         'service.instance.id': 'serviceinstanceid',
+      },
+    },
+
+    {
+      title: 'should map to generic_task with fallback to faas.name',
+      otelAttributes: {
+        'cloud.availability_zone': 'myavailzone',
+        'service.namespace': 'servicens',
+        'service.instance.id': 'serviceinstanceid',
+        'faas.name': 'myfaasname',
+      },
+    },
+    {
+      title:
+        'should map to generic_task with fallback to faas.name if service.name="unknown_service*"',
+      otelAttributes: {
+        'cloud.region': 'myregion',
+        'faas.instance': 'myfaasinstance',
+        'faas.name': 'myfaasname',
+        'service.name': 'unknown_service:foo',
+        'service.namespace': 'servicens',
+      },
+    },
+    {
+      title: 'should map to generic_task with fallback to faas.instance',
+      otelAttributes: {
+        'cloud.availability_zone': 'myavailzone',
+        'service.namespace': 'servicens',
+        'service.name': 'servicename',
+        'faas.instance': 'myfaasinstance',
       },
     },
 

@@ -51,6 +51,8 @@ const SERVICE_NAME = 'service_name';
 const TASK_ID = 'task_id';
 const ZONE = 'zone';
 
+const UNKNOWN_SERVICE_PREFIX = 'unknown_service';
+
 /**
  * Mappings of GCM resource label keys onto mapping config from OTel resource for a given
  * monitored resource type. Copied from Go impl:
@@ -149,8 +151,18 @@ const MAPPINGS = {
       fallback: 'global',
     },
     [NAMESPACE]: {otelKeys: [SemanticResourceAttributes.SERVICE_NAMESPACE]},
-    [JOB]: {otelKeys: [SemanticResourceAttributes.SERVICE_NAME]},
-    [TASK_ID]: {otelKeys: [SemanticResourceAttributes.SERVICE_INSTANCE_ID]},
+    [JOB]: {
+      otelKeys: [
+        SemanticResourceAttributes.SERVICE_NAME,
+        SemanticResourceAttributes.FAAS_NAME,
+      ],
+    },
+    [TASK_ID]: {
+      otelKeys: [
+        SemanticResourceAttributes.SERVICE_INSTANCE_ID,
+        SemanticResourceAttributes.FAAS_INSTANCE,
+      ],
+    },
   },
   [GENERIC_NODE]: {
     [LOCATION]: {
@@ -244,8 +256,10 @@ export function mapOtelResourceToMonitoredResource(
   } else {
     // fallback to generic_task
     if (
-      SemanticResourceAttributes.SERVICE_NAME in attrs &&
-      SemanticResourceAttributes.SERVICE_INSTANCE_ID in attrs
+      (SemanticResourceAttributes.SERVICE_NAME in attrs ||
+        SemanticResourceAttributes.FAAS_NAME in attrs) &&
+      (SemanticResourceAttributes.SERVICE_INSTANCE_ID in attrs ||
+        SemanticResourceAttributes.FAAS_INSTANCE in attrs)
     ) {
       mr = createMonitoredResource(GENERIC_TASK, attrs);
     } else {
@@ -266,13 +280,25 @@ function createMonitoredResource(
 
   Object.entries(mapping).map(([mrKey, mapConfig]) => {
     let mrValue: AttributeValue | undefined;
+    const test: string | undefined = undefined;
     for (const otelKey of mapConfig.otelKeys) {
-      if (otelKey in resourceAttrs) {
+      if (
+        otelKey in resourceAttrs &&
+        !resourceAttrs[otelKey]?.toString()?.startsWith(UNKNOWN_SERVICE_PREFIX)
+      ) {
         mrValue = resourceAttrs[otelKey];
         break;
       }
     }
 
+    if (
+      mrValue === undefined &&
+      mapConfig.otelKeys.includes(SemanticResourceAttributes.SERVICE_NAME)
+    ) {
+      // The service name started with unknown_service, was ignored above, and we couldn't find
+      // a better value for mrValue.
+      mrValue = resourceAttrs[SemanticResourceAttributes.SERVICE_NAME];
+    }
     if (mrValue === undefined) {
       mrValue = mapConfig.fallback ?? '';
     }

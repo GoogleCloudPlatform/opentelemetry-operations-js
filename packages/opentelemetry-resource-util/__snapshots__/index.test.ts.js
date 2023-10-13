@@ -2,7 +2,7 @@ exports['mapOtelResourceToMonitoredResource should map cloud_function to generic
   "type": "generic_task",
   "labels": {
     "location": "myregion",
-    "namespace": "",
+    "namespace": "servicens",
     "job": "servicename",
     "task_id": "serviceinstanceid"
   }
@@ -12,7 +12,7 @@ exports['mapOtelResourceToMonitoredResource should map cloud_run_revision to gen
   "type": "generic_task",
   "labels": {
     "location": "myregion",
-    "namespace": "",
+    "namespace": "servicens",
     "job": "servicename",
     "task_id": "serviceinstanceid"
   }
@@ -69,7 +69,7 @@ exports['mapOtelResourceToMonitoredResource should map to gae_instance" 1'] = {
     "location": "myregion",
     "module_id": "myfaasname",
     "version_id": "myfaasversion",
-    "instance_id": "myfaasid"
+    "instance_id": "myfaasinstance"
   }
 }
 
@@ -127,6 +127,36 @@ exports['mapOtelResourceToMonitoredResource should map to generic_task 1'] = {
   }
 }
 
+exports['mapOtelResourceToMonitoredResource should map to generic_task with fallback to faas.instance 1'] = {
+  "type": "generic_task",
+  "labels": {
+    "location": "myavailzone",
+    "namespace": "servicens",
+    "job": "servicename",
+    "task_id": "myfaasinstance"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to generic_task with fallback to faas.name 1'] = {
+  "type": "generic_task",
+  "labels": {
+    "location": "myavailzone",
+    "namespace": "servicens",
+    "job": "myfaasname",
+    "task_id": "serviceinstanceid"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to generic_task with fallback to faas.name if service.name="unknown_service*" 1'] = {
+  "type": "generic_task",
+  "labels": {
+    "location": "myregion",
+    "namespace": "servicens",
+    "job": "myfaasname",
+    "task_id": "myfaasinstance"
+  }
+}
+
 exports['mapOtelResourceToMonitoredResource should map to generic_task with fallback to global 1'] = {
   "type": "generic_task",
   "labels": {
@@ -143,6 +173,16 @@ exports['mapOtelResourceToMonitoredResource should map to generic_task with fall
     "location": "myregion",
     "namespace": "servicens",
     "job": "servicename",
+    "task_id": "serviceinstanceid"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to generic_task with unknown_service* if no better match found 1'] = {
+  "type": "generic_task",
+  "labels": {
+    "location": "myavailzone",
+    "namespace": "servicens",
+    "job": "unknown_service:node",
     "task_id": "serviceinstanceid"
   }
 }
