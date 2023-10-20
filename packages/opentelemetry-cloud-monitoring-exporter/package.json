@@ -60,7 +60,7 @@
     "nock": "13.3.4",
     "nyc": "15.1.0",
     "rimraf": "5.0.5",
-    "sinon": "16.1.0",
+    "sinon": "17.0.0",
     "snap-shot-it": "7.9.10",
     "ts-mocha": "10.0.0",
     "typescript": "4.9.5"
