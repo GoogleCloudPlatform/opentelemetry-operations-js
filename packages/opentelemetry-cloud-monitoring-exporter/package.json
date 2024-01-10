@@ -53,7 +53,7 @@
     "@types/mocha": "10.0.4",
     "@types/nock": "11.1.0",
     "@types/node": "14.18.63",
-    "@types/sinon": "10.0.19",
+    "@types/sinon": "17.0.3",
     "codecov": "3.8.3",
     "gts": "5.2.0",
     "mocha": "10.2.0",
