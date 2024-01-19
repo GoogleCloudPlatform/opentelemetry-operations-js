@@ -28,16 +28,13 @@ const exporter = new TraceExporter({
 });
 ```
 
-Now, register the exporter.
+Now, register the exporter with the built-in
+[`BatchSpanProcessor`](https://github.com/open-telemetry/opentelemetry-specification/blob/v1.4.0/specification/trace/sdk.md#batching-processor)
+which batches ended spans and passes them to the configured `SpanExporter`.
 
 ```js
 provider.addSpanProcessor(new BatchSpanProcessor(exporter));
 ```
-
-You can use built-in `SimpleSpanProcessor` or `BatchSpanProcessor` or write your own.
-
-- [SimpleSpanProcessor](https://github.com/open-telemetry/opentelemetry-specification/blob/v1.4.0/specification/trace/sdk.md#simple-processor): The implementation of `SpanProcessor` that passes ended span directly to the configured `SpanExporter`.
-- [BatchSpanProcessor](https://github.com/open-telemetry/opentelemetry-specification/blob/v1.4.0/specification/trace/sdk.md#batching-processor): The implementation of the `SpanProcessor` that batches ended spans and pushes them to the configured `SpanExporter`. It is recommended to use this `SpanProcessor` for better performance and optimization.
 
 ## Resource attributes
 
