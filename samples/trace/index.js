@@ -19,7 +19,7 @@
 // [START opentelemetry_trace_import]
 const opentelemetry = require("@opentelemetry/api");
 const { NodeTracerProvider } = require("@opentelemetry/sdk-trace-node");
-const { SimpleSpanProcessor } = require("@opentelemetry/sdk-trace-base");
+const { BatchSpanProcessor } = require("@opentelemetry/sdk-trace-base");
 const {
   TraceExporter,
 } = require("@google-cloud/opentelemetry-cloud-trace-exporter");
@@ -36,8 +36,8 @@ const provider = new NodeTracerProvider();
 // you don't need to provide auth credentials or a project id.
 const exporter = new TraceExporter();
 
-// Configure the span processor to send spans to the exporter
-provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
+// Configure the span processor to batch and send spans to the exporter
+provider.addSpanProcessor(new BatchSpanProcessor(exporter));
 
 // [END setup_exporter]
 
@@ -45,7 +45,7 @@ provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
 
 // Initialize the OpenTelemetry APIs to use the
 // NodeTracerProvider bindings
-provider.register()
+provider.register();
 const tracer = opentelemetry.trace.getTracer("basic");
 
 // Create a span.
@@ -66,4 +66,13 @@ span.end();
 
 console.log("Done recording traces.");
 
+// Finally shutdown the NodeTracerProvider to finish flushing any batched spans
+provider.shutdown().then(
+  () => {
+    console.log("Successfully shutdown");
+  },
+  (err) => {
+    console.error("Error shutting down", err);
+  }
+);
 // [END opentelemetry_trace_samples]
