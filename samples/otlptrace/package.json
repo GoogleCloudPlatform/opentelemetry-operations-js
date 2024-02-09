@@ -1,0 +1,16 @@
+{
+  "name": "otlptrace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "example.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@opentelemetry/exporter-trace-otlp-proto": "^0.48.0",
+    "@opentelemetry/sdk-node": "^0.48.0",
+    "google-auth-library": "^9.6.3"
+  }
+}
