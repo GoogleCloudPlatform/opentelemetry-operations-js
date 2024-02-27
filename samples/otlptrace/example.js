@@ -15,9 +15,10 @@
 
 const {GoogleAuth} = require('google-auth-library');
 const opentelemetry = require('@opentelemetry/sdk-node');
+const otelapi = require('@opentelemetry/api');
 const {
   OTLPTraceExporter,
-} = require('@opentelemetry/exporter-trace-otlp-proto');
+} = require('@opentelemetry/exporter-trace-otlp-http');
 
 async function main() {
   const auth = new GoogleAuth({
@@ -28,46 +29,31 @@ async function main() {
 
   const sdk = new opentelemetry.NodeSDK({
     traceExporter: new OTLPTraceExporter({
-      url: '<your-otlp-endpoint>/v1/traces',
       headers: {headers},
     })
   })
   sdk.start()
 
-  const provider = new NodeTracerProvider();
-  provider.register();
-  const exporter = new OTLPTraceExporter
-
-  const tracer = opentelemetry.trace.getTracer("basic");
+  const tracer = otelapi.trace.getTracer("basic");
 
 
   // Create a span.
-  const span = tracer.startSpan("foo");
+  const span = tracer.startActiveSpan("foo", (span) => {
+    // Set attributes to the span.
+    span.setAttribute("key", "value");
 
-  // Set attributes to the span.
-  span.setAttribute("key", "value");
+    // Annotate our span to capture metadata about our operation
+    span.addEvent("invoking work");
 
-  // Annotate our span to capture metadata about our operation
-  span.addEvent("invoking work");
+    // simulate some random work.
+    for (let i = 0; i <= Math.floor(Math.random() * 40000000); i += 1) {}
 
-  // simulate some random work.
-  for (let i = 0; i <= Math.floor(Math.random() * 40000000); i += 1) {}
-
-  // Be sure to end the span.
-  span.end();
-  // [END opentelemetry_trace_custom_span]
+    // Be sure to end the span.
+    span.end();
+  });
 
   console.log("Done recording traces.");
-
-  // Finally shutdown the NodeTracerProvider to finish flushing any batched spans
-  provider.shutdown().then(
-      () => {
-        console.log("Successfully shutdown");
-      },
-      (err) => {
-        console.error("Error shutting down", err);
-      }
-  );
-
+  await provider.shutdown();
+  console.log("Successfully shutdown");
 }
 main().catch(console.error);
