@@ -35,6 +35,7 @@
   "workspaces": [
     "packages/*",
     "samples/*",
+    "!samples/instrumentation-quickstart",
     "e2e-test-server",
     "scripts"
   ],
