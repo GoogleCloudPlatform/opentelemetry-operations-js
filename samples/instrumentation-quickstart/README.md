@@ -43,9 +43,26 @@ oauth2 flow (read more about the command [here][auth_command]):
 
 	gcloud auth application-default login
 
-Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable with `export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/gcloud/application_default_credentials.json"`
-or manually set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to point to a service
-account key JSON file path.
+> [!CAUTION]
+> This method of authentication is not recommended for production environments.
+
+Executing this command will save your application credentials to the default path which will depend on the type of machine -
+- Linux, macOS: `$HOME/.config/gcloud/application_default_credentials.json`
+- Windows: `%APPDATA%\gcloud\application_default_credentials.json`
+
+Next, export the credentials to `GOOGLE_APPLICATION_CREDENTIALS` environment variable -
+
+For Linux & MacOS:
+```shell
+export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.config/gcloud/application_default_credentials.json
+```
+
+For Windows:
+```shell
+SET GOOGLE_APPLICATION_CREDENTIALS=%APPDATA%\gcloud\application_default_credentials.json
+```
+
+You can also manually set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to point to a service account key JSON file path.
 
 Learn more at [Setting Up Authentication for Server to Server Production Applications][ADC].
 
@@ -64,4 +81,11 @@ export GOOGLE_CLOUD_PROJECT=<your project id>
 docker compose -f docker-compose.yaml -f docker-compose.creds.yaml up  --abort-on-container-exit
 ```
 
+## Viewing the results
+
+After a successful run of the example, you can see the generated metrics in the GCP console via Metrics Explorer. The generated metrics would be present under the `Prometheus Target` resource.
+
+Similarly, to view the generated traces in the GCP console, use the Trace Explorer.
+
 [auth_command]: https://cloud.google.com/sdk/gcloud/reference/beta/auth/application-default/login
+[ADC]: https://cloud.google.com/docs/authentication/application-default-credentials
