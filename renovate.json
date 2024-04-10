@@ -22,6 +22,10 @@
     {
       "matchPackagePrefixes": ["@nx/", "nx"],
       "groupName": "nx"
+    },
+    {
+      "matchPackageNames": ["fastify"],
+      "groupName": "fastify"
     }
   ]
 }
