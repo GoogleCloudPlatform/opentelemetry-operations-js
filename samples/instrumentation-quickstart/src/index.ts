@@ -44,11 +44,11 @@ fastify.get('/single', async request => {
  * handleMulti handles an http request by making 3-7 http requests to the /single endpoint.
  *
  * OpenTelemetry instrumentation requires no changes here. It will automatically generate a
- * span for the controller body.
+ * span for the handler body.
  */
 fastify.get('/multi', async request => {
   const subRequests = randInt(3, 8);
-  request.log.info({subRequests}, 'handle /multi request', subRequests);
+  request.log.info({subRequests}, 'handle /multi request');
 
   for (let i = 0; i < subRequests; i++) {
     await axios.get(`http://localhost:${port}/single`);
