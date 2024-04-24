@@ -15,21 +15,22 @@
 //
 
 /*app.ts*/
-import { trace } from '@opentelemetry/api';
+import { trace, diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
 import express, { Express, Request, Response } from 'express';
 import { rollTheDice } from './dice';
+
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
+import { AuthClient, GoogleAuth } from 'google-auth-library';
+import { Headers } from 'google-auth-library/build/src/auth/oauth2client';
 
 const tracer = trace.getTracer('dice-server', '0.1.0');
 
 const PORT: number = parseInt(process.env.PORT || '8080');
 const app: Express = express();
 
-import {NodeSDK} from '@opentelemetry/sdk-node';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
-import { AuthClient, GoogleAuth } from 'google-auth-library';
-import { Headers } from 'google-auth-library/build/src/auth/oauth2client';
-
 async function main() {
+  diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
   async function getAuthenticatedClient(): Promise<AuthClient> {  
     const auth: GoogleAuth = new GoogleAuth({
       scopes: 'https://www.googleapis.com/auth/cloud-platform',
