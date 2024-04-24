@@ -22,7 +22,7 @@ import { rollTheDice } from './dice';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { AuthClient, GoogleAuth } from 'google-auth-library';
-import { Headers } from 'google-auth-library/build/src/auth/oauth2client';
+import { credentials } from '@grpc/grpc-js';
 
 const tracer = trace.getTracer('dice-server', '0.1.0');
 
@@ -31,6 +31,7 @@ const app: Express = express();
 
 async function main() {
   diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
+
   async function getAuthenticatedClient(): Promise<AuthClient> {  
     const auth: GoogleAuth = new GoogleAuth({
       scopes: 'https://www.googleapis.com/auth/cloud-platform',
@@ -38,13 +39,11 @@ async function main() {
     const client: AuthClient = await auth.getClient();
     return client;    
   }
-
   const authenticatedClient: AuthClient = await getAuthenticatedClient();
-  const headers: Headers = await authenticatedClient.getRequestHeaders();
 
   const sdk = new NodeSDK({
     traceExporter: new OTLPTraceExporter({
-      headers: headers,
+      credentials: credentials.combineChannelCredentials(credentials.createSsl(), credentials.createFromGoogleCredential(authenticatedClient)),
     }),
   });
   sdk.start();
