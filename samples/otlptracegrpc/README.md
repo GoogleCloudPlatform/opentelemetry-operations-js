@@ -24,8 +24,14 @@ cd samples/otlptracegrpc && npm run start
 
 In another terminal window:
 
+To send a one-off request:
 ```sh
 curl localhost:8080/rolldice?rolls=12
+```
+
+To send requests indefinitely at a fixed rate, use the provided client application:
+```sh
+npm run client
 ```
 
 ## Useful links
