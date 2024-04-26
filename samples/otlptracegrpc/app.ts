@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-
-import {diag, DiagConsoleLogger, DiagLogLevel} from '@opentelemetry/api';
 import express, {Express, Request, Response} from 'express';
 import {rollTheDice} from './dice';
 
@@ -26,8 +24,6 @@ const PORT: number = parseInt(process.env.PORT || '8080');
 const app: Express = express();
 
 async function main() {
-  diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
-
   async function getAuthenticatedClient(): Promise<AuthClient> {
     const auth: GoogleAuth = new GoogleAuth({
       scopes: 'https://www.googleapis.com/auth/cloud-platform',
