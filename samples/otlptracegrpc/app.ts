@@ -13,7 +13,6 @@
 // limitations under the License.
 //
 
-/*app.ts*/
 import { trace, diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
 import express, { Express, Request, Response } from 'express';
 import { rollTheDice } from './dice';

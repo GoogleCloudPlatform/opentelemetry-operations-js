@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-/*dice.ts*/
 import { trace } from '@opentelemetry/api';
 
 const tracer = trace.getTracer('dice-lib');
