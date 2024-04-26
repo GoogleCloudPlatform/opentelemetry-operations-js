@@ -13,16 +13,14 @@
 // limitations under the License.
 //
 
-import { trace, diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
-import express, { Express, Request, Response } from 'express';
-import { rollTheDice } from './dice';
+import {diag, DiagConsoleLogger, DiagLogLevel} from '@opentelemetry/api';
+import express, {Express, Request, Response} from 'express';
+import {rollTheDice} from './dice';
 
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
-import { AuthClient, GoogleAuth } from 'google-auth-library';
-import { credentials } from '@grpc/grpc-js';
-
-const tracer = trace.getTracer('dice-server', '0.1.0');
+import {NodeSDK} from '@opentelemetry/sdk-node';
+import {OTLPTraceExporter} from '@opentelemetry/exporter-trace-otlp-grpc';
+import {AuthClient, GoogleAuth} from 'google-auth-library';
+import {credentials} from '@grpc/grpc-js';
 
 const PORT: number = parseInt(process.env.PORT || '8080');
 const app: Express = express();
@@ -30,18 +28,21 @@ const app: Express = express();
 async function main() {
   diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
 
-  async function getAuthenticatedClient(): Promise<AuthClient> {  
+  async function getAuthenticatedClient(): Promise<AuthClient> {
     const auth: GoogleAuth = new GoogleAuth({
       scopes: 'https://www.googleapis.com/auth/cloud-platform',
     });
     const client: AuthClient = await auth.getClient();
-    return client;    
+    return client;
   }
   const authenticatedClient: AuthClient = await getAuthenticatedClient();
 
   const sdk = new NodeSDK({
     traceExporter: new OTLPTraceExporter({
-      credentials: credentials.combineChannelCredentials(credentials.createSsl(), credentials.createFromGoogleCredential(authenticatedClient)),
+      credentials: credentials.combineChannelCredentials(
+        credentials.createSsl(),
+        credentials.createFromGoogleCredential(authenticatedClient)
+      ),
     }),
   });
   sdk.start();
@@ -50,8 +51,8 @@ async function main() {
     const rolls = req.query.rolls ? parseInt(req.query.rolls.toString()) : NaN;
     if (isNaN(rolls)) {
       res
-          .status(400)
-          .send("Request parameter 'rolls' is missing or not a number.");
+        .status(400)
+        .send("Request parameter 'rolls' is missing or not a number.");
       return;
     }
     res.send(JSON.stringify(rollTheDice(rolls, 1, 6)));

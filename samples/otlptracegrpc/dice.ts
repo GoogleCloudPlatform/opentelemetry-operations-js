@@ -14,18 +14,18 @@
 // limitations under the License.
 //
 
-import { trace } from '@opentelemetry/api';
+import {trace} from '@opentelemetry/api';
 
 const tracer = trace.getTracer('dice-lib');
 
-function rollOnce(min: number, max: number): number  {
+function rollOnce(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
 export function rollTheDice(rolls: number, min: number, max: number) {
   // Create a span. A span must be closed.
-  return tracer.startActiveSpan('rollTheDice', (span) => {
-    const result:number[] = [];
+  return tracer.startActiveSpan('rollTheDice', span => {
+    const result: number[] = [];
     for (let i = 0; i < rolls; i++) {
       result.push(rollOnce(min, max));
     }
@@ -35,4 +35,4 @@ export function rollTheDice(rolls: number, min: number, max: number) {
   });
 }
 
-module.exports = { rollTheDice };
+module.exports = {rollTheDice};
