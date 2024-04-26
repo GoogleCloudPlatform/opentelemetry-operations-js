@@ -23,14 +23,14 @@ import {credentials} from '@grpc/grpc-js';
 const PORT: number = parseInt(process.env.PORT || '8080');
 const app: Express = express();
 
+async function getAuthenticatedClient(): Promise<AuthClient> {
+  const auth: GoogleAuth = new GoogleAuth({
+    scopes: 'https://www.googleapis.com/auth/cloud-platform',
+  });
+  return await auth.getClient();
+}
+
 async function main() {
-  async function getAuthenticatedClient(): Promise<AuthClient> {
-    const auth: GoogleAuth = new GoogleAuth({
-      scopes: 'https://www.googleapis.com/auth/cloud-platform',
-    });
-    const client: AuthClient = await auth.getClient();
-    return client;
-  }
   const authenticatedClient: AuthClient = await getAuthenticatedClient();
 
   const sdk = new NodeSDK({
