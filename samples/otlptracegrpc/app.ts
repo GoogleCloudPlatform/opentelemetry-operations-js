@@ -11,8 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-import express, {Express, Request, Response} from 'express';
+
+import express, {Request, Response} from 'express';
 import {rollTheDice} from './dice';
 
 import {NodeSDK} from '@opentelemetry/sdk-node';
@@ -20,8 +20,8 @@ import {OTLPTraceExporter} from '@opentelemetry/exporter-trace-otlp-grpc';
 import {AuthClient, GoogleAuth} from 'google-auth-library';
 import {credentials} from '@grpc/grpc-js';
 
-const PORT: number = parseInt(process.env.PORT || '8080');
-const app: Express = express();
+const PORT = parseInt(process.env.PORT || '8080');
+const app = express();
 
 async function getAuthenticatedClient(): Promise<AuthClient> {
   const auth: GoogleAuth = new GoogleAuth({
