@@ -21,7 +21,7 @@ const APP_ENDPOINT = 'http://localhost:8080/rolldice';
 async function rollDice() {
   const numRolls = Math.floor(Math.random() * 10) + 1;
   console.log(`Making ${numRolls} rolls`);
-  const url = APP_ENDPOINT + '?rolls=' + numRolls;
+  const url = `${APP_ENDPOINT}?rolls=${numRolls}`;
   try {
     const response: AxiosResponse = await axios(url);
     if (response.status !== 200) {
