@@ -1,12 +1,12 @@
 {
-  "name": "sample-app-grpc",
+  "name": "otlp-trace-export",
   "version": "0.1.0",
   "private": true,
   "author": "Google Inc.",
   "license": "Apache-2.0",
   "scripts": {
-    "start": "ts-node ./app.ts",
-    "client": "ts-node ./client.ts",
+    "start": "ts-node ./src/app-grpc-export.ts",
+    "client": "ts-node ./src/client.ts",
     "lint": "gts lint",
     "clean": "gts clean",
     "fix": "gts fix",

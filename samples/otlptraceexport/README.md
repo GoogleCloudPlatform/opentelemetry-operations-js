@@ -17,7 +17,7 @@ export OTEL_RESOURCE_ATTRIBUTES="gcp.project_id=<project-id>"
 export OTEL_EXPORTER_OTLP_ENDPOINT=<endpoint>
 
 # run the app - this starts app at port 8080
-cd samples/otlptracegrpc && npm run start
+cd samples/otlptracexport && npm run start
 ```
 
 ## Sending Requests to the Application
