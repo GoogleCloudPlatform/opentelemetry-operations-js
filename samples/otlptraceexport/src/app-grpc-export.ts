@@ -20,8 +20,6 @@ import {OTLPTraceExporter} from '@opentelemetry/exporter-trace-otlp-grpc';
 import {AuthClient, GoogleAuth} from 'google-auth-library';
 import {credentials} from '@grpc/grpc-js';
 
-import {diag, DiagConsoleLogger, DiagLogLevel} from '@opentelemetry/api';
-
 const PORT = parseInt(process.env.PORT || '8080');
 const app = express();
 
@@ -34,8 +32,6 @@ async function getAuthenticatedClient(): Promise<AuthClient> {
 
 // Express App that exports traces via gRPC with protobuf
 async function main() {
-  // TODO: Remove logging
-  diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
   const authenticatedClient: AuthClient = await getAuthenticatedClient();
 
   const sdk = new NodeSDK({

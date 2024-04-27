@@ -19,9 +19,6 @@ import {NodeSDK} from '@opentelemetry/sdk-node';
 import {OTLPTraceExporter} from '@opentelemetry/exporter-trace-otlp-proto';
 import {AuthClient, GoogleAuth} from 'google-auth-library';
 
-import {diag, DiagConsoleLogger, DiagLogLevel} from '@opentelemetry/api';
-import {Headers} from 'google-auth-library/build/src/auth/oauth2client';
-
 const PORT = parseInt(process.env.PORT || '8080');
 const app = express();
 
@@ -34,10 +31,8 @@ async function getAuthenticatedClient(): Promise<AuthClient> {
 
 // Express App that exports traces over HTTP with protobuf
 async function main() {
-  // TODO: Remove logging
-  diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
   const authenticatedClient: AuthClient = await getAuthenticatedClient();
-  const requestHeaders: Headers = await authenticatedClient.getRequestHeaders();
+  const requestHeaders = await authenticatedClient.getRequestHeaders();
 
   const sdk = new NodeSDK({
     traceExporter: new OTLPTraceExporter({
