@@ -16,6 +16,7 @@
 
 /*app.js*/
 const { trace } = require('@opentelemetry/api');
+const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
 const express = require('express');
 const { rollTheDice } = require('./dice.js');
 
@@ -28,24 +29,51 @@ const opentelemetry = require('@opentelemetry/sdk-node');
 const {
   OTLPTraceExporter,
 } = require('@opentelemetry/exporter-trace-otlp-http');
+const {GoogleAuth} = require('google-auth-library');
 
 async function main() {
-  async function authenticate() {
-    const {GoogleAuth} = require('google-auth-library');
+  diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
+  async function getAuthenticatedClient() {
     const auth = new GoogleAuth({
       scopes: 'https://www.googleapis.com/auth/cloud-platform',
     });
     const client = await auth.getClient();
-    const headers = await client.getRequestHeaders();
-    return headers
+    return client;
   }
 
-  authHeaders = await authenticate();
+  const authenticatedClient = await getAuthenticatedClient();
+  const authHeaders = await authenticatedClient.getRequestHeaders();
+
+  // Handle token refresh - not working
+  // authenticatedClient.refreshHandler = async () => {
+  //   console.log(`Token expired, current headers: ${otlpTraceExporter.headers}`)
+  //   const refreshedHeader = await authenticatedClient.getRequestHeaders();
+  //   const updatedHeaders = {
+  //     ...otlpTraceExporter.headers,
+  //     ...refreshedHeader,
+  //   };
+  //   otlpTraceExporter.headers = updatedHeaders
+  //   console.log(`Token refreshed, updated header: ${otlpTraceExporter.headers}`)
+  // }
+
+  authenticatedClient.on('tokens', (credentials) => {
+    console.log(`Tokens event: ${credentials}`)
+    const refreshHeader = {
+      "Authorization" : `Bearer ${credentials.access_token}`
+    };
+    const updatedHeaders = {
+      ...otlpTraceExporter.headers,
+      ...refreshHeader,
+    };
+    otlpTraceExporter.headers = updatedHeaders;
+  });
+
+  const otlpTraceExporter = new OTLPTraceExporter({
+    headers: authHeaders,
+  });
 
   const sdk = new opentelemetry.NodeSDK({
-    traceExporter: new OTLPTraceExporter({
-      headers: authHeaders,
-    }),
+    traceExporter: otlpTraceExporter,
   });
   sdk.start();
 
