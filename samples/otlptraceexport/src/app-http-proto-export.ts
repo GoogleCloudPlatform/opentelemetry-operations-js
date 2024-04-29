@@ -31,7 +31,7 @@ async function getAuthenticatedClient(): Promise<AuthClient> {
 
 // Express App that exports traces over HTTP with protobuf
 async function main() {
-  const authenticatedClient: AuthClient = await getAuthenticatedClient();
+  const authenticatedClient = await getAuthenticatedClient();
   const requestHeaders = await authenticatedClient.getRequestHeaders();
 
   const sdk = new NodeSDK({
