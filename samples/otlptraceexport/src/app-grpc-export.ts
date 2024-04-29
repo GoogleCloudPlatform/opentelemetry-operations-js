@@ -30,6 +30,7 @@ async function getAuthenticatedClient(): Promise<AuthClient> {
   return await auth.getClient();
 }
 
+// Express App that exports traces via gRPC with protobuf
 async function main() {
   const authenticatedClient: AuthClient = await getAuthenticatedClient();
 
