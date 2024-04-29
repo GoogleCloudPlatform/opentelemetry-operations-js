@@ -23,7 +23,7 @@ const PORT = parseInt(process.env.PORT || '8080');
 const app = express();
 
 async function getAuthenticatedClient(): Promise<AuthClient> {
-  const auth: GoogleAuth = new GoogleAuth({
+  const auth = new GoogleAuth({
     scopes: 'https://www.googleapis.com/auth/cloud-platform',
   });
   return await auth.getClient();
