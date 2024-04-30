@@ -34,5 +34,3 @@ export function rollTheDice(rolls: number, min: number, max: number) {
     return result;
   });
 }
-
-module.exports = {rollTheDice};
