@@ -21,7 +21,7 @@ export OTEL_EXPORTER_OTLP_ENDPOINT=<endpoint>
 
 # run the app - this starts app at port 8080
 # the start script uses gRPC to export
-cd samples/otlptracexport && npm run start
+cd samples/otlptraceexport && npm run start
 ```
 Alternate run scripts available:
  -  `npm run start-http-proto` - will start a server that will export traces using http/protobuf.
