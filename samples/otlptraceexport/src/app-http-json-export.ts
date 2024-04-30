@@ -1,4 +1,3 @@
-// Copyright OpenTelemetry Authors
 // Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,49 +11,42 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-/*app.js*/
-const { trace } = require('@opentelemetry/api');
-const express = require('express');
-const { rollTheDice } = require('./dice.js');
+import express, {Request, Response} from 'express';
+import {rollTheDice} from './dice';
 
-const tracer = trace.getTracer('dice-server', '0.1.0');
+import {NodeSDK} from '@opentelemetry/sdk-node';
+import {OTLPTraceExporter} from '@opentelemetry/exporter-trace-otlp-http';
+import {AuthClient, GoogleAuth} from 'google-auth-library';
 
 const PORT = parseInt(process.env.PORT || '8080');
 const app = express();
 
-const opentelemetry = require('@opentelemetry/sdk-node');
-const {
-  OTLPTraceExporter,
-} = require('@opentelemetry/exporter-trace-otlp-http');
+async function getAuthenticatedClient(): Promise<AuthClient> {
+  const auth = new GoogleAuth({
+    scopes: 'https://www.googleapis.com/auth/cloud-platform',
+  });
+  return await auth.getClient();
+}
 
+// Express App that exports traces over HTTP with JSON
 async function main() {
-  async function authenticate() {
-    const {GoogleAuth} = require('google-auth-library');
-    const auth = new GoogleAuth({
-      scopes: 'https://www.googleapis.com/auth/cloud-platform',
-    });
-    const client = await auth.getClient();
-    const headers = await client.getRequestHeaders();
-    return headers
-  }
+  const authenticatedClient = await getAuthenticatedClient();
+  const requestHeaders = await authenticatedClient.getRequestHeaders();
 
-  authHeaders = await authenticate();
-
-  const sdk = new opentelemetry.NodeSDK({
+  const sdk = new NodeSDK({
     traceExporter: new OTLPTraceExporter({
-      headers: authHeaders,
+      headers: requestHeaders,
     }),
   });
   sdk.start();
 
-  app.get('/rolldice', (req, res) => {
+  app.get('/rolldice', (req: Request, res: Response) => {
     const rolls = req.query.rolls ? parseInt(req.query.rolls.toString()) : NaN;
     if (isNaN(rolls)) {
       res
-          .status(400)
-          .send("Request parameter 'rolls' is missing or not a number.");
+        .status(400)
+        .send("Request parameter 'rolls' is missing or not a number.");
       return;
     }
     res.send(JSON.stringify(rollTheDice(rolls, 1, 6)));

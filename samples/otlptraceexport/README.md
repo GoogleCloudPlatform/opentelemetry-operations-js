@@ -3,6 +3,7 @@
 This example shows how to send traces to an OTLP *(OpenTelemetry Protocol)* endpoint that is protected by GCP authentication. The sample showcases the trace export using:
  - gRPC
  - http with protobuf
+ - http with JSON
 
 ## Installation
 
@@ -24,6 +25,7 @@ cd samples/otlptracexport && npm run start
 ```
 Alternate run scripts available:
  -  `npm run start-http-proto` - will start a server that will export traces using http/protobuf.
+ -  `npm run start-http-json` - will start a server that will export traces using http/json.
 
 ## Sending Requests to the Application
 
