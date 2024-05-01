@@ -12,7 +12,9 @@
     "lint": "gts lint",
     "clean": "gts clean",
     "fix": "gts fix",
-    "compile": "tsc"
+    "compile": "tsc",
+    "test": "",
+    "pretest": "npm run compile"
   },
   "keywords": [],
   "dependencies": {
