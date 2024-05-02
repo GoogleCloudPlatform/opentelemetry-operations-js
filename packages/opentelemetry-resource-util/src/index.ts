@@ -15,8 +15,29 @@
 import {Attributes, AttributeValue} from '@opentelemetry/api';
 import {IResource} from '@opentelemetry/resources';
 import {
-  SemanticResourceAttributes,
-  CloudPlatformValues,
+  CLOUDPLATFORMVALUES_AWS_EC2,
+  CLOUDPLATFORMVALUES_GCP_APP_ENGINE,
+  CLOUDPLATFORMVALUES_GCP_CLOUD_FUNCTIONS,
+  CLOUDPLATFORMVALUES_GCP_CLOUD_RUN,
+  CLOUDPLATFORMVALUES_GCP_COMPUTE_ENGINE,
+  CLOUDPLATFORMVALUES_GCP_KUBERNETES_ENGINE,
+  SEMRESATTRS_CLOUD_ACCOUNT_ID,
+  SEMRESATTRS_CLOUD_AVAILABILITY_ZONE,
+  SEMRESATTRS_CLOUD_PLATFORM,
+  SEMRESATTRS_CLOUD_REGION,
+  SEMRESATTRS_FAAS_INSTANCE,
+  SEMRESATTRS_FAAS_NAME,
+  SEMRESATTRS_FAAS_VERSION,
+  SEMRESATTRS_HOST_ID,
+  SEMRESATTRS_HOST_NAME,
+  SEMRESATTRS_K8S_CLUSTER_NAME,
+  SEMRESATTRS_K8S_CONTAINER_NAME,
+  SEMRESATTRS_K8S_NAMESPACE_NAME,
+  SEMRESATTRS_K8S_NODE_NAME,
+  SEMRESATTRS_K8S_POD_NAME,
+  SEMRESATTRS_SERVICE_INSTANCE_ID,
+  SEMRESATTRS_SERVICE_NAME,
+  SEMRESATTRS_SERVICE_NAMESPACE,
 } from '@opentelemetry/semantic-conventions';
 
 const AWS_ACCOUNT = 'aws_account';
@@ -60,124 +81,129 @@ const UNKNOWN_SERVICE_PREFIX = 'unknown_service';
  */
 const MAPPINGS = {
   [GCE_INSTANCE]: {
-    [ZONE]: {otelKeys: [SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE]},
-    [INSTANCE_ID]: {otelKeys: [SemanticResourceAttributes.HOST_ID]},
+    [ZONE]: {
+      otelKeys: [SEMRESATTRS_CLOUD_AVAILABILITY_ZONE],
+    },
+    [INSTANCE_ID]: {otelKeys: [SEMRESATTRS_HOST_ID]},
   },
   [K8S_CONTAINER]: {
     [LOCATION]: {
-      otelKeys: [
-        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
-        SemanticResourceAttributes.CLOUD_REGION,
-      ],
+      otelKeys: [SEMRESATTRS_CLOUD_AVAILABILITY_ZONE, SEMRESATTRS_CLOUD_REGION],
     },
-    [CLUSTER_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_CLUSTER_NAME]},
+    [CLUSTER_NAME]: {
+      otelKeys: [SEMRESATTRS_K8S_CLUSTER_NAME],
+    },
     [NAMESPACE_NAME]: {
-      otelKeys: [SemanticResourceAttributes.K8S_NAMESPACE_NAME],
+      otelKeys: [SEMRESATTRS_K8S_NAMESPACE_NAME],
     },
-    [POD_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_POD_NAME]},
+    [POD_NAME]: {
+      otelKeys: [SEMRESATTRS_K8S_POD_NAME],
+    },
     [CONTAINER_NAME]: {
-      otelKeys: [SemanticResourceAttributes.K8S_CONTAINER_NAME],
+      otelKeys: [SEMRESATTRS_K8S_CONTAINER_NAME],
     },
   },
   [K8S_POD]: {
     [LOCATION]: {
-      otelKeys: [
-        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
-        SemanticResourceAttributes.CLOUD_REGION,
-      ],
+      otelKeys: [SEMRESATTRS_CLOUD_AVAILABILITY_ZONE, SEMRESATTRS_CLOUD_REGION],
     },
-    [CLUSTER_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_CLUSTER_NAME]},
+    [CLUSTER_NAME]: {
+      otelKeys: [SEMRESATTRS_K8S_CLUSTER_NAME],
+    },
     [NAMESPACE_NAME]: {
-      otelKeys: [SemanticResourceAttributes.K8S_NAMESPACE_NAME],
+      otelKeys: [SEMRESATTRS_K8S_NAMESPACE_NAME],
     },
-    [POD_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_POD_NAME]},
+    [POD_NAME]: {
+      otelKeys: [SEMRESATTRS_K8S_POD_NAME],
+    },
   },
   [K8S_NODE]: {
     [LOCATION]: {
-      otelKeys: [
-        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
-        SemanticResourceAttributes.CLOUD_REGION,
-      ],
+      otelKeys: [SEMRESATTRS_CLOUD_AVAILABILITY_ZONE, SEMRESATTRS_CLOUD_REGION],
     },
-    [CLUSTER_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_CLUSTER_NAME]},
-    [NODE_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_NODE_NAME]},
+    [CLUSTER_NAME]: {
+      otelKeys: [SEMRESATTRS_K8S_CLUSTER_NAME],
+    },
+    [NODE_NAME]: {
+      otelKeys: [SEMRESATTRS_K8S_NODE_NAME],
+    },
   },
   [K8S_CLUSTER]: {
     [LOCATION]: {
-      otelKeys: [
-        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
-        SemanticResourceAttributes.CLOUD_REGION,
-      ],
+      otelKeys: [SEMRESATTRS_CLOUD_AVAILABILITY_ZONE, SEMRESATTRS_CLOUD_REGION],
     },
-    [CLUSTER_NAME]: {otelKeys: [SemanticResourceAttributes.K8S_CLUSTER_NAME]},
+    [CLUSTER_NAME]: {
+      otelKeys: [SEMRESATTRS_K8S_CLUSTER_NAME],
+    },
   },
   [AWS_EC2_INSTANCE]: {
-    [INSTANCE_ID]: {otelKeys: [SemanticResourceAttributes.HOST_ID]},
+    [INSTANCE_ID]: {otelKeys: [SEMRESATTRS_HOST_ID]},
     [REGION]: {
-      otelKeys: [
-        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
-        SemanticResourceAttributes.CLOUD_REGION,
-      ],
+      otelKeys: [SEMRESATTRS_CLOUD_AVAILABILITY_ZONE, SEMRESATTRS_CLOUD_REGION],
     },
-    [AWS_ACCOUNT]: {otelKeys: [SemanticResourceAttributes.CLOUD_ACCOUNT_ID]},
+    [AWS_ACCOUNT]: {
+      otelKeys: [SEMRESATTRS_CLOUD_ACCOUNT_ID],
+    },
   },
   [CLOUD_RUN_REVISION]: {
-    [LOCATION]: {otelKeys: [SemanticResourceAttributes.CLOUD_REGION]},
-    [SERVICE_NAME]: {otelKeys: [SemanticResourceAttributes.FAAS_NAME]},
-    [CONFIGURATION_NAME]: {otelKeys: [SemanticResourceAttributes.FAAS_NAME]},
-    [REVISION_NAME]: {otelKeys: [SemanticResourceAttributes.FAAS_VERSION]},
+    [LOCATION]: {
+      otelKeys: [SEMRESATTRS_CLOUD_REGION],
+    },
+    [SERVICE_NAME]: {
+      otelKeys: [SEMRESATTRS_FAAS_NAME],
+    },
+    [CONFIGURATION_NAME]: {
+      otelKeys: [SEMRESATTRS_FAAS_NAME],
+    },
+    [REVISION_NAME]: {
+      otelKeys: [SEMRESATTRS_FAAS_VERSION],
+    },
   },
   [CLOUD_FUNCTION]: {
-    [REGION]: {otelKeys: [SemanticResourceAttributes.CLOUD_REGION]},
-    [FUNCTION_NAME]: {otelKeys: [SemanticResourceAttributes.FAAS_NAME]},
+    [REGION]: {otelKeys: [SEMRESATTRS_CLOUD_REGION]},
+    [FUNCTION_NAME]: {
+      otelKeys: [SEMRESATTRS_FAAS_NAME],
+    },
   },
   [GAE_INSTANCE]: {
     [LOCATION]: {
-      otelKeys: [
-        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
-        SemanticResourceAttributes.CLOUD_REGION,
-      ],
+      otelKeys: [SEMRESATTRS_CLOUD_AVAILABILITY_ZONE, SEMRESATTRS_CLOUD_REGION],
     },
-    [GAE_MODULE_ID]: {otelKeys: [SemanticResourceAttributes.FAAS_NAME]},
-    [GAE_VERSION_ID]: {otelKeys: [SemanticResourceAttributes.FAAS_VERSION]},
-    [INSTANCE_ID]: {otelKeys: [SemanticResourceAttributes.FAAS_INSTANCE]},
+    [GAE_MODULE_ID]: {
+      otelKeys: [SEMRESATTRS_FAAS_NAME],
+    },
+    [GAE_VERSION_ID]: {
+      otelKeys: [SEMRESATTRS_FAAS_VERSION],
+    },
+    [INSTANCE_ID]: {
+      otelKeys: [SEMRESATTRS_FAAS_INSTANCE],
+    },
   },
   [GENERIC_TASK]: {
     [LOCATION]: {
-      otelKeys: [
-        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
-        SemanticResourceAttributes.CLOUD_REGION,
-      ],
+      otelKeys: [SEMRESATTRS_CLOUD_AVAILABILITY_ZONE, SEMRESATTRS_CLOUD_REGION],
       fallback: 'global',
     },
-    [NAMESPACE]: {otelKeys: [SemanticResourceAttributes.SERVICE_NAMESPACE]},
+    [NAMESPACE]: {
+      otelKeys: [SEMRESATTRS_SERVICE_NAMESPACE],
+    },
     [JOB]: {
-      otelKeys: [
-        SemanticResourceAttributes.SERVICE_NAME,
-        SemanticResourceAttributes.FAAS_NAME,
-      ],
+      otelKeys: [SEMRESATTRS_SERVICE_NAME, SEMRESATTRS_FAAS_NAME],
     },
     [TASK_ID]: {
-      otelKeys: [
-        SemanticResourceAttributes.SERVICE_INSTANCE_ID,
-        SemanticResourceAttributes.FAAS_INSTANCE,
-      ],
+      otelKeys: [SEMRESATTRS_SERVICE_INSTANCE_ID, SEMRESATTRS_FAAS_INSTANCE],
     },
   },
   [GENERIC_NODE]: {
     [LOCATION]: {
-      otelKeys: [
-        SemanticResourceAttributes.CLOUD_AVAILABILITY_ZONE,
-        SemanticResourceAttributes.CLOUD_REGION,
-      ],
+      otelKeys: [SEMRESATTRS_CLOUD_AVAILABILITY_ZONE, SEMRESATTRS_CLOUD_REGION],
       fallback: 'global',
     },
-    [NAMESPACE]: {otelKeys: [SemanticResourceAttributes.SERVICE_NAMESPACE]},
+    [NAMESPACE]: {
+      otelKeys: [SEMRESATTRS_SERVICE_NAMESPACE],
+    },
     [NODE_ID]: {
-      otelKeys: [
-        SemanticResourceAttributes.HOST_ID,
-        SemanticResourceAttributes.HOST_NAME,
-      ],
+      otelKeys: [SEMRESATTRS_HOST_ID, SEMRESATTRS_HOST_NAME],
     },
   },
 } as const;
@@ -222,44 +248,43 @@ export function mapOtelResourceToMonitoredResource(
   includeUnsupportedResources = false
 ): MonitoredResource {
   const attrs = resource.attributes;
-  const platform = attrs[SemanticResourceAttributes.CLOUD_PLATFORM];
+  const platform = attrs[SEMRESATTRS_CLOUD_PLATFORM];
 
   let mr: MonitoredResource;
-  if (platform === CloudPlatformValues.GCP_COMPUTE_ENGINE) {
+  if (platform === CLOUDPLATFORMVALUES_GCP_COMPUTE_ENGINE) {
     mr = createMonitoredResource(GCE_INSTANCE, attrs);
-  } else if (platform === CloudPlatformValues.GCP_KUBERNETES_ENGINE) {
-    if (SemanticResourceAttributes.K8S_CONTAINER_NAME in attrs) {
+  } else if (platform === CLOUDPLATFORMVALUES_GCP_KUBERNETES_ENGINE) {
+    if (SEMRESATTRS_K8S_CONTAINER_NAME in attrs) {
       mr = createMonitoredResource(K8S_CONTAINER, attrs);
-    } else if (SemanticResourceAttributes.K8S_POD_NAME in attrs) {
+    } else if (SEMRESATTRS_K8S_POD_NAME in attrs) {
       mr = createMonitoredResource(K8S_POD, attrs);
-    } else if (SemanticResourceAttributes.K8S_NODE_NAME in attrs) {
+    } else if (SEMRESATTRS_K8S_NODE_NAME in attrs) {
       mr = createMonitoredResource(K8S_NODE, attrs);
     } else {
       mr = createMonitoredResource(K8S_CLUSTER, attrs);
     }
-  } else if (platform === CloudPlatformValues.GCP_APP_ENGINE) {
+  } else if (platform === CLOUDPLATFORMVALUES_GCP_APP_ENGINE) {
     mr = createMonitoredResource(GAE_INSTANCE, attrs);
-  } else if (platform === CloudPlatformValues.AWS_EC2) {
+  } else if (platform === CLOUDPLATFORMVALUES_AWS_EC2) {
     mr = createMonitoredResource(AWS_EC2_INSTANCE, attrs);
   }
   // Cloud Run and Cloud Functions are not writeable for custom metrics yet
   else if (
     includeUnsupportedResources &&
-    platform === CloudPlatformValues.GCP_CLOUD_RUN
+    platform === CLOUDPLATFORMVALUES_GCP_CLOUD_RUN
   ) {
     mr = createMonitoredResource(CLOUD_RUN_REVISION, attrs);
   } else if (
     includeUnsupportedResources &&
-    platform === CloudPlatformValues.GCP_CLOUD_FUNCTIONS
+    platform === CLOUDPLATFORMVALUES_GCP_CLOUD_FUNCTIONS
   ) {
     mr = createMonitoredResource(CLOUD_FUNCTION, attrs);
   } else {
     // fallback to generic_task
     if (
-      (SemanticResourceAttributes.SERVICE_NAME in attrs ||
-        SemanticResourceAttributes.FAAS_NAME in attrs) &&
-      (SemanticResourceAttributes.SERVICE_INSTANCE_ID in attrs ||
-        SemanticResourceAttributes.FAAS_INSTANCE in attrs)
+      (SEMRESATTRS_SERVICE_NAME in attrs || SEMRESATTRS_FAAS_NAME in attrs) &&
+      (SEMRESATTRS_SERVICE_INSTANCE_ID in attrs ||
+        SEMRESATTRS_FAAS_INSTANCE in attrs)
     ) {
       mr = createMonitoredResource(GENERIC_TASK, attrs);
     } else {
@@ -293,11 +318,11 @@ function createMonitoredResource(
 
     if (
       mrValue === undefined &&
-      mapConfig.otelKeys.includes(SemanticResourceAttributes.SERVICE_NAME)
+      mapConfig.otelKeys.includes(SEMRESATTRS_SERVICE_NAME)
     ) {
       // The service name started with unknown_service, was ignored above, and we couldn't find
       // a better value for mrValue.
-      mrValue = resourceAttrs[SemanticResourceAttributes.SERVICE_NAME];
+      mrValue = resourceAttrs[SEMRESATTRS_SERVICE_NAME];
     }
     if (mrValue === undefined) {
       mrValue = mapConfig.fallback ?? '';
