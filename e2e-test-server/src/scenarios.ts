@@ -19,6 +19,10 @@ import {
   BatchSpanProcessor,
   TracerConfig,
 } from '@opentelemetry/sdk-trace-base';
+import {
+  MeterProvider,
+  PeriodicExportingMetricReader,
+} from '@opentelemetry/sdk-metrics';
 import {AlwaysOnSampler} from '@opentelemetry/sdk-trace-base';
 import {
   Resource,
@@ -29,6 +33,7 @@ import {
   TraceExporter,
   TraceExporterOptions,
 } from '@google-cloud/opentelemetry-cloud-trace-exporter';
+import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import {GcpDetectorSync} from '@google-cloud/opentelemetry-resource-util';
 import * as constants from './constants';
 import {context, SpanKind} from '@opentelemetry/api';
@@ -121,6 +126,18 @@ async function complexTrace(request: Request): Promise<Response> {
 }
 
 async function detectResource(request: Request): Promise<Response> {
+  const resource = detectResourcesSync({
+    detectors: [new GcpDetectorSync(), envDetector],
+  });
+  const metricExporter = new MetricExporter({projectId: constants.PROJECT_ID});
+  const mp = new MeterProvider({
+    readers: [new PeriodicExportingMetricReader({exporter: metricExporter})],
+    resource,
+  });
+  mp.getMeter('foo').createCounter('countertest').add(10);
+  await mp.forceFlush();
+  await mp.shutdown();
+
   return await withTracer(
     async (tracer: Tracer): Promise<Response> => {
       const span = tracer.startSpan('resourceDetectionTrace', {
