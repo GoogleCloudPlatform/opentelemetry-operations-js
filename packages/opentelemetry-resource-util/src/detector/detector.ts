@@ -13,18 +13,33 @@
 // limitations under the License.
 
 import {
-  SemanticResourceAttributes as Semconv,
-  CloudPlatformValues,
-  CloudProviderValues,
+  CLOUDPLATFORMVALUES_GCP_APP_ENGINE,
+  CLOUDPLATFORMVALUES_GCP_CLOUD_FUNCTIONS,
+  CLOUDPLATFORMVALUES_GCP_CLOUD_RUN,
+  CLOUDPLATFORMVALUES_GCP_COMPUTE_ENGINE,
+  CLOUDPLATFORMVALUES_GCP_KUBERNETES_ENGINE,
+  CLOUDPROVIDERVALUES_GCP,
+  SEMRESATTRS_CLOUD_ACCOUNT_ID,
+  SEMRESATTRS_CLOUD_AVAILABILITY_ZONE,
+  SEMRESATTRS_CLOUD_PLATFORM,
+  SEMRESATTRS_CLOUD_PROVIDER,
+  SEMRESATTRS_CLOUD_REGION,
+  SEMRESATTRS_FAAS_INSTANCE,
+  SEMRESATTRS_FAAS_NAME,
+  SEMRESATTRS_FAAS_VERSION,
+  SEMRESATTRS_HOST_ID,
+  SEMRESATTRS_HOST_NAME,
+  SEMRESATTRS_HOST_TYPE,
+  SEMRESATTRS_K8S_CLUSTER_NAME,
 } from '@opentelemetry/semantic-conventions';
 
+import {Attributes} from '@opentelemetry/api';
 import {Detector, DetectorSync, Resource} from '@opentelemetry/resources';
-import * as gce from './gce';
-import * as gke from './gke';
+import * as metadata from 'gcp-metadata';
 import * as faas from './faas';
 import * as gae from './gae';
-import * as metadata from 'gcp-metadata';
-import {Attributes} from '@opentelemetry/api';
+import * as gce from './gce';
+import * as gke from './gke';
 
 async function detect(): Promise<Resource> {
   if (!(await metadata.isAvailable())) {
@@ -56,12 +71,12 @@ async function gkeResource(): Promise<Resource> {
   ]);
 
   return await makeResource({
-    [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_KUBERNETES_ENGINE,
+    [SEMRESATTRS_CLOUD_PLATFORM]: CLOUDPLATFORMVALUES_GCP_KUBERNETES_ENGINE,
     [zoneOrRegion.type === 'zone'
-      ? Semconv.CLOUD_AVAILABILITY_ZONE
-      : Semconv.CLOUD_REGION]: zoneOrRegion.value,
-    [Semconv.K8S_CLUSTER_NAME]: k8sClusterName,
-    [Semconv.HOST_ID]: hostId,
+      ? SEMRESATTRS_CLOUD_AVAILABILITY_ZONE
+      : SEMRESATTRS_CLOUD_REGION]: zoneOrRegion.value,
+    [SEMRESATTRS_K8S_CLUSTER_NAME]: k8sClusterName,
+    [SEMRESATTRS_HOST_ID]: hostId,
   });
 }
 
@@ -75,11 +90,11 @@ async function cloudRunResource(): Promise<Resource> {
     ]);
 
   return await makeResource({
-    [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_RUN,
-    [Semconv.FAAS_NAME]: faasName,
-    [Semconv.FAAS_VERSION]: faasVersion,
-    [Semconv.FAAS_INSTANCE]: faasInstance,
-    [Semconv.CLOUD_REGION]: faasCloudRegion,
+    [SEMRESATTRS_CLOUD_PLATFORM]: CLOUDPLATFORMVALUES_GCP_CLOUD_RUN,
+    [SEMRESATTRS_FAAS_NAME]: faasName,
+    [SEMRESATTRS_FAAS_VERSION]: faasVersion,
+    [SEMRESATTRS_FAAS_INSTANCE]: faasInstance,
+    [SEMRESATTRS_CLOUD_REGION]: faasCloudRegion,
   });
 }
 
@@ -93,11 +108,11 @@ async function cloudFunctionsResource(): Promise<Resource> {
     ]);
 
   return await makeResource({
-    [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_CLOUD_FUNCTIONS,
-    [Semconv.FAAS_NAME]: faasName,
-    [Semconv.FAAS_VERSION]: faasVersion,
-    [Semconv.FAAS_INSTANCE]: faasInstance,
-    [Semconv.CLOUD_REGION]: faasCloudRegion,
+    [SEMRESATTRS_CLOUD_PLATFORM]: CLOUDPLATFORMVALUES_GCP_CLOUD_FUNCTIONS,
+    [SEMRESATTRS_FAAS_NAME]: faasName,
+    [SEMRESATTRS_FAAS_VERSION]: faasVersion,
+    [SEMRESATTRS_FAAS_INSTANCE]: faasInstance,
+    [SEMRESATTRS_CLOUD_REGION]: faasCloudRegion,
   });
 }
 
@@ -118,12 +133,12 @@ async function gaeResource(): Promise<Resource> {
   ]);
 
   return await makeResource({
-    [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_APP_ENGINE,
-    [Semconv.FAAS_NAME]: faasName,
-    [Semconv.FAAS_VERSION]: faasVersion,
-    [Semconv.FAAS_INSTANCE]: faasInstance,
-    [Semconv.CLOUD_AVAILABILITY_ZONE]: zone,
-    [Semconv.CLOUD_REGION]: region,
+    [SEMRESATTRS_CLOUD_PLATFORM]: CLOUDPLATFORMVALUES_GCP_APP_ENGINE,
+    [SEMRESATTRS_FAAS_NAME]: faasName,
+    [SEMRESATTRS_FAAS_VERSION]: faasVersion,
+    [SEMRESATTRS_FAAS_INSTANCE]: faasInstance,
+    [SEMRESATTRS_CLOUD_AVAILABILITY_ZONE]: zone,
+    [SEMRESATTRS_CLOUD_REGION]: region,
   });
 }
 
@@ -136,12 +151,12 @@ async function gceResource(): Promise<Resource> {
   ]);
 
   return await makeResource({
-    [Semconv.CLOUD_PLATFORM]: CloudPlatformValues.GCP_COMPUTE_ENGINE,
-    [Semconv.CLOUD_AVAILABILITY_ZONE]: zoneAndRegion.zone,
-    [Semconv.CLOUD_REGION]: zoneAndRegion.region,
-    [Semconv.HOST_TYPE]: hostType,
-    [Semconv.HOST_ID]: hostId,
-    [Semconv.HOST_NAME]: hostName,
+    [SEMRESATTRS_CLOUD_PLATFORM]: CLOUDPLATFORMVALUES_GCP_COMPUTE_ENGINE,
+    [SEMRESATTRS_CLOUD_AVAILABILITY_ZONE]: zoneAndRegion.zone,
+    [SEMRESATTRS_CLOUD_REGION]: zoneAndRegion.region,
+    [SEMRESATTRS_HOST_TYPE]: hostType,
+    [SEMRESATTRS_HOST_ID]: hostId,
+    [SEMRESATTRS_HOST_NAME]: hostName,
   });
 }
 
@@ -149,8 +164,8 @@ async function makeResource(attrs: Attributes): Promise<Resource> {
   const project = await metadata.project<string>('project-id');
 
   return new Resource({
-    [Semconv.CLOUD_PROVIDER]: CloudProviderValues.GCP,
-    [Semconv.CLOUD_ACCOUNT_ID]: project,
+    [SEMRESATTRS_CLOUD_PROVIDER]: CLOUDPROVIDERVALUES_GCP,
+    [SEMRESATTRS_CLOUD_ACCOUNT_ID]: project,
     ...attrs,
   });
 }
