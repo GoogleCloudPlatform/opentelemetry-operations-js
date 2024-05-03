@@ -88,9 +88,12 @@ describe('App Engine (GAE)', () => {
 
   describe('GAE standard zone and region', () => {
     it('detects zone', async () => {
-      metadataStub.instance.withArgs('zone').resolves('us-east4-b');
+      metadataStub.instance
+        .withArgs('zone')
+        .resolves('projects/233510669999/zones/us15');
+
       const zone = await gae.standardAvailabilityZone();
-      assert.strict(zone, 'us-east4-b');
+      assert.strictEqual(zone, 'us15');
     });
 
     it('detects region', async () => {
