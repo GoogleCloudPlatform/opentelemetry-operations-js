@@ -123,10 +123,8 @@ async function gaeResource(): Promise<Resource> {
       gae.standardAvailabilityZone(),
       gae.standardCloudRegion(),
     ]);
-    console.log('Got GAE standard zone=%s and region=%s', zone, region);
   } else {
     ({zone, region} = await gce.availabilityZoneAndRegion());
-    console.log('Got GAE flex zone=%s and region=%s', zone, region);
   }
   const [faasName, faasVersion, faasInstance] = await Promise.all([
     gae.serviceName(),
