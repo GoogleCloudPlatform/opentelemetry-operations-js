@@ -18,7 +18,7 @@ import {rollTheDice} from './dice';
 import {NodeSDK} from '@opentelemetry/sdk-node';
 import {OTLPTraceExporter} from '@opentelemetry/exporter-trace-otlp-grpc';
 import {AuthClient, GoogleAuth} from 'google-auth-library';
-import {credentials} from '@grpc/grpc-js';
+import {CallCredentials, ChannelCredentials} from '@grpc/grpc-js';
 
 const PORT = parseInt(process.env.PORT || '8080');
 const app = express();
@@ -33,12 +33,12 @@ async function getAuthenticatedClient(): Promise<AuthClient> {
 // Express App that exports traces via gRPC with protobuf
 async function main() {
   const authenticatedClient: AuthClient = await getAuthenticatedClient();
+  const sslCreds: ChannelCredentials = ChannelCredentials.createSsl();
 
   const sdk = new NodeSDK({
     traceExporter: new OTLPTraceExporter({
-      credentials: credentials.combineChannelCredentials(
-        credentials.createSsl(),
-        credentials.createFromGoogleCredential(authenticatedClient)
+      credentials: sslCreds.compose(
+        CallCredentials.createFromGoogleCredential(authenticatedClient)
       ),
     }),
   });
