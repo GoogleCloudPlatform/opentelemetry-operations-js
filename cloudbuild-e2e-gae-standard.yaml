@@ -38,7 +38,7 @@ steps:
 
   # Run the test
   - name: $_TEST_RUNNER_IMAGE
-    id: run-tests-cloud-functions
+    id: run-tests-gae-standard
     dir: /
     env: ["PROJECT_ID=$PROJECT_ID"]
     args:
