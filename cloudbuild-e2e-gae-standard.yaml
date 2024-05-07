@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 # limitations under the License.
 
 steps:
-  # Cloud Functions doesn't play nice with lerna monorepos, so bundle in the local dependencies
+  # GAE standard doesn't play nice with lerna monorepos, so bundle in the local dependencies
   # before creating the zip file.
   - name: node:16-alpine
     id: build
@@ -28,15 +28,13 @@ steps:
 
       # builds a small self contained bundle with @vercel/ncc under dist/
       cd e2e-test-server
-      # --external will avoid bundling functions-framework. Needed so we only have one copy of
-      # global variables in that package when GCF executes it.
-      npm run bundle -- --external @google-cloud/functions-framework
+      npm run bundle
 
-      # create a new fake package.json in dist/ and zip it up into a source zip for Cloud
-      # Functions
+      # create a new fake package.json in dist/ and zip it up into a source zip for GAE
+      # standard
       cd dist
       cp ../fake.package.json package.json
-      zip -qr function-source.zip .
+      zip -qr appsource.zip .
 
   # Run the test
   - name: $_TEST_RUNNER_IMAGE
@@ -44,13 +42,12 @@ steps:
     dir: /
     env: ["PROJECT_ID=$PROJECT_ID"]
     args:
-      - cloud-functions-gen2
-      - --functionsource=/workspace/e2e-test-server/dist/function-source.zip
-      - --runtime=nodejs16
-      - --entrypoint=cloudFunctionHandler
+      - gae-standard
+      - --runtime=nodejs20
+      - --appsource=/workspace/e2e-test-server/dist/appsource.zip
 
 logsBucket: gs://opentelemetry-ops-e2e-cloud-build-logs
 timeout: 20m
 substitutions:
-  _TEST_RUNNER_IMAGE: gcr.io/${PROJECT_ID}/opentelemetry-operations-e2e-testing:0.19.0
+  _TEST_RUNNER_IMAGE: gcr.io/${PROJECT_ID}/opentelemetry-operations-e2e-testing:gae-standard-test-0
   _TEST_SERVER_IMAGE: gcr.io/${PROJECT_ID}/opentelemetry-operations-js-e2e-test-server:${SHORT_SHA}
