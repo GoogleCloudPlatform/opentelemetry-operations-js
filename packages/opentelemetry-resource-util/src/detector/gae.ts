@@ -76,7 +76,9 @@ export async function flexAvailabilityZoneAndRegion(): Promise<{
  * true before calling this, or it may throw exceptions.
  */
 export async function standardAvailabilityZone(): Promise<string> {
-  return await metadata.instance<string>(ZONE_METADATA_ATTR);
+  const zone = await metadata.instance<string>(ZONE_METADATA_ATTR);
+  // zone is of the form "projects/233510669999/zones/us15"
+  return zone.slice(zone.lastIndexOf('/') + 1);
 }
 
 /**
