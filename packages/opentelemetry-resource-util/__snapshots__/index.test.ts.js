@@ -195,6 +195,30 @@ exports['mapOtelResourceToMonitoredResource should map to k8s_cluster 1'] = {
   }
 }
 
+exports['mapOtelResourceToMonitoredResource should map to k8s_cluster on aws_eks 1'] = {
+  "type": "k8s_cluster",
+  "labels": {
+    "location": "myavailzone",
+    "cluster_name": "mycluster"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_cluster on azure_aks 1'] = {
+  "type": "k8s_cluster",
+  "labels": {
+    "location": "myavailzone",
+    "cluster_name": "mycluster"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_cluster on non-cloud 1'] = {
+  "type": "k8s_cluster",
+  "labels": {
+    "location": "myavailzone",
+    "cluster_name": "mycluster"
+  }
+}
+
 exports['mapOtelResourceToMonitoredResource should map to k8s_cluster with region fallback 1'] = {
   "type": "k8s_cluster",
   "labels": {
@@ -203,7 +227,64 @@ exports['mapOtelResourceToMonitoredResource should map to k8s_cluster with regio
   }
 }
 
+exports['mapOtelResourceToMonitoredResource should map to k8s_cluster with region fallback on aws_eks 1'] = {
+  "type": "k8s_cluster",
+  "labels": {
+    "location": "myregion",
+    "cluster_name": "mycluster"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_cluster with region fallback on azure_aks 1'] = {
+  "type": "k8s_cluster",
+  "labels": {
+    "location": "myregion",
+    "cluster_name": "mycluster"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_cluster with region fallback on non-cloud 1'] = {
+  "type": "k8s_cluster",
+  "labels": {
+    "location": "myregion",
+    "cluster_name": "mycluster"
+  }
+}
+
 exports['mapOtelResourceToMonitoredResource should map to k8s_container 1'] = {
+  "type": "k8s_container",
+  "labels": {
+    "location": "myavailzone",
+    "cluster_name": "mycluster",
+    "namespace_name": "myns",
+    "pod_name": "mypod",
+    "container_name": "mycontainer"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_container on aws_eks 1'] = {
+  "type": "k8s_container",
+  "labels": {
+    "location": "myavailzone",
+    "cluster_name": "mycluster",
+    "namespace_name": "myns",
+    "pod_name": "mypod",
+    "container_name": "mycontainer"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_container on azure_aks 1'] = {
+  "type": "k8s_container",
+  "labels": {
+    "location": "myavailzone",
+    "cluster_name": "mycluster",
+    "namespace_name": "myns",
+    "pod_name": "mypod",
+    "container_name": "mycontainer"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_container on non-cloud 1'] = {
   "type": "k8s_container",
   "labels": {
     "location": "myavailzone",
@@ -225,6 +306,39 @@ exports['mapOtelResourceToMonitoredResource should map to k8s_container with reg
   }
 }
 
+exports['mapOtelResourceToMonitoredResource should map to k8s_container with region fallback on aws_eks 1'] = {
+  "type": "k8s_container",
+  "labels": {
+    "location": "myregion",
+    "cluster_name": "mycluster",
+    "namespace_name": "myns",
+    "pod_name": "mypod",
+    "container_name": "mycontainer"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_container with region fallback on azure_aks 1'] = {
+  "type": "k8s_container",
+  "labels": {
+    "location": "myregion",
+    "cluster_name": "mycluster",
+    "namespace_name": "myns",
+    "pod_name": "mypod",
+    "container_name": "mycontainer"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_container with region fallback on non-cloud 1'] = {
+  "type": "k8s_container",
+  "labels": {
+    "location": "myregion",
+    "cluster_name": "mycluster",
+    "namespace_name": "myns",
+    "pod_name": "mypod",
+    "container_name": "mycontainer"
+  }
+}
+
 exports['mapOtelResourceToMonitoredResource should map to k8s_node 1'] = {
   "type": "k8s_node",
   "labels": {
@@ -234,7 +348,61 @@ exports['mapOtelResourceToMonitoredResource should map to k8s_node 1'] = {
   }
 }
 
+exports['mapOtelResourceToMonitoredResource should map to k8s_node on aws_eks 1'] = {
+  "type": "k8s_node",
+  "labels": {
+    "location": "myavailzone",
+    "cluster_name": "mycluster",
+    "node_name": "mynode"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_node on azure_aks 1'] = {
+  "type": "k8s_node",
+  "labels": {
+    "location": "myavailzone",
+    "cluster_name": "mycluster",
+    "node_name": "mynode"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_node on non-cloud 1'] = {
+  "type": "k8s_node",
+  "labels": {
+    "location": "myavailzone",
+    "cluster_name": "mycluster",
+    "node_name": "mynode"
+  }
+}
+
 exports['mapOtelResourceToMonitoredResource should map to k8s_node with region fallback 1'] = {
+  "type": "k8s_node",
+  "labels": {
+    "location": "myregion",
+    "cluster_name": "mycluster",
+    "node_name": "mynode"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_node with region fallback on aws_eks 1'] = {
+  "type": "k8s_node",
+  "labels": {
+    "location": "myregion",
+    "cluster_name": "mycluster",
+    "node_name": "mynode"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_node with region fallback on azure_aks 1'] = {
+  "type": "k8s_node",
+  "labels": {
+    "location": "myregion",
+    "cluster_name": "mycluster",
+    "node_name": "mynode"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_node with region fallback on non-cloud 1'] = {
   "type": "k8s_node",
   "labels": {
     "location": "myregion",
@@ -253,7 +421,67 @@ exports['mapOtelResourceToMonitoredResource should map to k8s_pod 1'] = {
   }
 }
 
+exports['mapOtelResourceToMonitoredResource should map to k8s_pod on aws_eks 1'] = {
+  "type": "k8s_pod",
+  "labels": {
+    "location": "myavailzone",
+    "cluster_name": "mycluster",
+    "namespace_name": "myns",
+    "pod_name": "mypod"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_pod on azure_aks 1'] = {
+  "type": "k8s_pod",
+  "labels": {
+    "location": "myavailzone",
+    "cluster_name": "mycluster",
+    "namespace_name": "myns",
+    "pod_name": "mypod"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_pod on non-cloud 1'] = {
+  "type": "k8s_pod",
+  "labels": {
+    "location": "myavailzone",
+    "cluster_name": "mycluster",
+    "namespace_name": "myns",
+    "pod_name": "mypod"
+  }
+}
+
 exports['mapOtelResourceToMonitoredResource should map to k8s_pod with region fallback 1'] = {
+  "type": "k8s_pod",
+  "labels": {
+    "location": "myregion",
+    "cluster_name": "mycluster",
+    "namespace_name": "myns",
+    "pod_name": "mypod"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_pod with region fallback on aws_eks 1'] = {
+  "type": "k8s_pod",
+  "labels": {
+    "location": "myregion",
+    "cluster_name": "mycluster",
+    "namespace_name": "myns",
+    "pod_name": "mypod"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_pod with region fallback on azure_aks 1'] = {
+  "type": "k8s_pod",
+  "labels": {
+    "location": "myregion",
+    "cluster_name": "mycluster",
+    "namespace_name": "myns",
+    "pod_name": "mypod"
+  }
+}
+
+exports['mapOtelResourceToMonitoredResource should map to k8s_pod with region fallback on non-cloud 1'] = {
   "type": "k8s_pod",
   "labels": {
     "location": "myregion",

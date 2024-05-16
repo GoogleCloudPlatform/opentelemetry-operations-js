@@ -125,6 +125,262 @@ describe('mapOtelResourceToMonitoredResource', () => {
     },
 
     {
+      title: 'should map to k8s_container on azure_aks',
+      otelAttributes: {
+        'cloud.platform': 'azure_aks',
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+        'k8s.container.name': 'mycontainer',
+      },
+    },
+
+    {
+      title: 'should map to k8s_container with region fallback on azure_aks',
+      otelAttributes: {
+        'cloud.platform': 'azure_aks',
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+        'k8s.container.name': 'mycontainer',
+      },
+    },
+
+    {
+      title: 'should map to k8s_pod on azure_aks',
+      otelAttributes: {
+        'cloud.platform': 'azure_aks',
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+      },
+    },
+
+    {
+      title: 'should map to k8s_pod with region fallback on azure_aks',
+      otelAttributes: {
+        'cloud.platform': 'azure_aks',
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+      },
+    },
+
+    {
+      title: 'should map to k8s_node on azure_aks',
+      otelAttributes: {
+        'cloud.platform': 'azure_aks',
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.node.name': 'mynode',
+      },
+    },
+
+    {
+      title: 'should map to k8s_node with region fallback on azure_aks',
+      otelAttributes: {
+        'cloud.platform': 'azure_aks',
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.node.name': 'mynode',
+      },
+    },
+
+    {
+      title: 'should map to k8s_cluster on azure_aks',
+      otelAttributes: {
+        'cloud.platform': 'azure_aks',
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+      },
+    },
+
+    {
+      title: 'should map to k8s_cluster with region fallback on azure_aks',
+      otelAttributes: {
+        'cloud.platform': 'azure_aks',
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+      },
+    },
+
+    {
+      title: 'should map to k8s_container on aws_eks',
+      otelAttributes: {
+        'cloud.platform': 'aws_eks',
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+        'k8s.container.name': 'mycontainer',
+      },
+    },
+
+    {
+      title: 'should map to k8s_container with region fallback on aws_eks',
+      otelAttributes: {
+        'cloud.platform': 'aws_eks',
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+        'k8s.container.name': 'mycontainer',
+      },
+    },
+
+    {
+      title: 'should map to k8s_pod on aws_eks',
+      otelAttributes: {
+        'cloud.platform': 'aws_eks',
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+      },
+    },
+
+    {
+      title: 'should map to k8s_pod with region fallback on aws_eks',
+      otelAttributes: {
+        'cloud.platform': 'aws_eks',
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+      },
+    },
+
+    {
+      title: 'should map to k8s_node on aws_eks',
+      otelAttributes: {
+        'cloud.platform': 'aws_eks',
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.node.name': 'mynode',
+      },
+    },
+
+    {
+      title: 'should map to k8s_node with region fallback on aws_eks',
+      otelAttributes: {
+        'cloud.platform': 'aws_eks',
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.node.name': 'mynode',
+      },
+    },
+
+    {
+      title: 'should map to k8s_cluster on aws_eks',
+      otelAttributes: {
+        'cloud.platform': 'aws_eks',
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+      },
+    },
+
+    {
+      title: 'should map to k8s_cluster with region fallback on aws_eks',
+      otelAttributes: {
+        'cloud.platform': 'aws_eks',
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+      },
+    },
+
+    {
+      title: 'should map to k8s_container on non-cloud',
+      otelAttributes: {
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+        'k8s.container.name': 'mycontainer',
+      },
+    },
+
+    {
+      title: 'should map to k8s_container with region fallback on non-cloud',
+      otelAttributes: {
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+        'k8s.container.name': 'mycontainer',
+      },
+    },
+
+    {
+      title: 'should map to k8s_pod on non-cloud',
+      otelAttributes: {
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+      },
+    },
+
+    {
+      title: 'should map to k8s_pod with region fallback on non-cloud',
+      otelAttributes: {
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.pod.name': 'mypod',
+      },
+    },
+
+    {
+      title: 'should map to k8s_node on non-cloud',
+      otelAttributes: {
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.node.name': 'mynode',
+      },
+    },
+
+    {
+      title: 'should map to k8s_node with region fallback on non-cloud',
+      otelAttributes: {
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+        'k8s.node.name': 'mynode',
+      },
+    },
+
+    {
+      title: 'should map to k8s_cluster on non-cloud',
+      otelAttributes: {
+        'cloud.availability_zone': 'myavailzone',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+      },
+    },
+
+    {
+      title: 'should map to k8s_cluster with region fallback on non-cloud',
+      otelAttributes: {
+        'cloud.region': 'myregion',
+        'k8s.cluster.name': 'mycluster',
+        'k8s.namespace.name': 'myns',
+      },
+    },
+
+    {
       title: 'should map to aws_ec2_instance"',
       otelAttributes: {
         'cloud.platform': 'aws_ec2',
