@@ -347,10 +347,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
       ].forEach(({title, otelAttributes}) => {
         it(title, () => {
           const resource = new Resource(otelAttributes);
-          const actual = mapOtelResourceToMonitoredResource(
-            resource,
-            undefined
-          );
+          const actual = mapOtelResourceToMonitoredResource(resource);
           snapshot(actual);
         });
       });
