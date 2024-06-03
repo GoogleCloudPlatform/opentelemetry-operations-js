@@ -37,94 +37,6 @@ describe('mapOtelResourceToMonitoredResource', () => {
     },
 
     {
-      title: 'should map to k8s_container',
-      otelAttributes: {
-        'cloud.platform': 'gcp_kubernetes_engine',
-        'cloud.availability_zone': 'myavailzone',
-        'k8s.cluster.name': 'mycluster',
-        'k8s.namespace.name': 'myns',
-        'k8s.pod.name': 'mypod',
-        'k8s.container.name': 'mycontainer',
-      },
-    },
-
-    {
-      title: 'should map to k8s_container with region fallback',
-      otelAttributes: {
-        'cloud.platform': 'gcp_kubernetes_engine',
-        'cloud.region': 'myregion',
-        'k8s.cluster.name': 'mycluster',
-        'k8s.namespace.name': 'myns',
-        'k8s.pod.name': 'mypod',
-        'k8s.container.name': 'mycontainer',
-      },
-    },
-
-    {
-      title: 'should map to k8s_pod',
-      otelAttributes: {
-        'cloud.platform': 'gcp_kubernetes_engine',
-        'cloud.availability_zone': 'myavailzone',
-        'k8s.cluster.name': 'mycluster',
-        'k8s.namespace.name': 'myns',
-        'k8s.pod.name': 'mypod',
-      },
-    },
-
-    {
-      title: 'should map to k8s_pod with region fallback',
-      otelAttributes: {
-        'cloud.platform': 'gcp_kubernetes_engine',
-        'cloud.region': 'myregion',
-        'k8s.cluster.name': 'mycluster',
-        'k8s.namespace.name': 'myns',
-        'k8s.pod.name': 'mypod',
-      },
-    },
-
-    {
-      title: 'should map to k8s_node',
-      otelAttributes: {
-        'cloud.platform': 'gcp_kubernetes_engine',
-        'cloud.availability_zone': 'myavailzone',
-        'k8s.cluster.name': 'mycluster',
-        'k8s.namespace.name': 'myns',
-        'k8s.node.name': 'mynode',
-      },
-    },
-
-    {
-      title: 'should map to k8s_node with region fallback',
-      otelAttributes: {
-        'cloud.platform': 'gcp_kubernetes_engine',
-        'cloud.region': 'myregion',
-        'k8s.cluster.name': 'mycluster',
-        'k8s.namespace.name': 'myns',
-        'k8s.node.name': 'mynode',
-      },
-    },
-
-    {
-      title: 'should map to k8s_cluster',
-      otelAttributes: {
-        'cloud.platform': 'gcp_kubernetes_engine',
-        'cloud.availability_zone': 'myavailzone',
-        'k8s.cluster.name': 'mycluster',
-        'k8s.namespace.name': 'myns',
-      },
-    },
-
-    {
-      title: 'should map to k8s_cluster with region fallback',
-      otelAttributes: {
-        'cloud.platform': 'gcp_kubernetes_engine',
-        'cloud.region': 'myregion',
-        'k8s.cluster.name': 'mycluster',
-        'k8s.namespace.name': 'myns',
-      },
-    },
-
-    {
       title: 'should map to aws_ec2_instance"',
       otelAttributes: {
         'cloud.platform': 'aws_ec2',
@@ -334,6 +246,111 @@ describe('mapOtelResourceToMonitoredResource', () => {
         includeUnsupportedResources
       );
       snapshot(actual);
+    });
+  });
+
+  describe('for k8s resource', () => {
+    [
+      {on: 'gcp_kubernetes_engine', platform: 'gcp_kubernetes_engine'},
+      {on: 'azure_aks', platform: 'azure_aks'},
+      {on: 'aws_eks', platform: 'aws_eks'},
+      {on: 'non-cloud', platform: undefined},
+    ].map(({on, platform}) => {
+      [
+        {
+          title: `should map to k8s_container on ${on}`,
+          otelAttributes: {
+            'cloud.platform': platform,
+            'cloud.availability_zone': 'myavailzone',
+            'k8s.cluster.name': 'mycluster',
+            'k8s.namespace.name': 'myns',
+            'k8s.pod.name': 'mypod',
+            'k8s.container.name': 'mycontainer',
+          },
+        },
+
+        {
+          title: `should map to k8s_container with region fallback on ${on}`,
+          otelAttributes: {
+            'cloud.platform': platform,
+            'cloud.region': 'myregion',
+            'k8s.cluster.name': 'mycluster',
+            'k8s.namespace.name': 'myns',
+            'k8s.pod.name': 'mypod',
+            'k8s.container.name': 'mycontainer',
+          },
+        },
+
+        {
+          title: `should map to k8s_pod on ${on}`,
+          otelAttributes: {
+            'cloud.platform': platform,
+            'cloud.availability_zone': 'myavailzone',
+            'k8s.cluster.name': 'mycluster',
+            'k8s.namespace.name': 'myns',
+            'k8s.pod.name': 'mypod',
+          },
+        },
+
+        {
+          title: `should map to k8s_pod with region fallback on ${on}`,
+          otelAttributes: {
+            'cloud.platform': platform,
+            'cloud.region': 'myregion',
+            'k8s.cluster.name': 'mycluster',
+            'k8s.namespace.name': 'myns',
+            'k8s.pod.name': 'mypod',
+          },
+        },
+
+        {
+          title: `should map to k8s_node on ${on}`,
+          otelAttributes: {
+            'cloud.platform': platform,
+            'cloud.availability_zone': 'myavailzone',
+            'k8s.cluster.name': 'mycluster',
+            'k8s.namespace.name': 'myns',
+            'k8s.node.name': 'mynode',
+          },
+        },
+
+        {
+          title: `should map to k8s_node with region fallback on ${on}`,
+          otelAttributes: {
+            'cloud.platform': platform,
+            'cloud.region': 'myregion',
+            'k8s.cluster.name': 'mycluster',
+            'k8s.namespace.name': 'myns',
+            'k8s.node.name': 'mynode',
+          },
+        },
+
+        {
+          title: `should map to k8s_cluster on ${on}`,
+          otelAttributes: {
+            'cloud.platform': platform,
+            'cloud.availability_zone': 'myavailzone',
+            'k8s.cluster.name': 'mycluster',
+            'k8s.namespace.name': 'myns',
+          },
+        },
+
+        {
+          title: `should map to k8s_cluster with region fallback on ${on}`,
+          otelAttributes: {
+            'cloud.platform': platform,
+            'cloud.region': 'myregion',
+            'k8s.cluster.name': 'mycluster',
+            'k8s.namespace.name': 'myns',
+          },
+        },
+      ].forEach(({title, otelAttributes}) => {
+        it(title, () => {
+          const resource = new Resource(otelAttributes);
+          const actual = mapOtelResourceToMonitoredResource(resource);
+          snapshot(actual);
+        });
+      });
     });
   });
 

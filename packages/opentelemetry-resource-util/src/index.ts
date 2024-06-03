@@ -20,7 +20,6 @@ import {
   CLOUDPLATFORMVALUES_GCP_CLOUD_FUNCTIONS,
   CLOUDPLATFORMVALUES_GCP_CLOUD_RUN,
   CLOUDPLATFORMVALUES_GCP_COMPUTE_ENGINE,
-  CLOUDPLATFORMVALUES_GCP_KUBERNETES_ENGINE,
   SEMRESATTRS_CLOUD_ACCOUNT_ID,
   SEMRESATTRS_CLOUD_AVAILABILITY_ZONE,
   SEMRESATTRS_CLOUD_PLATFORM,
@@ -253,16 +252,6 @@ export function mapOtelResourceToMonitoredResource(
   let mr: MonitoredResource;
   if (platform === CLOUDPLATFORMVALUES_GCP_COMPUTE_ENGINE) {
     mr = createMonitoredResource(GCE_INSTANCE, attrs);
-  } else if (platform === CLOUDPLATFORMVALUES_GCP_KUBERNETES_ENGINE) {
-    if (SEMRESATTRS_K8S_CONTAINER_NAME in attrs) {
-      mr = createMonitoredResource(K8S_CONTAINER, attrs);
-    } else if (SEMRESATTRS_K8S_POD_NAME in attrs) {
-      mr = createMonitoredResource(K8S_POD, attrs);
-    } else if (SEMRESATTRS_K8S_NODE_NAME in attrs) {
-      mr = createMonitoredResource(K8S_NODE, attrs);
-    } else {
-      mr = createMonitoredResource(K8S_CLUSTER, attrs);
-    }
   } else if (platform === CLOUDPLATFORMVALUES_GCP_APP_ENGINE) {
     mr = createMonitoredResource(GAE_INSTANCE, attrs);
   } else if (platform === CLOUDPLATFORMVALUES_AWS_EC2) {
@@ -279,18 +268,28 @@ export function mapOtelResourceToMonitoredResource(
     platform === CLOUDPLATFORMVALUES_GCP_CLOUD_FUNCTIONS
   ) {
     mr = createMonitoredResource(CLOUD_FUNCTION, attrs);
-  } else {
-    // fallback to generic_task
-    if (
-      (SEMRESATTRS_SERVICE_NAME in attrs || SEMRESATTRS_FAAS_NAME in attrs) &&
-      (SEMRESATTRS_SERVICE_INSTANCE_ID in attrs ||
-        SEMRESATTRS_FAAS_INSTANCE in attrs)
-    ) {
-      mr = createMonitoredResource(GENERIC_TASK, attrs);
+  } else if (SEMRESATTRS_K8S_CLUSTER_NAME in attrs) {
+    // if k8s.cluster.name is set, pattern match for various k8s resources.
+    // this will also match non-cloud k8s platforms like minikube.
+    if (SEMRESATTRS_K8S_CONTAINER_NAME in attrs) {
+      mr = createMonitoredResource(K8S_CONTAINER, attrs);
+    } else if (SEMRESATTRS_K8S_POD_NAME in attrs) {
+      mr = createMonitoredResource(K8S_POD, attrs);
+    } else if (SEMRESATTRS_K8S_NODE_NAME in attrs) {
+      mr = createMonitoredResource(K8S_NODE, attrs);
     } else {
-      // If not possible, finally fallback to generic_node
-      mr = createMonitoredResource(GENERIC_NODE, attrs);
+      mr = createMonitoredResource(K8S_CLUSTER, attrs);
     }
+  } else if (
+    (SEMRESATTRS_SERVICE_NAME in attrs || SEMRESATTRS_FAAS_NAME in attrs) &&
+    (SEMRESATTRS_SERVICE_INSTANCE_ID in attrs ||
+      SEMRESATTRS_FAAS_INSTANCE in attrs)
+  ) {
+    // fallback to generic_task
+    mr = createMonitoredResource(GENERIC_TASK, attrs);
+  } else {
+    // If not possible, finally fallback to generic_node
+    mr = createMonitoredResource(GENERIC_NODE, attrs);
   }
 
   return mr;
