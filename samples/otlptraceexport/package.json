@@ -24,7 +24,7 @@
     "@opentelemetry/exporter-trace-otlp-grpc": "0.51.1",
     "@opentelemetry/exporter-trace-otlp-proto": "0.51.1",
     "@opentelemetry/exporter-trace-otlp-http": "0.51.1",
-    "@grpc/grpc-js": "1.10.7",
+    "@grpc/grpc-js": "1.10.9",
     "express": "4.19.2",
     "google-auth-library": "9.9.0",
     "axios": "1.6.8"
