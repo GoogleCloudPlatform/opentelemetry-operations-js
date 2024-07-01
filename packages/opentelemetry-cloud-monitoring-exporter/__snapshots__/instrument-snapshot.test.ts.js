@@ -156,6 +156,68 @@ exports['MetricExporter snapshot tests Counter - INT 1'] = [
   }
 ]
 
+exports['MetricExporter snapshot tests Custom User Agent correctly adds a custom user agent when one is specified 1'] = [
+  {
+    "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/mycounter",
+    "body": {},
+    "userAgent": [
+      "opentelemetry-js/1.24.1 google-cloud-metric-exporter/0.18.0 myProduct/myVersion google-api-nodejs-client/7.2.0 (gzip)"
+    ]
+  },
+  {
+    "uri": "/v3/projects/otel-starter-project/metricDescriptors",
+    "body": {
+      "type": "workload.googleapis.com/mycounter",
+      "description": "description",
+      "displayName": "mycounter",
+      "metricKind": "CUMULATIVE",
+      "valueType": "INT64",
+      "unit": "unit",
+      "labels": []
+    },
+    "userAgent": [
+      "opentelemetry-js/1.24.1 google-cloud-metric-exporter/0.18.0 myProduct/myVersion google-api-nodejs-client/7.2.0 (gzip)"
+    ]
+  },
+  {
+    "uri": "/v3/projects/otel-starter-project/timeSeries",
+    "body": {
+      "timeSeries": [
+        {
+          "metric": {
+            "type": "workload.googleapis.com/mycounter",
+            "labels": {}
+          },
+          "resource": {
+            "type": "generic_node",
+            "labels": {
+              "location": "global",
+              "namespace": "",
+              "node_id": ""
+            }
+          },
+          "metricKind": "CUMULATIVE",
+          "valueType": "INT64",
+          "points": [
+            {
+              "value": {
+                "int64Value": "1"
+              },
+              "interval": {
+                "startTime": "startTime",
+                "endTime": "endTime"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "userAgent": [
+      "opentelemetry-js/1.24.1 google-cloud-metric-exporter/0.18.0 myProduct/myVersion google-api-nodejs-client/7.2.0 (gzip)"
+    ]
+  }
+]
+
 exports['MetricExporter snapshot tests Histogram - DOUBLE 1'] = [
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myhistogram",

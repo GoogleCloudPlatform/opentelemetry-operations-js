@@ -355,12 +355,36 @@ describe('MetricExporter snapshot tests', () => {
       });
     });
   });
+
+  describe('Custom User Agent', () => {
+    it('correctly adds a custom user agent when one is specified', async () => {
+      const metric = await generateMetricsData((_, meter) => {
+        const counter = meter.createCounter('mycounter', {
+          description: 'description',
+          unit: 'unit',
+          valueType: ValueType.INT,
+        });
+        counter.add(1);
+      });
+
+      const result = await callExporter(metric, {
+        product: 'myProduct',
+        version: 'myVersion',
+      });
+      assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+      gcmNock.snapshotCalls();
+    });
+  });
 });
 
-function callExporter(resourceMetrics: ResourceMetrics): Promise<ExportResult> {
+function callExporter(
+  resourceMetrics: ResourceMetrics,
+  userAgent?: any
+): Promise<ExportResult> {
   return new Promise(resolve => {
     const exporter = new MetricExporter({
       projectId: PROJECT_ID,
+      userAgent,
     });
     // Application default credentials won't be available so stub them away
     sinon.stub(exporter['_auth'], 'getClient');
