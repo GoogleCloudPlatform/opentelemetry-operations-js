@@ -26,7 +26,7 @@ import {Aggregation, ResourceMetrics, View} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
-import {MetricExporter} from '../src';
+import {ExporterOptions, MetricExporter} from '../src';
 import {generateMetricsData} from './util';
 
 import type {monitoring_v3} from 'googleapis';
@@ -355,12 +355,38 @@ describe('MetricExporter snapshot tests', () => {
       });
     });
   });
+
+  describe('Custom User Agent', () => {
+    it('correctly adds a custom user agent when one is specified', async () => {
+      const metric = await generateMetricsData((_, meter) => {
+        const counter = meter.createCounter('mycounter', {
+          description: 'description',
+          unit: 'unit',
+          valueType: ValueType.INT,
+        });
+        counter.add(1);
+      });
+
+      const result = await callExporter(metric, {
+        userAgent: {
+          product: 'myProduct',
+          version: 'myVersion',
+        },
+      });
+      assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
+      gcmNock.snapshotCalls();
+    });
+  });
 });
 
-function callExporter(resourceMetrics: ResourceMetrics): Promise<ExportResult> {
+function callExporter(
+  resourceMetrics: ResourceMetrics,
+  exporterOptions?: ExporterOptions
+): Promise<ExportResult> {
   return new Promise(resolve => {
     const exporter = new MetricExporter({
       projectId: PROJECT_ID,
+      ...exporterOptions,
     });
     // Application default credentials won't be available so stub them away
     sinon.stub(exporter['_auth'], 'getClient');

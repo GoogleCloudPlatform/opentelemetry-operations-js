@@ -55,6 +55,13 @@ export interface ExporterOptions {
    * Cloud Monitoring when a large number of clients are all started up at the same time.
    */
   disableCreateMetricDescriptors?: boolean;
+  /**
+   * Add a custom user agent and version strings to all monitoring exports
+   */
+  userAgent?: {
+    product: string;
+    version: string;
+  };
 }
 
 export interface Credentials {

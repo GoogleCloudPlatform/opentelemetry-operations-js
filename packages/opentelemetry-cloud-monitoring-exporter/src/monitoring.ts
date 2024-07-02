@@ -90,7 +90,9 @@ export class MetricExporter implements PushMetricExporter {
       rootUrl:
         'https://' + (options.apiEndpoint || 'monitoring.googleapis.com:443'),
       headers: OT_REQUEST_HEADER,
-      userAgentDirectives: OT_USER_AGENTS,
+      userAgentDirectives: OT_USER_AGENTS.concat(
+        options.userAgent ? [options.userAgent] : []
+      ),
     });
 
     // Start this async process as early as possible. It will be
