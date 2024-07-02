@@ -26,7 +26,7 @@ import {Aggregation, ResourceMetrics, View} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
-import {MetricExporter} from '../src';
+import {ExporterOptions, MetricExporter} from '../src';
 import {generateMetricsData} from './util';
 
 import type {monitoring_v3} from 'googleapis';
@@ -368,8 +368,10 @@ describe('MetricExporter snapshot tests', () => {
       });
 
       const result = await callExporter(metric, {
-        product: 'myProduct',
-        version: 'myVersion',
+        userAgent: {
+          product: 'myProduct',
+          version: 'myVersion',
+        },
       });
       assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
       gcmNock.snapshotCalls();
@@ -379,12 +381,12 @@ describe('MetricExporter snapshot tests', () => {
 
 function callExporter(
   resourceMetrics: ResourceMetrics,
-  userAgent?: any
+  exporterOptions?: ExporterOptions
 ): Promise<ExportResult> {
   return new Promise(resolve => {
     const exporter = new MetricExporter({
       projectId: PROJECT_ID,
-      userAgent,
+      ...exporterOptions,
     });
     // Application default credentials won't be available so stub them away
     sinon.stub(exporter['_auth'], 'getClient');
