@@ -33,7 +33,7 @@
     "@opentelemetry/sdk-metrics": "1.24.1",
     "@opentelemetry/sdk-node": "0.51.1",
     "axios": "1.7.2",
-    "fastify": "4.23.2",
+    "fastify": "4.28.1",
     "pino": "8.21.0"
   }
 }
