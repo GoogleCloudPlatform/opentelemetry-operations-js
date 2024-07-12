@@ -13,7 +13,7 @@ when choosing a version numbers (conventional commits helps here).
 
 Use `git fetch` and `git checkout origin/main` to ensure you’re on the latest commit. Make sure
 you have no unstaged changes. Ideally, also use `git clean -dfx` to remove all ignored and
-untracked files.
+untracked files. Finally, run `npm install` to get local development tools like lerna.
 
 ## Create a new branch
 
@@ -28,17 +28,29 @@ choose the next version number for each package when releasing.
 Bump the package versions based on conventional commits with:
 
 ```bash
-lerna version \
+npx lerna version \
+  --no-private \
   --conventional-commits \
+  --no-push \
+  --no-git-tag-version
+```
+
+Alternatively, bump major/minor/patch with
+
+```bash
+npx lerna version \
+  minor \
+  --no-private \
   --no-push \
   --no-git-tag-version
 ```
 
 Be sure to check the lerna's output when it prompts if everything is correct,
 making sure the bumped versions are what you expected. In the event that they
-are not, re-run the command without `--conventional-commits` and lerna will
-interactively ask you to input the correct bumps. You may need to do this when
-first releasing a 0.X package as 1.0.0.
+are not, re-run the command without `--conventional-commits` or `minor`
+command and lerna will interactively ask you to input the correct bumps for
+each individual package. You may need to do this when first releasing a 0.X
+package as 1.0.0.
 
 ## Run `npm install && npm run compile`
 
@@ -100,7 +112,7 @@ Now use lerna to publish the packages. This command will build and upload each p
 npm.
 
 ```bash
-lerna publish from-package
+npx lerna publish from-package
 ```
 
 ## Create tags for each package
