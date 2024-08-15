@@ -29,4 +29,4 @@ steps:
 images: ["${_TEST_SERVER_IMAGE_NAME}"]
 logsBucket: gs://opentelemetry-ops-e2e-cloud-build-logs
 substitutions:
-  _TEST_SERVER_IMAGE_NAME: gcr.io/${PROJECT_ID}/opentelemetry-operations-js-e2e-test-server
+  _TEST_SERVER_IMAGE_NAME: us-central1-docker.pkg.dev/${PROJECT_ID}/e2e-testing/opentelemetry-operations-js-e2e-test-server
