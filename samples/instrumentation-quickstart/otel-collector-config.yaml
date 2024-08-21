@@ -17,6 +17,7 @@ receivers:
   otlp:
     protocols:
       http:
+        endpoint: 0.0.0.0:4318
 
   # Use the filelog receiver to read the application's logs from its log file.
   # This config reads JSON logs in same format that the Cloud Logging agents
@@ -82,12 +83,12 @@ receivers:
 exporters:
   # Export logs and traces using the standard googelcloud exporter
   googlecloud:
-    project: $GOOGLE_CLOUD_PROJECT
+    project: ${GOOGLE_CLOUD_PROJECT}
     log:
       default_log_name: "opentelemetry.io/collector-exported-log"
   # Export metrics to Google Managed service for Prometheus
   googlemanagedprometheus:
-    project: $GOOGLE_CLOUD_PROJECT
+    project: ${GOOGLE_CLOUD_PROJECT}
 
 processors:
   # Batch telemetry together to more efficiently send to GCP
