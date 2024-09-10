@@ -24,6 +24,8 @@ services:
       - GOOGLE_CLOUD_PROJECT
     volumes:
       - logs:/var/log:rw
+    ports:
+      - 8080
     depends_on:
       - otelcol
   otelcol:
@@ -34,6 +36,9 @@ services:
     environment:
       - GOOGLE_CLOUD_PROJECT
       - GOOGLE_CLOUD_QUOTA_PROJECT
+    ports:
+      # Collector prometheus port. The metrics are checked in tests
+      - 8888
   loadgen:
     image: golang:1.22
     command:
