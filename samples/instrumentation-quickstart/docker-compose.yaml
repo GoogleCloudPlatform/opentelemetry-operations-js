@@ -24,16 +24,21 @@ services:
       - GOOGLE_CLOUD_PROJECT
     volumes:
       - logs:/var/log:rw
+    ports:
+      - 8080
     depends_on:
       - otelcol
   otelcol:
-    image: otel/opentelemetry-collector-contrib:0.104.0
+    image: otel/opentelemetry-collector-contrib:0.107.0
     volumes:
       - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml:ro
       - logs:/var/log:ro
     environment:
       - GOOGLE_CLOUD_PROJECT
       - GOOGLE_CLOUD_QUOTA_PROJECT
+    ports:
+      # Collector prometheus port. The metrics are checked in tests
+      - 8888
   loadgen:
     image: golang:1.22
     command:

@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,20 +13,15 @@
 # limitations under the License.
 
 steps:
-  - name: docker
-    id: build-test-server
+  - name: golang:1.23
+    dir: samples/instrumentation-quickstart/integrationtest
     env:
-      - DOCKER_BUILDKIT=1
-    args:
-      - build
-      - --tag=${_TEST_SERVER_IMAGE_NAME}:${SHORT_SHA}
-      - --tag=${_TEST_SERVER_IMAGE_NAME}:latest
-      - --build-arg=BUILDKIT_INLINE_CACHE=1
-      - --cache-from=${_TEST_SERVER_IMAGE_NAME}:latest
-      - --file=e2e-test-server/Dockerfile
-      - .
+      - COMPOSE_OVERRIDE_FILE=../docker-compose.cloudbuild.yaml
+      # https://github.com/testcontainers/testcontainers-go/issues/2754
+      - TESTCONTAINERS_RYUK_CONNECTION_TIMEOUT=10m
+      - TESTCONTAINERS_RYUK_RECONNECTION_TIMEOUT=10m
+    script: go test -v
 
-images: ["${_TEST_SERVER_IMAGE_NAME}"]
 logsBucket: gs://opentelemetry-ops-e2e-cloud-build-logs
-substitutions:
-  _TEST_SERVER_IMAGE_NAME: us-central1-docker.pkg.dev/${PROJECT_ID}/e2e-testing/opentelemetry-operations-js-e2e-test-server
+options:
+  machineType: E2_HIGHCPU_8
