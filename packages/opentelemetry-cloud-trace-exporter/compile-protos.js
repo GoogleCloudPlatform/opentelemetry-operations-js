@@ -49,12 +49,8 @@ async function generateProtoJSON() {
     tracingProtoPath,
   ];
 
-  try {
-    await pbjsMain(pbjsArgs);
-    console.log('Proto JSON file generated successfully.');
-  } catch (error) {
-    console.error('Error generating Proto JSON file:', error);
-  }
+  await pbjsMain(pbjsArgs);
+  console.log('Proto JSON file generated successfully.');
 }
 
 generateProtoJSON();
