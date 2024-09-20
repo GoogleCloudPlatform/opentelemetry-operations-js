@@ -29,7 +29,6 @@ import {TraceService, NamedSpans} from './types';
 import {VERSION} from './version';
 import * as protoJson from '../protos/protos.json';
 
-
 const OT_REQUEST_HEADER = 'x-opentelemetry-outgoing-request';
 const TRACE_USER_AGENT = `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`;
 const OPTIONS: grpc.ClientOptions = {
