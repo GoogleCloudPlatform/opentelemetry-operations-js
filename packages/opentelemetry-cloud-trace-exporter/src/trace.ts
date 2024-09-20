@@ -27,7 +27,8 @@ import {TraceExporterOptions} from './external-types';
 import {getReadableSpanTransformer} from './transform';
 import {TraceService, NamedSpans} from './types';
 import {VERSION} from './version';
-const protoJson = require('../protos/protos.json');
+import * as protoJson from '../protos/protos.json';
+
 
 const OT_REQUEST_HEADER = 'x-opentelemetry-outgoing-request';
 const TRACE_USER_AGENT = `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`;
