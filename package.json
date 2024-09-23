@@ -6,7 +6,6 @@
     "clean": "lerna run clean",
     "precompile": "tsc --version",
     "compile": "lerna run compile",
-    "codecov": "lerna run codecov",
     "test": "lerna run test",
     "lint": "lerna run lint",
     "fix": "lerna run fix",
