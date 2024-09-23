@@ -20,7 +20,6 @@ import {
 import {ReadableSpan, SpanExporter} from '@opentelemetry/sdk-trace-base';
 import {diag} from '@opentelemetry/api';
 import * as protoloader from '@grpc/proto-loader';
-import * as protofiles from 'google-proto-files';
 import * as grpc from '@grpc/grpc-js';
 import {GoogleAuth} from 'google-auth-library';
 import {promisify} from 'util';
@@ -28,6 +27,7 @@ import {TraceExporterOptions} from './external-types';
 import {getReadableSpanTransformer} from './transform';
 import {TraceService, NamedSpans} from './types';
 import {VERSION} from './version';
+import * as protoJson from '../protos/protos.json';
 
 const OT_REQUEST_HEADER = 'x-opentelemetry-outgoing-request';
 const TRACE_USER_AGENT = `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`;
@@ -155,17 +155,11 @@ export class TraceExporter implements SpanExporter {
     diag.debug(
       'Google Cloud Trace got authentication. Initializaing rpc client'
     );
-    const packageDefinition = await protoloader.load(
-      protofiles.getProtoPath('devtools', 'cloudtrace', 'v2', 'tracing.proto'),
-      {
-        includeDirs: [protofiles.getProtoPath('..')],
-        longs: String,
-        defaults: true,
-        oneofs: true,
-      }
-    );
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+
+    const packageDefinition = protoloader.fromJSON(protoJson);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const {google}: any = grpc.loadPackageDefinition(packageDefinition);
+
     const traceService: new (
       ...args: ConstructorParameters<typeof grpc.Client>
     ) => TraceService = google.devtools.cloudtrace.v2.TraceService;
