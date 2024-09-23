@@ -26,8 +26,11 @@ jobs:
           npm --version
       - run: npm install
       - run: npm test
-      - run: npm run codecov
-        if: matrix.node == 19
+      - name: Report Coverage
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
+          verbose: true
 
   lint:
     runs-on: ubuntu-latest
