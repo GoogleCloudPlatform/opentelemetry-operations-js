@@ -26,8 +26,8 @@
     "@opentelemetry/exporter-trace-otlp-http": "0.53.0",
     "@grpc/grpc-js": "1.11.3",
     "express": "4.19.2",
-    "google-auth-library": "9.11.0",
-    "axios": "1.7.4"
+    "google-auth-library": "9.14.1",
+    "axios": "1.7.7"
   },
   "devDependencies": {
     "gts": "5.3.1",
