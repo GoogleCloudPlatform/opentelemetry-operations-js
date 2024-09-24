@@ -29,7 +29,7 @@ services:
     depends_on:
       - otelcol
   otelcol:
-    image: otel/opentelemetry-collector-contrib:0.107.0
+    image: otel/opentelemetry-collector-contrib:0.110.0
     volumes:
       - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml:ro
       - logs:/var/log:ro
@@ -40,7 +40,7 @@ services:
       # Collector prometheus port. The metrics are checked in tests
       - 8888
   loadgen:
-    image: golang:1.22
+    image: golang:1.23
     command:
       - go
       - run
