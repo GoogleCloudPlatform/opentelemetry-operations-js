@@ -3,7 +3,7 @@ exports['MetricExporter snapshot tests Counter - DOUBLE 1'] = [
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/mycounter",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -31,7 +31,7 @@ exports['MetricExporter snapshot tests Counter - DOUBLE 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -72,7 +72,7 @@ exports['MetricExporter snapshot tests Counter - DOUBLE 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -82,7 +82,7 @@ exports['MetricExporter snapshot tests Counter - INT 1'] = [
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/mycounter",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -110,7 +110,7 @@ exports['MetricExporter snapshot tests Counter - INT 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -151,7 +151,7 @@ exports['MetricExporter snapshot tests Counter - INT 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -161,7 +161,7 @@ exports['MetricExporter snapshot tests Custom User Agent correctly adds a custom
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/mycounter",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 myProduct/myVersion google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 myProduct/myVersion google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -176,7 +176,7 @@ exports['MetricExporter snapshot tests Custom User Agent correctly adds a custom
       "labels": []
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 myProduct/myVersion google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 myProduct/myVersion google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -213,7 +213,7 @@ exports['MetricExporter snapshot tests Custom User Agent correctly adds a custom
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 myProduct/myVersion google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 myProduct/myVersion google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -223,7 +223,7 @@ exports['MetricExporter snapshot tests Histogram - DOUBLE 1'] = [
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myhistogram",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -251,7 +251,7 @@ exports['MetricExporter snapshot tests Histogram - DOUBLE 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -334,7 +334,7 @@ exports['MetricExporter snapshot tests Histogram - DOUBLE 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -344,7 +344,7 @@ exports['MetricExporter snapshot tests Histogram - INT 1'] = [
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myhistogram",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -372,7 +372,7 @@ exports['MetricExporter snapshot tests Histogram - INT 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -428,8 +428,8 @@ exports['MetricExporter snapshot tests Histogram - INT 1'] = [
                   "bucketCounts": [
                     "0",
                     "0",
-                    "0",
                     "1",
+                    "0",
                     "0",
                     "0",
                     "0",
@@ -455,7 +455,7 @@ exports['MetricExporter snapshot tests Histogram - INT 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -465,7 +465,7 @@ exports['MetricExporter snapshot tests ObservableCounter - DOUBLE 1'] = [
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myobservablecounter",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -493,7 +493,7 @@ exports['MetricExporter snapshot tests ObservableCounter - DOUBLE 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -534,7 +534,7 @@ exports['MetricExporter snapshot tests ObservableCounter - DOUBLE 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -544,7 +544,7 @@ exports['MetricExporter snapshot tests ObservableCounter - INT 1'] = [
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myobservablecounter",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -572,7 +572,7 @@ exports['MetricExporter snapshot tests ObservableCounter - INT 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -613,7 +613,7 @@ exports['MetricExporter snapshot tests ObservableCounter - INT 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -623,7 +623,7 @@ exports['MetricExporter snapshot tests ObservableGauge - DOUBLE 1'] = [
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myobservablegauge",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -651,7 +651,7 @@ exports['MetricExporter snapshot tests ObservableGauge - DOUBLE 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -691,7 +691,7 @@ exports['MetricExporter snapshot tests ObservableGauge - DOUBLE 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -701,7 +701,7 @@ exports['MetricExporter snapshot tests ObservableGauge - INT 1'] = [
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myobservablegauge",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -729,7 +729,7 @@ exports['MetricExporter snapshot tests ObservableGauge - INT 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -769,7 +769,7 @@ exports['MetricExporter snapshot tests ObservableGauge - INT 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -779,7 +779,7 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - DOUBLE 1'] = [
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myobservableupdowncounter",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -807,7 +807,7 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - DOUBLE 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -847,7 +847,7 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - DOUBLE 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -857,7 +857,7 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - INT 1'] = [
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myobservableupdowncounter",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -885,7 +885,7 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - INT 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -925,7 +925,7 @@ exports['MetricExporter snapshot tests ObservableUpDownCounter - INT 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -935,7 +935,7 @@ exports['MetricExporter snapshot tests UpDownCounter - DOUBLE 1'] = [
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myupdowncounter",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -963,7 +963,7 @@ exports['MetricExporter snapshot tests UpDownCounter - DOUBLE 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -1003,7 +1003,7 @@ exports['MetricExporter snapshot tests UpDownCounter - DOUBLE 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -1013,7 +1013,7 @@ exports['MetricExporter snapshot tests UpDownCounter - INT 1'] = [
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myupdowncounter",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -1041,7 +1041,7 @@ exports['MetricExporter snapshot tests UpDownCounter - INT 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -1081,7 +1081,7 @@ exports['MetricExporter snapshot tests UpDownCounter - INT 1'] = [
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -1091,7 +1091,7 @@ exports['MetricExporter snapshot tests normalizes label keys in metric and descr
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/mycounter",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -1131,7 +1131,7 @@ exports['MetricExporter snapshot tests normalizes label keys in metric and descr
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -1175,7 +1175,7 @@ exports['MetricExporter snapshot tests normalizes label keys in metric and descr
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -1185,7 +1185,7 @@ exports['MetricExporter snapshot tests reconfigure with views ExponentialHistogr
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myexphist",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -1200,7 +1200,7 @@ exports['MetricExporter snapshot tests reconfigure with views ExponentialHistogr
       "labels": []
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -1249,7 +1249,7 @@ exports['MetricExporter snapshot tests reconfigure with views ExponentialHistogr
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -1259,7 +1259,7 @@ exports['MetricExporter snapshot tests reconfigure with views ExponentialHistogr
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myexphist",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -1274,7 +1274,7 @@ exports['MetricExporter snapshot tests reconfigure with views ExponentialHistogr
       "labels": []
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -1430,7 +1430,7 @@ exports['MetricExporter snapshot tests reconfigure with views ExponentialHistogr
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
@@ -1440,7 +1440,7 @@ exports['MetricExporter snapshot tests reconfigure with views counter with histo
     "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myrenamedhistogram",
     "body": {},
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -1455,7 +1455,7 @@ exports['MetricExporter snapshot tests reconfigure with views counter with histo
       "labels": []
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   },
   {
@@ -1534,7 +1534,7 @@ exports['MetricExporter snapshot tests reconfigure with views counter with histo
       ]
     },
     "userAgent": [
-      "opentelemetry-js/1.25.1 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
+      "opentelemetry-js/1.26.0 google-cloud-metric-exporter/0.19.0 google-api-nodejs-client/7.2.0 (gzip)"
     ]
   }
 ]
