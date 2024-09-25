@@ -52,10 +52,12 @@ command and lerna will interactively ask you to input the correct bumps for
 each individual package. You may need to do this when first releasing a 0.X
 package as 1.0.0.
 
-## Run `npm install && npm run compile`
+## Run `npm install && npm run compile && npm run update-snapshot-tests`
 
-Don't forget this step! This will build everything and regenerate the
-`src/version.ts` files in each subpackage.
+Don't forget this step! This will build everything, and regenerate the `src/version.ts` files
+in each subpackage. Updating the version files will actually change the user agent string the
+exporters use, so you will need to `update-snapshot-tests` to update snapshot/golden tests with
+the new expected user agent. The user agent should be the **only** change to the snapshots.
 
 ## Create a new commit
 
