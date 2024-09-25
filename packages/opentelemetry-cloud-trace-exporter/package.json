@@ -30,6 +30,7 @@
   "files": [
     "build/src/**/*.js",
     "build/src/**/*.d.ts",
+    "build/protos/**/*.json",
     "doc",
     "LICENSE",
     "README.md"
