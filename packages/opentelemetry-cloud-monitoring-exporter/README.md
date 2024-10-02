@@ -2,9 +2,15 @@
 [![NPM Published Version][npm-img]][npm-url]
 [![Apache License][license-image]][license-image]
 
-OpenTelemetry Google Cloud Monitoring Exporter allows the user to send collected metrics to Google Cloud Monitoring.
+OpenTelemetry Google Cloud Monitoring Exporter allows the user to send collected metrics to
+[Google Cloud Monitoring](https://cloud.google.com/monitoring).
 
-[Cloud Monitoring](https://cloud.google.com/monitoring) provides visibility into the performance, uptime, and overall health of cloud-powered applications. It collects metrics, events, and metadata from Google Cloud, Amazon Web Services, hosted uptime probes, application instrumentation, and a variety of common application components including Cassandra, Nginx, Apache Web Server, Elasticsearch, and many others. Operations ingests that data and generates insights via dashboards, charts, and alerts. Cloud Monitoring alerting helps you collaborate by integrating with Slack, PagerDuty, and more.
+To get started with instrumentation in Google Cloud, see [Generate traces and metrics with
+Node.js](https://cloud.google.com/stackdriver/docs/instrumentation/setup/nodejs).
+
+To learn more about instrumentation and observability, including opinionated recommendations
+for Google Cloud Observability, visit [Instrumentation and
+observability](https://cloud.google.com/stackdriver/docs/instrumentation/overview).
 
 ## Installation
 

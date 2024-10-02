@@ -2,9 +2,15 @@
 [![NPM Published Version][npm-img]][npm-url]
 [![Apache License][license-image]][license-image]
 
-OpenTelemetry Google Cloud Trace Exporter allows the user to send collected traces to Google Cloud.
+OpenTelemetry Google Cloud Trace Exporter allows the user to send collected traces to [Google
+Cloud Trace](https://cloud.google.com/trace).
 
-[Google Cloud Trace](https://cloud.google.com/trace) is a distributed tracing system. It helps gather timing data needed to troubleshoot latency problems in microservice architectures. It manages both the collection and lookup of this data.
+To get started with instrumentation in Google Cloud, see [Generate traces and metrics with
+Node.js](https://cloud.google.com/stackdriver/docs/instrumentation/setup/nodejs).
+
+To learn more about instrumentation and observability, including opinionated recommendations
+for Google Cloud Observability, visit [Instrumentation and
+observability](https://cloud.google.com/stackdriver/docs/instrumentation/overview).
 
 ## Setup
 

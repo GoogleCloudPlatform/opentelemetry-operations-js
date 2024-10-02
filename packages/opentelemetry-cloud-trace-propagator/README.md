@@ -4,6 +4,13 @@
 
 OpenTelemetry Google Cloud Trace Propagator allows other services to create spans with the right context.
 
+To get started with instrumentation in Google Cloud, see [Generate traces and metrics with
+Node.js](https://cloud.google.com/stackdriver/docs/instrumentation/setup/nodejs).
+
+To learn more about instrumentation and observability, including opinionated recommendations
+for Google Cloud Observability, visit [Instrumentation and
+observability](https://cloud.google.com/stackdriver/docs/instrumentation/overview).
+
 Format:
 `TRACE_ID/SPAN_ID;o=TRACE_TRUE`
 
