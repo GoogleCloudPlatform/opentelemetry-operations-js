@@ -2,6 +2,13 @@
 
 The packages in this repository support all [officially supported Node.js versions](https://nodejs.org/en/about/releases/) (10, 12, 14, 16).
 
+To get started with instrumentation in Google Cloud, see [Generate traces and metrics with
+Node.js](https://cloud.google.com/stackdriver/docs/instrumentation/setup/nodejs).
+
+To learn more about instrumentation and observability, including opinionated recommendations
+for Google Cloud Observability, visit [Instrumentation and
+observability](https://cloud.google.com/stackdriver/docs/instrumentation/overview).
+
 ## OpenTelemetry Google Cloud Trace Exporter
 
 [![npm version](https://badge.fury.io/js/%40google-cloud%2Fopentelemetry-cloud-trace-exporter.svg)](https://badge.fury.io/js/%40google-cloud%2Fopentelemetry-cloud-trace-exporter)

@@ -4,6 +4,9 @@
 > This sample is not an npm workspace within this repo. It does not link in any dependencies
 > from this repo and all commands should be run directly from this directory.
 
+This is the code sample for [Generate traces and metrics with
+Node.js](https://cloud.google.com/stackdriver/docs/instrumentation/setup/nodejs).
+
 This sample is a [Fastify](https://fastify.dev/) Node.js application instrumented with
 [OpenTelemetry JS auto instrumentation](https://opentelemetry.io/docs/languages/js/automatic/).
 This is a Node.js version of [this golang
