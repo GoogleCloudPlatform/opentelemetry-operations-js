@@ -51,7 +51,7 @@
     "@opentelemetry/sdk-metrics": "1.26.0",
     "@types/mocha": "10.0.8",
     "@types/nock": "11.1.0",
-    "@types/node": "14.18.63",
+    "@types/node": "20.17.2",
     "@types/sinon": "17.0.3",
     "gts": "5.3.1",
     "mocha": "10.7.3",
