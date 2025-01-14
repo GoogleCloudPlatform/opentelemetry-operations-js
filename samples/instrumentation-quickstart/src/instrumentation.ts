@@ -29,6 +29,9 @@ import {
 import {
   ConsoleMetricExporter,
   PeriodicExportingMetricReader,
+  ExponentialHistogramAggregation,
+  DefaultAggregation,
+  InstrumentType,
 } from '@opentelemetry/sdk-metrics';
 import {OTLPMetricExporter} from '@opentelemetry/exporter-metrics-otlp-proto';
 
@@ -48,7 +51,17 @@ function getMetricReader() {
       diag.info('using otel metrics exporter');
       return new PeriodicExportingMetricReader({
         ...readerOptions,
-        exporter: new OTLPMetricExporter(),
+        exporter: new OTLPMetricExporter({
+          // Use exponential histograms for histogram instruments.
+          // This can be done using an environment variable after
+          // https://github.com/open-telemetry/opentelemetry-js/issues/3920 is implemented.
+          aggregationPreference: (_instrumentType: InstrumentType) =>  {
+            if (_instrumentType === InstrumentType.HISTOGRAM) {
+              return new ExponentialHistogramAggregation()
+            }
+            return new DefaultAggregation()
+          }
+        }),
       });
     case 'console':
       return new PeriodicExportingMetricReader({
