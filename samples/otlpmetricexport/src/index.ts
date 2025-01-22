@@ -32,7 +32,7 @@ diag.setLogger(
   opentelemetry.core.getEnv().OTEL_LOG_LEVEL
 );
 
-// Express App that exports traces via gRPC with protobuf
+// App that exports metrics via gRPC with protobuf
 async function main() {
   const authenticatedClient: AuthClient = await getAuthenticatedClient();
 
@@ -53,7 +53,7 @@ async function main() {
   sdk.start();
 
   // Create a meter
-  const meter = metrics.getMeterProvider().getMeter('metrics-sample');
+  const meter = metrics.getMeter('metrics-sample');
 
   // Create a counter instrument
   const counter = meter.createCounter('metric_name');
