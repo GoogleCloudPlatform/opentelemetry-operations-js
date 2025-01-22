@@ -1,0 +1,33 @@
+{
+  "name": "otlp-metrics-export",
+  "version": "0.1.0",
+  "private": true,
+  "author": "Google Inc.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "start": "ts-node ./src/index.ts",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "fix": "gts fix",
+    "compile": "tsc",
+    "test": "",
+    "pretest": "npm run compile"
+  },
+  "keywords": [],
+  "dependencies": {
+    "@opentelemetry/api": "1.9.0",
+    "@opentelemetry/auto-instrumentations-node": "0.50.0",
+    "@opentelemetry/exporter-metrics-otlp-grpc": "0.53.0",
+    "@opentelemetry/resources": "1.26.0",
+    "@opentelemetry/sdk-node": "0.53.0",
+    "@opentelemetry/sdk-metrics": "1.26.0",
+    "@grpc/grpc-js": "1.11.3",
+    "google-auth-library": "9.14.1"
+  },
+  "devDependencies": {
+    "gts": "5.3.1",
+    "typescript": "4.9.5",
+    "ts-node": "10.9.2"
+  },
+  "description": "This example shows how to send metrics to an OTLP *(OpenTelemetry Protocol)* endpoint that is protected by GCP authentication over gRPC."
+}
