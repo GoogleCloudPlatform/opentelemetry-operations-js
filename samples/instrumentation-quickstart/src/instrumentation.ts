@@ -55,8 +55,8 @@ function getMetricReader() {
           // Use exponential histograms for histogram instruments.
           // This can be done using an environment variable after
           // https://github.com/open-telemetry/opentelemetry-js/issues/3920 is implemented.
-          aggregationPreference: (_instrumentType: InstrumentType) =>  {
-            if (_instrumentType === InstrumentType.HISTOGRAM) {
+          aggregationPreference: (instrumentType: InstrumentType) =>  {
+            if (instrumentType === InstrumentType.HISTOGRAM) {
               return new ExponentialHistogramAggregation()
             }
             return new DefaultAggregation()
