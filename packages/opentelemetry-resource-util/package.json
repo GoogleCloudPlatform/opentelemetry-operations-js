@@ -50,7 +50,7 @@
     "@opentelemetry/semantic-conventions": "1.27.0",
     "@types/mocha": "10.0.8",
     "@types/node": "14.18.63",
-    "@types/sinon": "17.0.3",
+    "@types/sinon": "17.0.4",
     "bignumber.js": "9.1.2",
     "gts": "5.3.1",
     "mocha": "10.7.3",
