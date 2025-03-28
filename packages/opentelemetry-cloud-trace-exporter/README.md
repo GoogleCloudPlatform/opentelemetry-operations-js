@@ -57,7 +57,7 @@ const {
 
 const provider = new NodeTracerProvider({
   // ...
-  resource: new Resource({
+  resource: resourceFromAttributes({
 
   SEMRESATTRS_SERVICE_NAME,
     [SEMRESATTRS_SERVICE_NAME]: 'things-service',

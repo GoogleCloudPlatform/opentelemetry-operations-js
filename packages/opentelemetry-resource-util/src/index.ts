@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {Attributes, AttributeValue} from '@opentelemetry/api';
-import {IResource} from '@opentelemetry/resources';
+import {Resource} from '@opentelemetry/resources';
 import {
   CLOUDPLATFORMVALUES_AWS_EC2,
   CLOUDPLATFORMVALUES_GCP_APP_ENGINE,
@@ -229,7 +229,7 @@ export interface MonitoredResource {
  * @returns the corresponding GCM MonitoredResource
  */
 export function mapOtelResourceToMonitoredResource(
-  resource: IResource
+  resource: Resource
 ): MonitoredResource;
 /**
  * @deprecated This overload is deprecated, do not pass the includeUnsupportedResources boolean
@@ -239,11 +239,11 @@ export function mapOtelResourceToMonitoredResource(
  * @returns the corresponding GCM MonitoredResource
  */
 export function mapOtelResourceToMonitoredResource(
-  resource: IResource,
+  resource: Resource,
   includeUnsupportedResources: boolean | undefined
 ): MonitoredResource;
 export function mapOtelResourceToMonitoredResource(
-  resource: IResource,
+  resource: Resource,
   includeUnsupportedResources = false
 ): MonitoredResource {
   const attrs = resource.attributes;

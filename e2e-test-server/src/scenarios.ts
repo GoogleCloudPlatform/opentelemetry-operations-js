@@ -21,9 +21,9 @@ import {
 } from '@opentelemetry/sdk-trace-base';
 import {AlwaysOnSampler} from '@opentelemetry/sdk-trace-base';
 import {
-  Resource,
   envDetector,
   detectResourcesSync,
+  emptyResource,
 } from '@opentelemetry/resources';
 import {
   TraceExporter,
@@ -57,7 +57,7 @@ async function withTracer<R>(
 ): Promise<R> {
   const tracerProvider = new BasicTracerProvider({
     sampler: new AlwaysOnSampler(),
-    resource: Resource.EMPTY,
+    resource: emptyResource(),
     ...options.tracerConfig,
   });
   tracerProvider.addSpanProcessor(

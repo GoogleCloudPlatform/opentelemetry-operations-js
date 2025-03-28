@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import * as ot from '@opentelemetry/api';
-import {VERSION as CORE_VERSION} from '@opentelemetry/core';
-import {IResource} from '@opentelemetry/resources';
+import {Resource} from '@opentelemetry/resources';
 import {ReadableSpan} from '@opentelemetry/sdk-trace-base';
 import {
   AttributeMap,
@@ -30,10 +29,10 @@ import {
   TruncatableString,
 } from './types';
 import {mapOtelResourceToMonitoredResource} from '@google-cloud/opentelemetry-resource-util';
-import {VERSION} from './version';
+import {VERSION, OT_VERSION} from './version';
 
 const AGENT_LABEL_KEY = 'g.co/agent';
-const AGENT_LABEL_VALUE = `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`;
+const AGENT_LABEL_VALUE = `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`;
 
 export function getReadableSpanTransformer(
   projectId: string,
@@ -88,8 +87,8 @@ export function getReadableSpanTransformer(
       },
     };
 
-    if (span.parentSpanId) {
-      out.parentSpanId = span.parentSpanId;
+    if (span.parentSpanContext?.spanId) {
+      out.parentSpanId = span.parentSpanContext?.spanId;
     }
 
     return out;
@@ -200,7 +199,7 @@ function mergeAttributes(...attributeList: Attributes[]): Attributes {
 }
 
 function transformResourceToAttributes(
-  resource: IResource,
+  resource: Resource,
   projectId: string,
   resourceFilter?: RegExp,
   stringifyArrayAttributes?: boolean

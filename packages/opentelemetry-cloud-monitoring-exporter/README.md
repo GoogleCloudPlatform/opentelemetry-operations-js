@@ -23,7 +23,7 @@ npm install --save @google-cloud/opentelemetry-cloud-monitoring-exporter
 
 ```js
 const { MeterProvider, PeriodicExportingMetricReader } = require("@opentelemetry/sdk-metrics");
-const { Resource } = require("@opentelemetry/resources");
+const { resourceFromAttributes } = require("@opentelemetry/resources");
 const { MetricExporter } = require("@google-cloud/opentelemetry-cloud-monitoring-exporter");
 const { GcpDetectorSync } = require("@google-cloud/opentelemetry-resource-util");
 
@@ -34,7 +34,7 @@ const meterProvider = new MeterProvider({
   // running on GCP. These resource attributes will be translated to a specific GCP monitored
   // resource if running on GCP. Otherwise, metrics will be sent with monitored resource
   // `generic_task`.
-  resource: new Resource({
+  resource: resourceFromAttributes({
     "service.name": "example-metric-service",
     "service.namespace": "samples",
     "service.instance.id": "12345",

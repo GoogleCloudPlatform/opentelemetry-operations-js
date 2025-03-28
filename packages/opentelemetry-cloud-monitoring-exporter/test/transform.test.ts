@@ -62,7 +62,7 @@ describe('transform', () => {
           description: '',
           name: '',
           unit: '',
-          type: InstrumentType.COUNTER,
+          // type: InstrumentType.COUNTER,
           valueType: ValueType.DOUBLE,
         },
         isMonotonic: true,
@@ -86,7 +86,7 @@ describe('transform', () => {
       const data: ExponentialHistogramMetricData = {
         descriptor: {
           name: 'foohist',
-          type: InstrumentType.HISTOGRAM,
+          // type: InstrumentType.HISTOGRAM,
           description: 'Some small exponential histogram',
           unit: '',
           valueType: ValueType.DOUBLE,

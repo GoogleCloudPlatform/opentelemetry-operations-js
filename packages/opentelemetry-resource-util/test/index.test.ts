@@ -20,7 +20,7 @@
  */
 
 import {mapOtelResourceToMonitoredResource} from '../src';
-import {Resource} from '@opentelemetry/resources';
+import {resourceFromAttributes} from '@opentelemetry/resources';
 
 import * as snapshot from 'snap-shot-it';
 import * as assert from 'assert';
@@ -240,7 +240,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
     },
   ].forEach(({title, otelAttributes, includeUnsupportedResources}) => {
     it(title, () => {
-      const resource = new Resource(otelAttributes);
+      const resource = resourceFromAttributes(otelAttributes);
       const actual = mapOtelResourceToMonitoredResource(
         resource,
         includeUnsupportedResources
@@ -346,7 +346,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
         },
       ].forEach(({title, otelAttributes}) => {
         it(title, () => {
-          const resource = new Resource(otelAttributes);
+          const resource = resourceFromAttributes(otelAttributes);
           const actual = mapOtelResourceToMonitoredResource(resource);
           snapshot(actual);
         });
@@ -365,7 +365,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
       [['a', null, 'c', 'd', undefined], '["a",null,"c","d",null]'],
     ].forEach(([value, expect]) => {
       const monitoredResource = mapOtelResourceToMonitoredResource(
-        new Resource({'host.id': value})
+        resourceFromAttributes({'host.id': value})
       );
       const mappedValue = monitoredResource.labels['node_id'];
 

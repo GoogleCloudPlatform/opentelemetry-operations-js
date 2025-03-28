@@ -226,8 +226,14 @@ describe('GcpDetectorSync', () => {
   it('returns empty resource when metadata server is not available', async () => {
     metadataStub.isAvailable.resolves(false);
     const resource = new GcpDetectorSync().detect();
-    await resource.waitForAsyncAttributes?.();
-    assert.deepStrictEqual(resource.attributes, {});
+    const attributes: Record<string, unknown> = {};
+    for (const key in resource.attributes) {
+      const value = await resource.attributes[key];
+      if (value !== undefined) {
+        attributes[key] = value;
+      }
+    }
+    assert.deepStrictEqual(attributes, {});
   });
 
   describe('detects a GKE resource', () => {
@@ -246,8 +252,14 @@ describe('GcpDetectorSync', () => {
         .withArgs('attributes/cluster-location')
         .resolves('us-east4-b');
       const resource = new GcpDetectorSync().detect();
-      await resource.waitForAsyncAttributes?.();
-      assert.deepStrictEqual(resource.attributes, {
+      const attributes: Record<string, unknown> = {};
+      for (const key in resource.attributes) {
+        const value = await resource.attributes[key];
+        if (value !== undefined) {
+          attributes[key] = value;
+        }
+      }
+      assert.deepStrictEqual(attributes, {
         'cloud.account.id': 'fake-project-id',
         'cloud.availability_zone': 'us-east4-b',
         'cloud.platform': 'gcp_kubernetes_engine',
@@ -262,8 +274,14 @@ describe('GcpDetectorSync', () => {
         .withArgs('attributes/cluster-location')
         .resolves('us-east4');
       const resource = new GcpDetectorSync().detect();
-      await resource.waitForAsyncAttributes?.();
-      assert.deepStrictEqual(resource.attributes, {
+      const attributes: Record<string, unknown> = {};
+      for (const key in resource.attributes) {
+        const value = await resource.attributes[key];
+        if (value !== undefined) {
+          attributes[key] = value;
+        }
+      }
+      assert.deepStrictEqual(attributes, {
         'cloud.account.id': 'fake-project-id',
         'cloud.platform': 'gcp_kubernetes_engine',
         'cloud.provider': 'gcp',
@@ -289,8 +307,14 @@ describe('GcpDetectorSync', () => {
       .resolves('projects/233510669999/zones/us-east4-b');
 
     const resource = new GcpDetectorSync().detect();
-    await resource.waitForAsyncAttributes?.();
-    assert.deepStrictEqual(resource.attributes, {
+    const attributes: Record<string, unknown> = {};
+    for (const key in resource.attributes) {
+      const value = await resource.attributes[key];
+      if (value !== undefined) {
+        attributes[key] = value;
+      }
+    }
+    assert.deepStrictEqual(attributes, {
       'cloud.account.id': 'fake-project-id',
       'cloud.availability_zone': 'us-east4-b',
       'cloud.platform': 'gcp_compute_engine',
@@ -314,8 +338,14 @@ describe('GcpDetectorSync', () => {
       .resolves('projects/233510669999/regions/us-east4');
 
     const resource = new GcpDetectorSync().detect();
-    await resource.waitForAsyncAttributes?.();
-    assert.deepStrictEqual(resource.attributes, {
+    const attributes: Record<string, unknown> = {};
+    for (const key in resource.attributes) {
+      const value = await resource.attributes[key];
+      if (value !== undefined) {
+        attributes[key] = value;
+      }
+    }
+    assert.deepStrictEqual(attributes, {
       'cloud.account.id': 'fake-project-id',
       'cloud.platform': 'gcp_cloud_run',
       'cloud.provider': 'gcp',
@@ -338,8 +368,14 @@ describe('GcpDetectorSync', () => {
       .resolves('projects/233510669999/regions/us-east4');
 
     const resource = new GcpDetectorSync().detect();
-    await resource.waitForAsyncAttributes?.();
-    assert.deepStrictEqual(resource.attributes, {
+    const attributes: Record<string, unknown> = {};
+    for (const key in resource.attributes) {
+      const value = await resource.attributes[key];
+      if (value !== undefined) {
+        attributes[key] = value;
+      }
+    }
+    assert.deepStrictEqual(attributes, {
       'cloud.account.id': 'fake-project-id',
       'cloud.platform': 'gcp_cloud_functions',
       'cloud.provider': 'gcp',
@@ -361,8 +397,14 @@ describe('GcpDetectorSync', () => {
       .resolves('projects/233510669999/regions/us-east4');
 
     const resource = new GcpDetectorSync().detect();
-    await resource.waitForAsyncAttributes?.();
-    assert.deepStrictEqual(resource.attributes, {
+    const attributes: Record<string, unknown> = {};
+    for (const key in resource.attributes) {
+      const value = await resource.attributes[key];
+      if (value !== undefined) {
+        attributes[key] = value;
+      }
+    }
+    assert.deepStrictEqual(attributes, {
       'cloud.account.id': 'fake-project-id',
       'cloud.availability_zone': 'us-east4-b',
       'cloud.platform': 'gcp_app_engine',
@@ -383,8 +425,14 @@ describe('GcpDetectorSync', () => {
       .resolves('projects/233510669999/zones/us-east4-b');
 
     const resource = new GcpDetectorSync().detect();
-    await resource.waitForAsyncAttributes?.();
-    assert.deepStrictEqual(resource.attributes, {
+    const attributes: Record<string, unknown> = {};
+    for (const key in resource.attributes) {
+      const value = await resource.attributes[key];
+      if (value !== undefined) {
+        attributes[key] = value;
+      }
+    }
+    assert.deepStrictEqual(attributes, {
       'cloud.account.id': 'fake-project-id',
       'cloud.availability_zone': 'us-east4-b',
       'cloud.platform': 'gcp_app_engine',
@@ -402,7 +450,13 @@ describe('GcpDetectorSync', () => {
     metadataStub.project.rejects();
 
     const resource = new GcpDetectorSync().detect();
-    await resource.waitForAsyncAttributes?.();
-    assert.deepStrictEqual(resource.attributes, {});
+    const attributes: Record<string, unknown> = {};
+    for (const key in resource.attributes) {
+      const value = await resource.attributes[key];
+      if (value !== undefined) {
+        attributes[key] = value;
+      }
+    }
+    assert.deepStrictEqual(attributes, {});
   });
 });

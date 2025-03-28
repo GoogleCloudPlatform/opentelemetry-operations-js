@@ -29,7 +29,9 @@ async function getAuthenticatedClient(): Promise<AuthClient> {
 
 diag.setLogger(
   new DiagConsoleLogger(),
-  opentelemetry.core.getEnv().OTEL_LOG_LEVEL
+  opentelemetry.core.diagLogLevelFromString(
+    opentelemetry.core.getStringFromEnv('OTEL_LOG_LEVEL')
+  )
 );
 
 // App that exports metrics via gRPC with protobuf
