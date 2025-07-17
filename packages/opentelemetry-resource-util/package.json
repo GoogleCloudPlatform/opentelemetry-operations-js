@@ -61,7 +61,7 @@
     "typescript": "4.9.5"
   },
   "peerDependencies": {
-    "@opentelemetry/resources": "^^2.0.0"
+    "@opentelemetry/resources": "^2.0.0"
   },
   "dependencies": {
     "@opentelemetry/semantic-conventions": "^1.30.0",
