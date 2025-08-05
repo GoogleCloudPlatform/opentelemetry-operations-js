@@ -14,7 +14,6 @@
 
 import {status as Status} from '@grpc/grpc-js';
 import {
-  Tracer,
   BasicTracerProvider,
   BatchSpanProcessor,
   TracerConfig,
@@ -22,7 +21,7 @@ import {
 import {AlwaysOnSampler} from '@opentelemetry/sdk-trace-base';
 import {
   envDetector,
-  detectResourcesSync,
+  detectResources,
   emptyResource,
 } from '@opentelemetry/resources';
 import {
@@ -31,7 +30,7 @@ import {
 } from '@google-cloud/opentelemetry-cloud-trace-exporter';
 import {GcpDetectorSync} from '@google-cloud/opentelemetry-resource-util';
 import * as constants from './constants';
-import {context, SpanKind} from '@opentelemetry/api';
+import {context, SpanKind, Tracer} from '@opentelemetry/api';
 import {AsyncHooksContextManager} from '@opentelemetry/context-async-hooks';
 
 export interface Request {
@@ -55,19 +54,16 @@ async function withTracer<R>(
     exporterConfig?: TraceExporterOptions;
   } = {}
 ): Promise<R> {
+  const exporter = new TraceExporter({
+    projectId: constants.PROJECT_ID,
+    ...options.exporterConfig,
+  });
   const tracerProvider = new BasicTracerProvider({
     sampler: new AlwaysOnSampler(),
     resource: emptyResource(),
+    spanProcessors: [new BatchSpanProcessor(exporter)],
     ...options.tracerConfig,
   });
-  tracerProvider.addSpanProcessor(
-    new BatchSpanProcessor(
-      new TraceExporter({
-        projectId: constants.PROJECT_ID,
-        ...options.exporterConfig,
-      })
-    )
-  );
 
   try {
     return f(tracerProvider.getTracer(constants.INSTRUMENTING_MODULE_NAME));
@@ -121,7 +117,11 @@ async function complexTrace(request: Request): Promise<Response> {
 }
 
 async function detectResource(request: Request): Promise<Response> {
-  return await withTracer(
+  const resource = await detectResources({
+    detectors: [new GcpDetectorSync(), envDetector],
+  });
+
+  return withTracer(
     async (tracer: Tracer): Promise<Response> => {
       const span = tracer.startSpan('resourceDetectionTrace', {
         attributes: {[constants.TEST_ID]: request.testId},
@@ -131,11 +131,7 @@ async function detectResource(request: Request): Promise<Response> {
       return {statusCode: Status.OK, headers: {[constants.TRACE_ID]: traceId}};
     },
     {
-      tracerConfig: {
-        resource: detectResourcesSync({
-          detectors: [new GcpDetectorSync(), envDetector],
-        }),
-      },
+      tracerConfig: {resource},
       exporterConfig: {
         // Pass through all resource labels as /detectResource scenario checks for OTel
         // semantic convention attributes to be present.
