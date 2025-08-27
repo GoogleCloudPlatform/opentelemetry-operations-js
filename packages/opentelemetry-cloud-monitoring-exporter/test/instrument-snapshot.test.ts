@@ -22,11 +22,7 @@
 import {Attributes, ValueType} from '@opentelemetry/api';
 import * as snapshot from 'snap-shot-it';
 import {ExportResult, ExportResultCode} from '@opentelemetry/core';
-import {
-  ResourceMetrics,
-  InstrumentType,
-  AggregationType,
-} from '@opentelemetry/sdk-metrics';
+import {AggregationType, ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
@@ -281,18 +277,10 @@ describe('MetricExporter snapshot tests', () => {
         },
         {
           views: [
-            // new View({
-            //   instrumentName: 'mycounter',
-            //   aggregation: Aggregation.Histogram(),
-            //   name: 'myrenamedhistogram',
-            // }),
             {
               instrumentName: 'mycounter',
-              instrumentType: InstrumentType.HISTOGRAM,
+              aggregation: {type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM},
               name: 'myrenamedhistogram',
-              // aggregation: {
-              //   type: AggregationType.DEFAULT,
-              // },
             },
           ],
         }
@@ -324,16 +312,9 @@ describe('MetricExporter snapshot tests', () => {
           },
           {
             views: [
-              // new View({
-              //   instrumentName: 'myexphist',
-              //   aggregation: Aggregation.ExponentialHistogram(),
-              // }),
               {
                 instrumentName: 'myexphist',
-                instrumentType: InstrumentType.HISTOGRAM,
-                aggregation: {
-                  type: AggregationType.EXPONENTIAL_HISTOGRAM,
-                },
+                aggregation: {type: AggregationType.EXPONENTIAL_HISTOGRAM},
               },
             ],
           }
@@ -360,16 +341,9 @@ describe('MetricExporter snapshot tests', () => {
           },
           {
             views: [
-              // new View({
-              //   instrumentName: 'myexphist',
-              //   aggregation: Aggregation.ExponentialHistogram(),
-              // }),
               {
                 instrumentName: 'myexphist',
-                instrumentType: InstrumentType.HISTOGRAM,
-                aggregation: {
-                  type: AggregationType.EXPONENTIAL_HISTOGRAM,
-                },
+                aggregation: {type: AggregationType.EXPONENTIAL_HISTOGRAM},
               },
             ],
           }

@@ -1437,7 +1437,7 @@ exports['MetricExporter snapshot tests reconfigure with views ExponentialHistogr
 
 exports['MetricExporter snapshot tests reconfigure with views counter with histogram view 1'] = [
   {
-    "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/mycounter",
+    "uri": "/v3/projects/otel-starter-project/metricDescriptors/workload.googleapis.com/myrenamedhistogram",
     "body": {},
     "userAgent": [
       "opentelemetry-js/2.0.0 google-cloud-metric-exporter/0.20.0 google-api-nodejs-client/7.2.0 (gzip)"
@@ -1446,11 +1446,11 @@ exports['MetricExporter snapshot tests reconfigure with views counter with histo
   {
     "uri": "/v3/projects/otel-starter-project/metricDescriptors",
     "body": {
-      "type": "workload.googleapis.com/mycounter",
+      "type": "workload.googleapis.com/myrenamedhistogram",
       "description": "instrument description",
-      "displayName": "mycounter",
+      "displayName": "myrenamedhistogram",
       "metricKind": "CUMULATIVE",
-      "valueType": "DOUBLE",
+      "valueType": "DISTRIBUTION",
       "unit": "{myunit}",
       "labels": []
     },
@@ -1464,7 +1464,7 @@ exports['MetricExporter snapshot tests reconfigure with views counter with histo
       "timeSeries": [
         {
           "metric": {
-            "type": "workload.googleapis.com/mycounter",
+            "type": "workload.googleapis.com/myrenamedhistogram",
             "labels": {}
           },
           "resource": {
@@ -1476,11 +1476,53 @@ exports['MetricExporter snapshot tests reconfigure with views counter with histo
             }
           },
           "metricKind": "CUMULATIVE",
-          "valueType": "DOUBLE",
+          "valueType": "DISTRIBUTION",
           "points": [
             {
               "value": {
-                "doubleValue": 12.3
+                "distributionValue": {
+                  "count": "1",
+                  "mean": 12.3,
+                  "bucketOptions": {
+                    "explicitBuckets": {
+                      "bounds": [
+                        0,
+                        5,
+                        10,
+                        25,
+                        50,
+                        75,
+                        100,
+                        250,
+                        500,
+                        750,
+                        1000,
+                        2500,
+                        5000,
+                        7500,
+                        10000
+                      ]
+                    }
+                  },
+                  "bucketCounts": [
+                    "0",
+                    "0",
+                    "0",
+                    "1",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                  ]
+                }
               },
               "interval": {
                 "startTime": "startTime",
