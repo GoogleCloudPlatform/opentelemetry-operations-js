@@ -30,17 +30,13 @@ import {mountProjectIdPath, partitionList} from './utils';
 import {diag} from '@opentelemetry/api';
 import {mapOtelResourceToMonitoredResource} from '@google-cloud/opentelemetry-resource-util';
 
-import {VERSION, OT_VERSION} from './version';
+import {VERSION} from './version';
 
 // Stackdriver Monitoring v3 only accepts up to 200 TimeSeries per
 // CreateTimeSeries call.
 const MAX_BATCH_EXPORT_SIZE = 200;
 
 const OT_USER_AGENTS = [
-  {
-    product: 'opentelemetry-js',
-    version: OT_VERSION,
-  },
   {
     product: 'google-cloud-metric-exporter',
     version: VERSION,

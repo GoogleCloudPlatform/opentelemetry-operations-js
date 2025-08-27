@@ -22,11 +22,11 @@ import {promisify} from 'util';
 import {TraceExporterOptions} from './external-types';
 import {getReadableSpanTransformer} from './transform';
 import {TraceService, NamedSpans} from './types';
-import {VERSION, OT_VERSION} from './version';
+import {VERSION} from './version';
 import * as protoJson from '../protos/protos.json';
 
 const OT_REQUEST_HEADER = 'x-opentelemetry-outgoing-request';
-const TRACE_USER_AGENT = `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`;
+const TRACE_USER_AGENT = `google-cloud-trace-exporter ${VERSION}`;
 const OPTIONS: grpc.ClientOptions = {
   'grpc.primary_user_agent': TRACE_USER_AGENT,
 };

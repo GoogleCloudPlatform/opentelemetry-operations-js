@@ -414,7 +414,7 @@ describe('Google Cloud Trace Exporter', () => {
       // TODO remove conditional call once node 10 is dropped
       assert.match?.(
         userAgentMetadata[0] as string,
-        /opentelemetry-js \S+; google-cloud-trace-exporter \S+/
+        /google-cloud-trace-exporter \S+/
       );
     });
   });

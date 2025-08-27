@@ -29,10 +29,10 @@ import {
   TruncatableString,
 } from './types';
 import {mapOtelResourceToMonitoredResource} from '@google-cloud/opentelemetry-resource-util';
-import {VERSION, OT_VERSION} from './version';
+import {VERSION} from './version';
 
 const AGENT_LABEL_KEY = 'g.co/agent';
-const AGENT_LABEL_VALUE = `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`;
+const AGENT_LABEL_VALUE = `google-cloud-trace-exporter ${VERSION}`;
 
 export function getReadableSpanTransformer(
   projectId: string,
