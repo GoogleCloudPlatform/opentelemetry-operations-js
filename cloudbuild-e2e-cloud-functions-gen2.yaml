@@ -46,7 +46,7 @@ steps:
     args:
       - cloud-functions-gen2
       - --functionsource=/workspace/e2e-test-server/dist/function-source.zip
-      - --runtime=nodejs16
+      - --runtime=nodejs20
       - --entrypoint=cloudFunctionHandler
 
 logsBucket: gs://opentelemetry-ops-e2e-cloud-build-logs
