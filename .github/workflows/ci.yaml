@@ -8,19 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [14, 16, 18, 19]
-        include:
-          - node: 14
-            npm-version: ^7
+        node: [18, 20, 22, 24]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      # TODO: remove once node 14 is dropped
-      - name: Install npm@${{ matrix.npm-version }}
-        if: matrix.npm-version
-        run: npm install -g npm@${{ matrix.npm-version }}
       - run: |
           node --version
           npm --version
@@ -38,7 +31,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 19
+          node-version: 24
       - run: npm install
       - run: npm run lint
 

@@ -1,6 +1,6 @@
 # OpenTelemetry Operations Exporters for JavaScript
 
-The packages in this repository support all [officially supported Node.js versions](https://nodejs.org/en/about/releases/) (10, 12, 14, 16).
+The packages in this repository support all [officially supported Node.js versions](https://nodejs.org/en/about/releases/) (18, 20, 22, 24).
 
 To get started with instrumentation in Google Cloud, see [Generate traces and metrics with
 Node.js](https://cloud.google.com/stackdriver/docs/instrumentation/setup/nodejs).

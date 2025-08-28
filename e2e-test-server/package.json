@@ -13,7 +13,7 @@
   "license": "Apache-2.0",
   "keywords": [],
   "engines": {
-    "node": ">=14"
+    "node": ">=18"
   },
   "scripts": {
     "lint": "gts lint",
