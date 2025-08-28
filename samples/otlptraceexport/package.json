@@ -17,6 +17,9 @@
     "pretest": "npm run compile"
   },
   "keywords": [],
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@opentelemetry/api": "1.9.0",
     "@opentelemetry/resources": "2.0.0",
