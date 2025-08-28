@@ -37,9 +37,5 @@
     "!samples/instrumentation-quickstart",
     "e2e-test-server",
     "scripts"
-  ],
-  "overrides": {
-    "nx": "16.10.0",
-    "@nx/devkit": "16.10.0"
-  }
+  ]
 }
