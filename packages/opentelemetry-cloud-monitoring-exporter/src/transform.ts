@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {
-  InstrumentDescriptor,
+  MetricDescriptor as InstrumentDescriptor,
   Histogram,
   MetricData,
   DataPoint,

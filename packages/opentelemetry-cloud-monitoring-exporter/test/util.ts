@@ -20,7 +20,7 @@ import {
 } from '@opentelemetry/sdk-metrics';
 import {Attributes, Meter} from '@opentelemetry/api';
 
-import {Resource} from '@opentelemetry/resources';
+import {emptyResource} from '@opentelemetry/resources';
 
 class InMemoryMetricReader extends MetricReader {
   protected async onShutdown(): Promise<void> {}
@@ -31,9 +31,11 @@ export async function generateMetricsData(
   customize?: (meterProvider: MeterProvider, meter: Meter) => void,
   meterProviderOptions?: MeterProviderOptions
 ): Promise<ResourceMetrics> {
-  const meterProvider = new MeterProvider(meterProviderOptions);
   const reader = new InMemoryMetricReader();
-  meterProvider.addMetricReader(reader);
+  const meterProvider = new MeterProvider({
+    ...meterProviderOptions,
+    readers: [reader],
+  });
   const meter = meterProvider.getMeter('test-meter');
 
   if (customize) {
@@ -54,7 +56,7 @@ export async function generateMetricsData(
 
 export function emptyResourceMetrics(): ResourceMetrics {
   return {
-    resource: Resource.EMPTY,
+    resource: emptyResource(),
     scopeMetrics: [],
   };
 }

@@ -15,7 +15,7 @@
 import * as types from '@opentelemetry/api';
 import {diag, TraceFlags} from '@opentelemetry/api';
 import {ExportResult, ExportResultCode} from '@opentelemetry/core';
-import {Resource} from '@opentelemetry/resources';
+import {emptyResource} from '@opentelemetry/resources';
 import {ReadableSpan} from '@opentelemetry/sdk-trace-base';
 import * as assert from 'assert';
 import * as sinon from 'sinon';
@@ -186,8 +186,8 @@ describe('Google Cloud Trace Exporter', () => {
           isRemote: true,
         }),
         status: {code: types.SpanStatusCode.OK},
-        resource: Resource.empty(),
-        instrumentationLibrary: {name: 'default', version: '0.0.1'},
+        resource: emptyResource(),
+        instrumentationScope: {name: 'default', version: '0.0.1'},
         droppedAttributesCount: 0,
         droppedEventsCount: 0,
         droppedLinksCount: 0,
@@ -239,8 +239,8 @@ describe('Google Cloud Trace Exporter', () => {
           isRemote: true,
         }),
         status: {code: types.SpanStatusCode.OK},
-        resource: Resource.empty(),
-        instrumentationLibrary: {name: 'default', version: '0.0.1'},
+        resource: emptyResource(),
+        instrumentationScope: {name: 'default', version: '0.0.1'},
         droppedAttributesCount: 0,
         droppedEventsCount: 0,
         droppedLinksCount: 0,
@@ -282,8 +282,8 @@ describe('Google Cloud Trace Exporter', () => {
           isRemote: true,
         }),
         status: {code: types.SpanStatusCode.OK},
-        resource: Resource.empty(),
-        instrumentationLibrary: {name: 'default', version: '0.0.1'},
+        resource: emptyResource(),
+        instrumentationScope: {name: 'default', version: '0.0.1'},
         droppedAttributesCount: 0,
         droppedEventsCount: 0,
         droppedLinksCount: 0,
@@ -319,8 +319,8 @@ describe('Google Cloud Trace Exporter', () => {
           isRemote: true,
         }),
         status: {code: types.SpanStatusCode.OK},
-        resource: Resource.empty(),
-        instrumentationLibrary: {name: 'default', version: '0.0.1'},
+        resource: emptyResource(),
+        instrumentationScope: {name: 'default', version: '0.0.1'},
         droppedAttributesCount: 0,
         droppedEventsCount: 0,
         droppedLinksCount: 0,
@@ -354,8 +354,8 @@ describe('Google Cloud Trace Exporter', () => {
           isRemote: true,
         }),
         status: {code: types.SpanStatusCode.OK},
-        resource: Resource.empty(),
-        instrumentationLibrary: {name: 'default', version: '0.0.1'},
+        resource: emptyResource(),
+        instrumentationScope: {name: 'default', version: '0.0.1'},
         droppedAttributesCount: 0,
         droppedEventsCount: 0,
         droppedLinksCount: 0,
@@ -391,8 +391,8 @@ describe('Google Cloud Trace Exporter', () => {
           isRemote: true,
         }),
         status: {code: types.SpanStatusCode.OK},
-        resource: Resource.empty(),
-        instrumentationLibrary: {name: 'default', version: '0.0.1'},
+        resource: emptyResource(),
+        instrumentationScope: {name: 'default', version: '0.0.1'},
         droppedAttributesCount: 0,
         droppedEventsCount: 0,
         droppedLinksCount: 0,

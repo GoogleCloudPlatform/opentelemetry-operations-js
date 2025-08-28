@@ -12,11 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-  ExportResult,
-  ExportResultCode,
-  VERSION as OT_VERSION,
-} from '@opentelemetry/core';
+import {ExportResult, ExportResultCode} from '@opentelemetry/core';
 import {ReadableSpan, SpanExporter} from '@opentelemetry/sdk-trace-base';
 import {diag} from '@opentelemetry/api';
 import * as protoloader from '@grpc/proto-loader';
@@ -26,7 +22,7 @@ import {promisify} from 'util';
 import {TraceExporterOptions} from './external-types';
 import {getReadableSpanTransformer} from './transform';
 import {TraceService, NamedSpans} from './types';
-import {VERSION} from './version';
+import {VERSION, OT_VERSION} from './version';
 import * as protoJson from '../protos/protos.json';
 
 const OT_REQUEST_HEADER = 'x-opentelemetry-outgoing-request';

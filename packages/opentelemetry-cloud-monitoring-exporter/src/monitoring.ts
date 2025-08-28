@@ -17,11 +17,8 @@ import {
   ResourceMetrics,
   MetricData,
 } from '@opentelemetry/sdk-metrics';
-import {
-  ExportResult,
-  ExportResultCode,
-  VERSION as OT_VERSION,
-} from '@opentelemetry/core';
+import {ExportResult, ExportResultCode} from '@opentelemetry/core';
+
 import {ExporterOptions} from './external-types';
 import {GoogleAuth, JWT} from 'google-auth-library';
 // Import directly from this module instead of googleapis to improve bundler tree shaking
@@ -33,7 +30,7 @@ import {mountProjectIdPath, partitionList} from './utils';
 import {diag} from '@opentelemetry/api';
 import {mapOtelResourceToMonitoredResource} from '@google-cloud/opentelemetry-resource-util';
 
-import {VERSION} from './version';
+import {VERSION, OT_VERSION} from './version';
 
 // Stackdriver Monitoring v3 only accepts up to 200 TimeSeries per
 // CreateTimeSeries call.

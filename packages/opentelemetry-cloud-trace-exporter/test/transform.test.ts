@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import * as api from '@opentelemetry/api';
-import {VERSION as CORE_VERSION} from '@opentelemetry/core';
-import {Resource} from '@opentelemetry/resources';
+import {resourceFromAttributes} from '@opentelemetry/resources';
 import type {ReadableSpan} from '@opentelemetry/sdk-trace-base';
 import * as assert from 'assert';
 import {getReadableSpanTransformer} from '../src/transform';
 import {LinkType, Span, Code, Status, SpanKind} from '../src/types';
-import {VERSION} from '../src/version';
+import {VERSION, OT_VERSION} from '../src/version';
 
 describe('transform', () => {
   let readableSpan: ReadableSpan;
@@ -47,15 +46,17 @@ describe('transform', () => {
       name: 'my-span',
       spanContext: () => spanContext,
       status: {code: api.SpanStatusCode.OK},
-      resource: new Resource({
+      resource: resourceFromAttributes({
         service: 'ui',
         version: 1,
         cost: 112.12,
       }),
-      instrumentationLibrary: {name: 'default', version: '0.0.1'},
+      instrumentationScope: {name: 'default', version: '0.0.1'},
       droppedAttributesCount: 0,
       droppedEventsCount: 0,
       droppedLinksCount: 0,
+      // @ts-expect-error testing behavior with unsupported type
+      parentSpanContext: {},
     };
   });
 
@@ -67,7 +68,7 @@ describe('transform', () => {
         attributeMap: {
           'g.co/agent': {
             stringValue: {
-              value: `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`,
+              value: `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`,
             },
           },
           'g.co/r/generic_node/location': {
@@ -102,7 +103,7 @@ describe('transform', () => {
   });
   it('should transform spans with parent', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (readableSpan as any).parentSpanId = '3e0c63257de34c92';
+    (readableSpan as any).parentSpanContext.spanId = '3e0c63257de34c92';
     const result = transformer(readableSpan);
     assert.deepStrictEqual(result.parentSpanId, '3e0c63257de34c92');
   });
@@ -382,7 +383,7 @@ describe('transform', () => {
   it('should transform gce_instance resource to g.co/r/gce_instance/* labels', () => {
     const result = transformer({
       ...readableSpan,
-      resource: new Resource({
+      resource: resourceFromAttributes({
         'cloud.provider': 'gcp',
         'cloud.platform': 'gcp_compute_engine',
         'host.id': 'foobar.com',
@@ -393,7 +394,7 @@ describe('transform', () => {
       attributeMap: {
         'g.co/agent': {
           stringValue: {
-            value: `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`,
+            value: `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`,
           },
         },
         'g.co/r/gce_instance/instance_id': {
@@ -416,7 +417,7 @@ describe('transform', () => {
 
     const result = transformer({
       ...readableSpan,
-      resource: new Resource({
+      resource: resourceFromAttributes({
         'custom.foo': 'bar',
         'custom.bool': true,
         'custom.number': 5,
@@ -439,7 +440,7 @@ describe('transform', () => {
         },
         'g.co/agent': {
           stringValue: {
-            value: `opentelemetry-js ${CORE_VERSION}; google-cloud-trace-exporter ${VERSION}`,
+            value: `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`,
           },
         },
         'g.co/r/generic_node/location': {

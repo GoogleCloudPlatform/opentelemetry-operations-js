@@ -33,17 +33,45 @@ import {
   SEMRESATTRS_K8S_CLUSTER_NAME,
 } from '@opentelemetry/semantic-conventions';
 
-import {Attributes} from '@opentelemetry/api';
-import {Detector, DetectorSync, Resource} from '@opentelemetry/resources';
+import {AttributeValue, Attributes} from '@opentelemetry/api';
+import {
+  DetectedResource,
+  DetectedResourceAttributes,
+  emptyResource,
+  Resource,
+  ResourceDetector,
+  resourceFromAttributes,
+} from '@opentelemetry/resources';
 import * as metadata from 'gcp-metadata';
 import * as faas from './faas';
 import * as gae from './gae';
 import * as gce from './gce';
 import * as gke from './gke';
 
+const ATTRIBUTE_NAMES = [
+  SEMRESATTRS_CLOUD_PLATFORM,
+  SEMRESATTRS_CLOUD_AVAILABILITY_ZONE,
+  SEMRESATTRS_CLOUD_REGION,
+  SEMRESATTRS_K8S_CLUSTER_NAME,
+  SEMRESATTRS_HOST_TYPE,
+  SEMRESATTRS_HOST_ID,
+  SEMRESATTRS_HOST_NAME,
+  SEMRESATTRS_CLOUD_PROVIDER,
+  SEMRESATTRS_CLOUD_ACCOUNT_ID,
+  SEMRESATTRS_FAAS_NAME,
+  SEMRESATTRS_FAAS_VERSION,
+  SEMRESATTRS_FAAS_INSTANCE,
+] as const;
+
+// Ensure that all resource keys are accounted for in ATTRIBUTE_NAMES
+type GcpResourceAttributeName = (typeof ATTRIBUTE_NAMES)[number];
+type GcpResourceAttributes = Partial<
+  Record<GcpResourceAttributeName, AttributeValue>
+>;
+
 async function detect(): Promise<Resource> {
   if (!(await metadata.isAvailable())) {
-    return Resource.EMPTY;
+    return emptyResource();
   }
 
   // Note the order of these if checks is significant with more specific resources coming
@@ -60,7 +88,7 @@ async function detect(): Promise<Resource> {
     return await gceResource();
   }
 
-  return Resource.EMPTY;
+  return emptyResource();
 }
 
 async function gkeResource(): Promise<Resource> {
@@ -160,14 +188,14 @@ async function gceResource(): Promise<Resource> {
   });
 }
 
-async function makeResource(attrs: Attributes): Promise<Resource> {
+async function makeResource(attrs: GcpResourceAttributes): Promise<Resource> {
   const project = await metadata.project<string>('project-id');
 
-  return new Resource({
+  return resourceFromAttributes({
     [SEMRESATTRS_CLOUD_PROVIDER]: CLOUDPROVIDERVALUES_GCP,
     [SEMRESATTRS_CLOUD_ACCOUNT_ID]: project,
     ...attrs,
-  });
+  } satisfies GcpResourceAttributes);
 }
 
 /**
@@ -176,7 +204,7 @@ async function makeResource(attrs: Attributes): Promise<Resource> {
  *
  * @deprecated Async resource detectors are deprecated. Please use {@link GcpDetectorSync} instead.
  */
-export class GcpDetector implements Detector {
+export class GcpDetector {
   detect = detect;
 }
 
@@ -184,12 +212,19 @@ export class GcpDetector implements Detector {
  * Google Cloud resource detector which populates attributes based on the environment this
  * process is running in. If not on GCP, returns an empty resource.
  */
-export class GcpDetectorSync implements DetectorSync {
+export class GcpDetectorSync implements ResourceDetector {
   private async _asyncAttributes(): Promise<Attributes> {
     return (await detect()).attributes;
   }
 
-  detect(): Resource {
-    return new Resource({}, this._asyncAttributes());
+  detect(): DetectedResource {
+    const asyncAttributes = this._asyncAttributes();
+    const attributes = {} as DetectedResourceAttributes;
+    ATTRIBUTE_NAMES.forEach(name => {
+      // Each resource attribute is determined asynchronously in _gatherData().
+      attributes[name] = asyncAttributes.then(data => data[name]);
+    });
+
+    return {attributes};
   }
 }
