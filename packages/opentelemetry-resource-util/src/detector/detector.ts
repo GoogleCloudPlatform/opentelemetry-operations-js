@@ -33,14 +33,14 @@ import {
   SEMRESATTRS_K8S_CLUSTER_NAME,
 } from '@opentelemetry/semantic-conventions';
 
-import {Attributes} from '@opentelemetry/api';
+import {AttributeValue, Attributes} from '@opentelemetry/api';
 import {
+  DetectedResource,
+  DetectedResourceAttributes,
+  emptyResource,
   Resource,
   ResourceDetector,
-  DetectedResource,
-  emptyResource,
   resourceFromAttributes,
-  DetectedResourceAttributes,
 } from '@opentelemetry/resources';
 import * as metadata from 'gcp-metadata';
 import * as faas from './faas';
@@ -61,7 +61,13 @@ const ATTRIBUTE_NAMES = [
   SEMRESATTRS_FAAS_NAME,
   SEMRESATTRS_FAAS_VERSION,
   SEMRESATTRS_FAAS_INSTANCE,
-];
+] as const;
+
+// Ensure that all resource keys are accounted for in ATTRIBUTE_NAMES
+type GcpResourceAttributeName = (typeof ATTRIBUTE_NAMES)[number];
+type GcpResourceAttributes = Partial<
+  Record<GcpResourceAttributeName, AttributeValue>
+>;
 
 async function detect(): Promise<Resource> {
   if (!(await metadata.isAvailable())) {
@@ -182,14 +188,14 @@ async function gceResource(): Promise<Resource> {
   });
 }
 
-async function makeResource(attrs: Attributes): Promise<Resource> {
+async function makeResource(attrs: GcpResourceAttributes): Promise<Resource> {
   const project = await metadata.project<string>('project-id');
 
   return resourceFromAttributes({
     [SEMRESATTRS_CLOUD_PROVIDER]: CLOUDPROVIDERVALUES_GCP,
     [SEMRESATTRS_CLOUD_ACCOUNT_ID]: project,
     ...attrs,
-  });
+  } satisfies GcpResourceAttributes);
 }
 
 /**
