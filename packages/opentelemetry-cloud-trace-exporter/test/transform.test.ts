@@ -17,7 +17,7 @@ import type {ReadableSpan} from '@opentelemetry/sdk-trace-base';
 import * as assert from 'assert';
 import {getReadableSpanTransformer} from '../src/transform';
 import {LinkType, Span, Code, Status, SpanKind} from '../src/types';
-import {VERSION} from '../src/version';
+import {VERSION, OT_VERSION} from '../src/version';
 
 describe('transform', () => {
   let readableSpan: ReadableSpan;
@@ -68,7 +68,7 @@ describe('transform', () => {
         attributeMap: {
           'g.co/agent': {
             stringValue: {
-              value: `google-cloud-trace-exporter ${VERSION}`,
+              value: `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`,
             },
           },
           'g.co/r/generic_node/location': {
@@ -394,7 +394,7 @@ describe('transform', () => {
       attributeMap: {
         'g.co/agent': {
           stringValue: {
-            value: `google-cloud-trace-exporter ${VERSION}`,
+            value: `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`,
           },
         },
         'g.co/r/gce_instance/instance_id': {
@@ -440,7 +440,7 @@ describe('transform', () => {
         },
         'g.co/agent': {
           stringValue: {
-            value: `google-cloud-trace-exporter ${VERSION}`,
+            value: `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`,
           },
         },
         'g.co/r/generic_node/location': {
