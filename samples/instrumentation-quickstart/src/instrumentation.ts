@@ -29,8 +29,7 @@ import {
 import {
   ConsoleMetricExporter,
   PeriodicExportingMetricReader,
-  ExponentialHistogramAggregation,
-  DefaultAggregation,
+  AggregationType,
   InstrumentType,
 } from '@opentelemetry/sdk-metrics';
 import {OTLPMetricExporter} from '@opentelemetry/exporter-metrics-otlp-proto';
@@ -55,12 +54,12 @@ function getMetricReader() {
           // Use exponential histograms for histogram instruments.
           // This can be done using an environment variable after
           // https://github.com/open-telemetry/opentelemetry-js/issues/3920 is implemented.
-          aggregationPreference: (instrumentType: InstrumentType) =>  {
+          aggregationPreference: (instrumentType: InstrumentType) => {
             if (instrumentType === InstrumentType.HISTOGRAM) {
-              return new ExponentialHistogramAggregation()
+              return {type: AggregationType.EXPONENTIAL_HISTOGRAM};
             }
-            return new DefaultAggregation()
-          }
+            return {type: AggregationType.DEFAULT};
+          },
         }),
       });
     case 'console':
@@ -82,7 +81,9 @@ function getMetricReader() {
 
 diag.setLogger(
   new DiagConsoleLogger(),
-  opentelemetry.core.getEnv().OTEL_LOG_LEVEL
+  opentelemetry.core.diagLogLevelFromString(
+    opentelemetry.core.getStringFromEnv('OTEL_LOG_LEVEL')
+  )
 );
 
 const sdk = new opentelemetry.NodeSDK({
