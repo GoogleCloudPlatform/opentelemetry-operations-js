@@ -109,7 +109,7 @@ describe('MetricExporter', () => {
         return Promise.resolve(
           {} as Partial<
             GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
-          > as GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+          > as GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>,
         );
       });
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -120,19 +120,19 @@ describe('MetricExporter', () => {
         return Promise.resolve(
           {} as Partial<
             GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
-          > as GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>
+          > as GaxiosPromise<monitoring_v3.Schema$MetricDescriptor>,
         );
       });
 
       sinon.replace(
         exporter['_monitoring'].projects.metricDescriptors,
         'create',
-        metricDescriptorCreate as sinon.SinonSpy
+        metricDescriptorCreate as sinon.SinonSpy,
       );
       sinon.replace(
         exporter['_monitoring'].projects.metricDescriptors,
         'get',
-        metricDescriptorsGet as sinon.SinonSpy
+        metricDescriptorsGet as sinon.SinonSpy,
       );
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -145,7 +145,7 @@ describe('MetricExporter', () => {
       sinon.replace(
         exporter['_monitoring'].projects.timeSeries,
         'create',
-        timeSeries as any
+        timeSeries as any,
       );
 
       sinon.replace(exporter['_auth'], 'getClient', () => {
@@ -218,7 +218,7 @@ describe('MetricExporter', () => {
 
       assert.deepStrictEqual(
         metricDescriptorsGet.getCall(0).args[0].name,
-        'projects/not-real/metricDescriptors/workload.googleapis.com/name'
+        'projects/not-real/metricDescriptors/workload.googleapis.com/name',
       );
     });
 
@@ -249,7 +249,7 @@ describe('MetricExporter', () => {
         assert.deepStrictEqual(result, {code: ExportResultCode.SUCCESS});
         assert.deepStrictEqual(
           metricDescriptorCreate.getCall(0).args[0].requestBody!.type,
-          'workload.googleapis.com/name'
+          'workload.googleapis.com/name',
         );
         assert.strictEqual(metricDescriptorCreate.callCount, 1);
         assert.strictEqual(timeSeries.callCount, 1);
@@ -308,18 +308,18 @@ describe('MetricExporter', () => {
           exporterSkipDescriptorCreate['_monitoring'].projects
             .metricDescriptors,
           'create',
-          metricDescriptorCreate as sinon.SinonSpy
+          metricDescriptorCreate as sinon.SinonSpy,
         );
         sinon.replace(
           exporterSkipDescriptorCreate['_monitoring'].projects
             .metricDescriptors,
           'get',
-          metricDescriptorsGet as sinon.SinonSpy
+          metricDescriptorsGet as sinon.SinonSpy,
         );
         sinon.replace(
           exporterSkipDescriptorCreate['_monitoring'].projects.timeSeries,
           'create',
-          timeSeries as any
+          timeSeries as any,
         );
         sinon.replace(
           exporterSkipDescriptorCreate['_auth'],
@@ -329,7 +329,7 @@ describe('MetricExporter', () => {
               throw new Error('fail');
             }
             return {} as any;
-          }
+          },
         );
 
         resourceMetrics = await generateMetricsData();
@@ -358,7 +358,7 @@ describe('MetricExporter', () => {
 
         assert.deepStrictEqual(
           metricDescriptorCreate.getCall(0).args[0].requestBody!.type,
-          'workload.googleapis.com/name'
+          'workload.googleapis.com/name',
         );
         assert.strictEqual(metricDescriptorCreate.callCount, 1);
         assert.strictEqual(timeSeries.callCount, 1);
@@ -405,15 +405,15 @@ describe('MetricExporter', () => {
 
         assert.deepStrictEqual(
           metricDescriptorCreate.getCall(0).args[0].requestBody!.type,
-          'workload.googleapis.com/name400'
+          'workload.googleapis.com/name400',
         );
         assert.deepStrictEqual(
           metricDescriptorCreate.getCall(100).args[0].requestBody!.type,
-          'workload.googleapis.com/name300'
+          'workload.googleapis.com/name300',
         );
         assert.deepStrictEqual(
           metricDescriptorCreate.getCall(400).args[0].requestBody!.type,
-          'workload.googleapis.com/name0'
+          'workload.googleapis.com/name0',
         );
 
         assert.strictEqual(metricDescriptorCreate.callCount, 401);

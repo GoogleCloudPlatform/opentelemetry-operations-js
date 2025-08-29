@@ -42,12 +42,12 @@ describe('CloudPropagator', () => {
       cloudPropagator.inject(
         trace.setSpanContext(ROOT_CONTEXT, spanContext),
         carrier,
-        defaultTextMapSetter
+        defaultTextMapSetter,
       );
 
       assert.deepStrictEqual(
         carrier[X_CLOUD_TRACE_HEADER],
-        'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=1'
+        'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=1',
       );
     });
     it('should inject a context of a unsampled span', () => {
@@ -59,11 +59,11 @@ describe('CloudPropagator', () => {
       cloudPropagator.inject(
         trace.setSpanContext(ROOT_CONTEXT, spanContext),
         carrier,
-        defaultTextMapSetter
+        defaultTextMapSetter,
       );
       assert.deepStrictEqual(
         carrier[X_CLOUD_TRACE_HEADER],
-        'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=0'
+        'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=0',
       );
     });
   });
@@ -74,7 +74,7 @@ describe('CloudPropagator', () => {
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=1';
       const extractedSpanContext = trace
         .getSpan(
-          cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
+          cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter),
         )
         ?.spanContext();
 
@@ -91,7 +91,7 @@ describe('CloudPropagator', () => {
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=0';
       const extractedSpanContext = trace
         .getSpan(
-          cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
+          cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter),
         )
         ?.spanContext();
 
@@ -108,7 +108,7 @@ describe('CloudPropagator', () => {
         'd4cda95b652f4a1592b449d5929fda1b/7929822056569588882;o=123';
       const extractedSpanContext = trace
         .getSpan(
-          cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
+          cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter),
         )
         ?.spanContext();
 
@@ -125,13 +125,13 @@ describe('CloudPropagator', () => {
         'b75dc0042a82efcb6b0a194911272926/1258215';
       const extractedSpanContext = trace
         .getSpan(
-          cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
+          cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter),
         )
         ?.spanContext();
 
       assert.deepStrictEqual(
         extractedSpanContext!.traceId,
-        'b75dc0042a82efcb6b0a194911272926'
+        'b75dc0042a82efcb6b0a194911272926',
       );
       assert.deepStrictEqual(extractedSpanContext!.spanId, '00000000001332e7');
       assert.deepStrictEqual(extractedSpanContext!.traceFlags, TraceFlags.NONE);
@@ -143,7 +143,7 @@ describe('CloudPropagator', () => {
       ];
       const extractedSpanContext = trace
         .getSpan(
-          cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
+          cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter),
         )
         ?.spanContext();
       assert.deepStrictEqual(extractedSpanContext, {
@@ -158,10 +158,14 @@ describe('CloudPropagator', () => {
       assert.deepStrictEqual(
         trace
           .getSpan(
-            cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
+            cloudPropagator.extract(
+              ROOT_CONTEXT,
+              carrier,
+              defaultTextMapGetter,
+            ),
           )
           ?.spanContext(),
-        undefined
+        undefined,
       );
     });
 
@@ -190,7 +194,11 @@ describe('CloudPropagator', () => {
 
         const extractedSpanContext = trace
           .getSpan(
-            cloudPropagator.extract(ROOT_CONTEXT, carrier, defaultTextMapGetter)
+            cloudPropagator.extract(
+              ROOT_CONTEXT,
+              carrier,
+              defaultTextMapGetter,
+            ),
           )
           ?.spanContext();
 

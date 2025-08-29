@@ -46,7 +46,7 @@ export class CloudPropagator implements TextMapPropagator {
   inject(
     context: Context,
     carrier: unknown,
-    setter: TextMapSetter<unknown>
+    setter: TextMapSetter<unknown>,
   ): void {
     const spanContext = trace.getSpanContext(context);
     if (!spanContext) return;
@@ -61,7 +61,7 @@ export class CloudPropagator implements TextMapPropagator {
   extract(
     context: Context,
     carrier: unknown,
-    getter: TextMapGetter<unknown>
+    getter: TextMapGetter<unknown>,
   ): Context {
     const traceContextHeader = getter.get(carrier, X_CLOUD_TRACE_HEADER);
     const traceContextHeaderValue = Array.isArray(traceContextHeader)
@@ -71,7 +71,7 @@ export class CloudPropagator implements TextMapPropagator {
       return context;
     }
     const matches = traceContextHeaderValue.match(
-      /^([0-9a-fA-F]{32})(?:\/([0-9]+))(?:;o=(.*))?/
+      /^([0-9a-fA-F]{32})(?:\/([0-9]+))(?:;o=(.*))?/,
     );
 
     if (

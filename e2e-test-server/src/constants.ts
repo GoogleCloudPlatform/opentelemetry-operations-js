@@ -46,7 +46,7 @@ switch (process.env.SUBSCRIPTION_MODE) {
     break;
   default:
     throw new Error(
-      `SUBSCRIPTION_MODE must be ${SubscriptionMode.PUSH}, ${SubscriptionMode.PULL}, or unset.`
+      `SUBSCRIPTION_MODE must be ${SubscriptionMode.PUSH}, ${SubscriptionMode.PULL}, or unset.`,
     );
 }
 

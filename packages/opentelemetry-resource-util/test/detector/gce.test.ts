@@ -99,7 +99,7 @@ describe('GCE', () => {
 
       await assert.rejects(
         gce.availabilityZoneAndRegion(),
-        /zone was not in the expected format/
+        /zone was not in the expected format/,
       );
     });
   });

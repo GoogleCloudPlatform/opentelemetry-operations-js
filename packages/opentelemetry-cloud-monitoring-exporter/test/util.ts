@@ -29,7 +29,7 @@ class InMemoryMetricReader extends MetricReader {
 
 export async function generateMetricsData(
   customize?: (meterProvider: MeterProvider, meter: Meter) => void,
-  meterProviderOptions?: MeterProviderOptions
+  meterProviderOptions?: MeterProviderOptions,
 ): Promise<ResourceMetrics> {
   const reader = new InMemoryMetricReader();
   const meterProvider = new MeterProvider({

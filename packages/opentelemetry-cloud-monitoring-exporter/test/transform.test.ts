@@ -18,7 +18,6 @@ import {
   AggregationTemporality,
   DataPointType,
   ExponentialHistogramMetricData,
-  InstrumentType,
   MetricData,
 } from '@opentelemetry/sdk-metrics';
 import {DiagAPI, ValueType, diag} from '@opentelemetry/api';
@@ -70,7 +69,7 @@ describe('transform', () => {
       createTimeSeries(data, {labels: {}, type: ''}, 'workload.googleapis.com');
       sinon.assert.calledOnceWithMatch(
         diagSpy.info,
-        'Encountered unexpected dataPointType'
+        'Encountered unexpected dataPointType',
       );
     });
 
@@ -118,7 +117,7 @@ describe('transform', () => {
         createTimeSeries(
           data,
           {labels: {}, type: ''},
-          'workload.googleapis.com'
+          'workload.googleapis.com',
         ),
         [
           {
@@ -157,7 +156,7 @@ describe('transform', () => {
             },
             valueType: 'DISTRIBUTION',
           },
-        ]
+        ],
       );
     });
   });

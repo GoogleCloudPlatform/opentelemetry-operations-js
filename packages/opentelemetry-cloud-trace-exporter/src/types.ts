@@ -155,7 +155,7 @@ export interface TraceService {
   BatchWriteSpans: (
     call: NamedSpans,
     metadata: Metadata,
-    callback: Function
+    callback: Function,
   ) => void;
 }
 

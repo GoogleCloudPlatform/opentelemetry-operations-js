@@ -30,8 +30,8 @@ async function getAuthenticatedClient(): Promise<AuthClient> {
 diag.setLogger(
   new DiagConsoleLogger(),
   opentelemetry.core.diagLogLevelFromString(
-    opentelemetry.core.getStringFromEnv('OTEL_LOG_LEVEL')
-  )
+    opentelemetry.core.getStringFromEnv('OTEL_LOG_LEVEL'),
+  ),
 );
 
 // App that exports metrics via gRPC with protobuf
@@ -46,7 +46,7 @@ async function main() {
       exporter: new OTLPMetricExporter({
         credentials: credentials.combineChannelCredentials(
           credentials.createSsl(),
-          credentials.createFromGoogleCredential(authenticatedClient)
+          credentials.createFromGoogleCredential(authenticatedClient),
         ),
       }),
     }),
@@ -76,4 +76,4 @@ async function main() {
   });
 }
 
-main();
+main().catch(console.error);

@@ -86,7 +86,7 @@ describe('GKE', () => {
 
       await assert.rejects(
         gke.availabilityZoneOrRegion(),
-        /unrecognized format for cluster location/
+        /unrecognized format for cluster location/,
       );
     });
   });

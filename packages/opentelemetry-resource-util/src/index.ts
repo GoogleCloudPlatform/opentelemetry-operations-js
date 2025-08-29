@@ -229,7 +229,7 @@ export interface MonitoredResource {
  * @returns the corresponding GCM MonitoredResource
  */
 export function mapOtelResourceToMonitoredResource(
-  resource: Resource
+  resource: Resource,
 ): MonitoredResource;
 /**
  * @deprecated This overload is deprecated, do not pass the includeUnsupportedResources boolean
@@ -240,11 +240,11 @@ export function mapOtelResourceToMonitoredResource(
  */
 export function mapOtelResourceToMonitoredResource(
   resource: Resource,
-  includeUnsupportedResources: boolean | undefined
+  includeUnsupportedResources: boolean | undefined,
 ): MonitoredResource;
 export function mapOtelResourceToMonitoredResource(
   resource: Resource,
-  includeUnsupportedResources = false
+  includeUnsupportedResources = false,
 ): MonitoredResource {
   const attrs = resource.attributes;
   const platform = attrs[SEMRESATTRS_CLOUD_PLATFORM];
@@ -297,14 +297,13 @@ export function mapOtelResourceToMonitoredResource(
 
 function createMonitoredResource(
   monitoredResourceType: keyof typeof MAPPINGS,
-  resourceAttrs: Attributes
+  resourceAttrs: Attributes,
 ): MonitoredResource {
   const mapping: Mapping = MAPPINGS[monitoredResourceType];
   const labels: {[key: string]: string} = {};
 
   Object.entries(mapping).map(([mrKey, mapConfig]) => {
     let mrValue: AttributeValue | undefined;
-    const test: string | undefined = undefined;
     for (const otelKey of mapConfig.otelKeys) {
       if (
         otelKey in resourceAttrs &&

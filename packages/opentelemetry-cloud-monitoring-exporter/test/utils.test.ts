@@ -19,7 +19,7 @@ describe('utils', () => {
     it('should return the correct mounted project id path', () => {
       assert.strictEqual(
         mountProjectIdPath('any-project-id'),
-        'projects/any-project-id'
+        'projects/any-project-id',
       );
     });
   });

@@ -145,15 +145,15 @@ describe('transform', () => {
     });
     assert.deepStrictEqual(
       result.attributes!.attributeMap!.testBoolArray,
-      undefined
+      undefined,
     );
     assert.deepStrictEqual(
       result.attributes!.attributeMap!.testIntArray,
-      undefined
+      undefined,
     );
     assert.deepStrictEqual(
       result.attributes!.attributeMap!.testStringArray,
-      undefined
+      undefined,
     );
     assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 3);
   });
@@ -204,7 +204,7 @@ describe('transform', () => {
       result.attributes!.attributeMap!['/http/client_protocol'],
       {
         stringValue: {value: 'https'},
-      }
+      },
     );
     assert.deepStrictEqual(result.attributes!.attributeMap!['/http/host'], {
       stringValue: {value: 'example.com'},
@@ -372,6 +372,7 @@ describe('transform', () => {
     // some unexpected status code is converted to error
     const futureAddedCodeResult = transformer({
       ...readableSpan,
+      // @ts-expect-error
       status: {code: -10},
     });
     assert.deepStrictEqual<Status>(futureAddedCodeResult.status, {
@@ -469,35 +470,35 @@ describe('transform', () => {
         ...readableSpan,
         kind: api.SpanKind.INTERNAL,
       }).spanKind,
-      SpanKind.INTERNAL
+      SpanKind.INTERNAL,
     );
     assert.strictEqual(
       transformer({
         ...readableSpan,
         kind: api.SpanKind.SERVER,
       }).spanKind,
-      SpanKind.SERVER
+      SpanKind.SERVER,
     );
     assert.strictEqual(
       transformer({
         ...readableSpan,
         kind: api.SpanKind.CLIENT,
       }).spanKind,
-      SpanKind.CLIENT
+      SpanKind.CLIENT,
     );
     assert.strictEqual(
       transformer({
         ...readableSpan,
         kind: api.SpanKind.PRODUCER,
       }).spanKind,
-      SpanKind.PRODUCER
+      SpanKind.PRODUCER,
     );
     assert.strictEqual(
       transformer({
         ...readableSpan,
         kind: api.SpanKind.CONSUMER,
       }).spanKind,
-      SpanKind.CONSUMER
+      SpanKind.CONSUMER,
     );
   });
 
@@ -505,9 +506,10 @@ describe('transform', () => {
     assert.strictEqual(
       transformer({
         ...readableSpan,
+        // @ts-expect-error
         kind: 16,
       }).spanKind,
-      SpanKind.SPAN_KIND_UNSPECIFIED
+      SpanKind.SPAN_KIND_UNSPECIFIED,
     );
   });
 });

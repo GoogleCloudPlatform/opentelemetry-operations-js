@@ -19,7 +19,7 @@ export default createLogger({
   format: format.combine(
     format.splat(),
     format.simple(),
-    format.colorize({all: true})
+    format.colorize({all: true}),
   ),
   transports: [new transports.Console()],
 });

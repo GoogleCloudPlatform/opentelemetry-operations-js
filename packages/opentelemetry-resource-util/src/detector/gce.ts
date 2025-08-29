@@ -33,7 +33,7 @@ export async function onGce(): Promise<boolean> {
     diag.debug(
       'Could not fetch metadata attribute %s, assuming not on GCE. Error was %s',
       MACHINE_TYPE_METADATA_ATTR,
-      err
+      err,
     );
     return false;
   }
@@ -82,7 +82,7 @@ export async function availabilityZoneAndRegion(): Promise<{
   const {zone, region} = fullZone.match(re)?.groups ?? {};
   if (!zone || !region) {
     throw new Error(
-      `zone was not in the expected format: projects/PROJECT_NUM/zones/COUNTRY-REGION-ZONE. Got ${fullZone}`
+      `zone was not in the expected format: projects/PROJECT_NUM/zones/COUNTRY-REGION-ZONE. Got ${fullZone}`,
     );
   }
 

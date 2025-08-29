@@ -35,7 +35,7 @@ async function generateProtoJSON() {
     'devtools',
     'cloudtrace',
     'v2',
-    'tracing.proto'
+    'tracing.proto',
   );
   const outputFilePath = join('protos', 'protos.json');
 

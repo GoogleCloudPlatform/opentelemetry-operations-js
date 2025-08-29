@@ -81,7 +81,7 @@ describe('App Engine (GAE)', () => {
 
       await assert.rejects(
         gae.flexAvailabilityZoneAndRegion(),
-        /zone was not in the expected format/
+        /zone was not in the expected format/,
       );
     });
   });

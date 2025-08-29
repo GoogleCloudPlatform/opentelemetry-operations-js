@@ -56,7 +56,7 @@ class GcmNock {
     const replyCallback = function (
       this: nock.ReplyFnContext,
       uri: string,
-      body: nock.Body
+      body: nock.Body,
     ): nock.ReplyBody {
       const userAgent = this.req.headers['user-agent'];
       calls.push({uri, body: body as Body, userAgent});
@@ -65,7 +65,7 @@ class GcmNock {
 
     const metricDescriptorGetReplyCallback = function (
       this: nock.ReplyFnContext,
-      uri: string
+      uri: string,
     ): nock.ReplyBody {
       const userAgent = this.req.headers['user-agent'];
       calls.push({
@@ -283,7 +283,7 @@ describe('MetricExporter snapshot tests', () => {
               name: 'myrenamedhistogram',
             },
           ],
-        }
+        },
       );
 
       const result = await callExporter(resourceMetrics);
@@ -317,7 +317,7 @@ describe('MetricExporter snapshot tests', () => {
                 aggregation: {type: AggregationType.EXPONENTIAL_HISTOGRAM},
               },
             ],
-          }
+          },
         );
 
         const result = await callExporter(resourceMetrics);
@@ -346,7 +346,7 @@ describe('MetricExporter snapshot tests', () => {
                 aggregation: {type: AggregationType.EXPONENTIAL_HISTOGRAM},
               },
             ],
-          }
+          },
         );
 
         const result = await callExporter(resourceMetrics);
@@ -381,7 +381,7 @@ describe('MetricExporter snapshot tests', () => {
 
 function callExporter(
   resourceMetrics: ResourceMetrics,
-  exporterOptions?: ExporterOptions
+  exporterOptions?: ExporterOptions,
 ): Promise<ExportResult> {
   return new Promise(resolve => {
     const exporter = new MetricExporter({

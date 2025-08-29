@@ -37,7 +37,7 @@ const AGENT_LABEL_VALUE = `opentelemetry-js ${OT_VERSION}; google-cloud-trace-ex
 export function getReadableSpanTransformer(
   projectId: string,
   resourceFilter?: RegExp | undefined,
-  stringifyArrayAttributes?: boolean
+  stringifyArrayAttributes?: boolean,
 ): (span: ReadableSpan) => Span {
   return span => {
     // @todo get dropped attribute count from sdk ReadableSpan
@@ -47,15 +47,15 @@ export function getReadableSpanTransformer(
           ...span.attributes,
           [AGENT_LABEL_KEY]: AGENT_LABEL_VALUE,
         },
-        stringifyArrayAttributes
+        stringifyArrayAttributes,
       ),
       // Add in special g.co/r resource labels
       transformResourceToAttributes(
         span.resource,
         projectId,
         resourceFilter,
-        stringifyArrayAttributes
-      )
+        stringifyArrayAttributes,
+      ),
     );
 
     const out: Span = {
@@ -79,7 +79,7 @@ export function getReadableSpanTransformer(
           annotation: {
             attributes: transformAttributes(
               e.attributes ?? {},
-              stringifyArrayAttributes
+              stringifyArrayAttributes,
             ),
             description: stringToTruncatableString(e.name),
           },
@@ -146,12 +146,12 @@ function transformTime(time: ot.HrTime): Timestamp {
 }
 
 function getLinkTransformer(
-  stringifyArrayAttributes?: boolean
+  stringifyArrayAttributes?: boolean,
 ): (link: ot.Link) => Link {
   return link => ({
     attributes: transformAttributes(
       link.attributes ?? {},
-      stringifyArrayAttributes
+      stringifyArrayAttributes,
     ),
     spanId: link.context.spanId,
     traceId: link.context.traceId,
@@ -161,22 +161,22 @@ function getLinkTransformer(
 
 function transformAttributes(
   attributes: ot.SpanAttributes,
-  stringifyArrayAttributes?: boolean
+  stringifyArrayAttributes?: boolean,
 ): Attributes {
   const changedAttributes = transformAttributeNames(attributes);
   return spanAttributesToGCTAttributes(
     changedAttributes,
-    stringifyArrayAttributes
+    stringifyArrayAttributes,
   );
 }
 
 function spanAttributesToGCTAttributes(
   attributes: ot.SpanAttributes,
-  stringifyArrayAttributes?: boolean
+  stringifyArrayAttributes?: boolean,
 ): Attributes {
   const attributeMap = transformAttributeValues(
     attributes,
-    stringifyArrayAttributes
+    stringifyArrayAttributes,
   );
   return {
     attributeMap,
@@ -202,7 +202,7 @@ function transformResourceToAttributes(
   resource: Resource,
   projectId: string,
   resourceFilter?: RegExp,
-  stringifyArrayAttributes?: boolean
+  stringifyArrayAttributes?: boolean,
 ): Attributes {
   const monitoredResource = mapOtelResourceToMonitoredResource(resource);
   const attributes: ot.SpanAttributes = {};
@@ -227,7 +227,7 @@ function transformResourceToAttributes(
 
 function transformAttributeValues(
   attributes: ot.SpanAttributes,
-  stringifyArrayAttributes?: boolean
+  stringifyArrayAttributes?: boolean,
 ): AttributeMap {
   const out: AttributeMap = {};
   for (const [key, value] of Object.entries(attributes)) {
@@ -236,7 +236,7 @@ function transformAttributeValues(
     }
     const attributeValue = valueToAttributeValue(
       value,
-      stringifyArrayAttributes
+      stringifyArrayAttributes,
     );
     if (attributeValue !== undefined) {
       out[key] = attributeValue;
@@ -251,7 +251,7 @@ function stringToTruncatableString(value: string): TruncatableString {
 
 function valueToAttributeValue(
   value: ot.AttributeValue,
-  stringifyArrayAttributes?: boolean
+  stringifyArrayAttributes?: boolean,
 ): AttributeValue | undefined {
   switch (typeof value) {
     case 'number':
@@ -283,7 +283,7 @@ const HTTP_ATTRIBUTE_MAPPING: {[key: string]: string} = {
   'http.route': '/http/route',
 };
 function transformAttributeNames(
-  attributes: ot.SpanAttributes
+  attributes: ot.SpanAttributes,
 ): ot.SpanAttributes {
   const out: ot.SpanAttributes = {};
   for (const [key, value] of Object.entries(attributes)) {

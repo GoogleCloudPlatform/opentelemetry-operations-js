@@ -88,7 +88,7 @@ export class MetricExporter implements PushMetricExporter {
         'https://' + (options.apiEndpoint || 'monitoring.googleapis.com:443'),
       headers: OT_REQUEST_HEADER,
       userAgentDirectives: OT_USER_AGENTS.concat(
-        options.userAgent ? [options.userAgent] : []
+        options.userAgent ? [options.userAgent] : [],
       ),
     });
 
@@ -109,7 +109,7 @@ export class MetricExporter implements PushMetricExporter {
    */
   export(
     metrics: ResourceMetrics,
-    resultCallback: (result: ExportResult) => void
+    resultCallback: (result: ExportResult) => void,
   ): void {
     this._exportAsync(metrics).then(resultCallback, err => {
       diag.error(err.message);
@@ -128,7 +128,7 @@ export class MetricExporter implements PushMetricExporter {
    * @param resourceMetrics Metrics to be sent to the Google Cloud Monitoring backend
    */
   private async _exportAsync(
-    resourceMetrics: ResourceMetrics
+    resourceMetrics: ResourceMetrics,
   ): Promise<ExportResult> {
     if (this._projectId instanceof Promise) {
       this._projectId = await this._projectId;
@@ -142,7 +142,7 @@ export class MetricExporter implements PushMetricExporter {
 
     diag.debug('Google Cloud Monitoring export');
     const resource = mapOtelResourceToMonitoredResource(
-      resourceMetrics.resource
+      resourceMetrics.resource,
     );
     const timeSeries: TimeSeries[] = [];
     for (const scopeMetric of resourceMetrics.scopeMetrics) {
@@ -152,7 +152,7 @@ export class MetricExporter implements PushMetricExporter {
           (await this._registerMetricDescriptor(metric));
         if (isRegistered) {
           timeSeries.push(
-            ...createTimeSeries(metric, resource, this._metricPrefix)
+            ...createTimeSeries(metric, resource, this._metricPrefix),
           );
         }
       }
@@ -163,7 +163,7 @@ export class MetricExporter implements PushMetricExporter {
     };
     for (const batchedTimeSeries of partitionList(
       timeSeries,
-      MAX_BATCH_EXPORT_SIZE
+      MAX_BATCH_EXPORT_SIZE,
     )) {
       try {
         await this._sendTimeSeries(batchedTimeSeries);
@@ -188,10 +188,10 @@ export class MetricExporter implements PushMetricExporter {
    * @param metric The OpenTelemetry MetricData.
    */
   private async _registerMetricDescriptor(
-    metric: MetricData
+    metric: MetricData,
   ): Promise<boolean> {
     const isDescriptorCreated = this.createdMetricDescriptors.has(
-      metric.descriptor.name
+      metric.descriptor.name,
     );
 
     if (isDescriptorCreated) {
@@ -216,7 +216,7 @@ export class MetricExporter implements PushMetricExporter {
   private async _checkIfDescriptorExists(
     descriptor: MetricDescriptor,
     projectIdPath: string,
-    authClient: JWT
+    authClient: JWT,
   ) {
     try {
       await this._monitoring.projects.metricDescriptors.get({
@@ -235,7 +235,7 @@ export class MetricExporter implements PushMetricExporter {
    * @returns whether or not the descriptor was successfully created
    */
   private async _createMetricDescriptorIfNeeded(
-    metric: MetricData
+    metric: MetricData,
   ): Promise<boolean> {
     const authClient = await this._authorize();
     const descriptor = transformMetricDescriptor(metric, this._metricPrefix);
@@ -245,7 +245,7 @@ export class MetricExporter implements PushMetricExporter {
       const descriptorExists = await this._checkIfDescriptorExists(
         descriptor,
         projectIdPath,
-        authClient
+        authClient,
       );
       if (!descriptorExists) {
         await this._monitoring.projects.metricDescriptors.create({
