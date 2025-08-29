@@ -28,7 +28,7 @@
     "google-auth-library": "9.14.1"
   },
   "devDependencies": {
-    "gts": "5.3.1",
+    "gts": "6.0.2",
     "typescript": "4.9.5",
     "ts-node": "10.9.2"
   },
