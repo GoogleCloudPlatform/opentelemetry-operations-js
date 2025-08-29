@@ -349,24 +349,6 @@ exports['mapOtelResourceToMonitoredResource should map to aws_ec2_instance" 1'] 
   }
 }
 
-exports['mapOtelResourceToMonitoredResource should map to cloud_function" 1'] = {
-  "type": "cloud_function",
-  "labels": {
-    "region": "myregion",
-    "function_name": "myfaasname"
-  }
-}
-
-exports['mapOtelResourceToMonitoredResource should map to cloud_run_revision" 1'] = {
-  "type": "cloud_run_revision",
-  "labels": {
-    "location": "myregion",
-    "service_name": "myfaasname",
-    "configuration_name": "myfaasname",
-    "revision_name": "myfaasversion"
-  }
-}
-
 exports['mapOtelResourceToMonitoredResource should map to gae_instance" 1'] = {
   "type": "gae_instance",
   "labels": {

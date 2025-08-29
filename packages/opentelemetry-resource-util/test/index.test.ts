@@ -55,20 +55,6 @@ describe('mapOtelResourceToMonitoredResource', () => {
         'cloud.account.id': 'myawsaccount',
       },
     },
-
-    {
-      title: 'should map to cloud_run_revision"',
-      otelAttributes: {
-        'cloud.platform': 'gcp_cloud_run',
-        'cloud.region': 'myregion',
-        'faas.instance': 'myfaasinstance',
-        'faas.name': 'myfaasname',
-        'faas.version': 'myfaasversion',
-        'service.name': 'servicename',
-        'service.instance.id': 'serviceinstanceid',
-      },
-      includeUnsupportedResources: true,
-    },
     {
       title:
         'should map cloud_run_revision to generic_task when not including unsupported resources"',
@@ -82,22 +68,8 @@ describe('mapOtelResourceToMonitoredResource', () => {
         'service.namespace': 'servicens',
         'service.instance.id': 'serviceinstanceid',
       },
-      includeUnsupportedResources: false,
     },
 
-    {
-      title: 'should map to cloud_function"',
-      otelAttributes: {
-        'cloud.platform': 'gcp_cloud_functions',
-        'cloud.region': 'myregion',
-        'faas.instance': 'myfaasinstance',
-        'faas.name': 'myfaasname',
-        'faas.version': 'myfaasversion',
-        'service.name': 'servicename',
-        'service.instance.id': 'serviceinstanceid',
-      },
-      includeUnsupportedResources: true,
-    },
     {
       title:
         'should map cloud_function to generic_task when not including unsupported resources"',
@@ -111,7 +83,6 @@ describe('mapOtelResourceToMonitoredResource', () => {
         'service.namespace': 'servicens',
         'service.instance.id': 'serviceinstanceid',
       },
-      includeUnsupportedResources: false,
     },
 
     {
@@ -238,13 +209,10 @@ describe('mapOtelResourceToMonitoredResource', () => {
       title: 'should map empty resource to generic_node',
       otelAttributes: {foo: 'bar', 'no.useful': 'resourceattribs'},
     },
-  ].forEach(({title, otelAttributes, includeUnsupportedResources}) => {
+  ].forEach(({title, otelAttributes}) => {
     it(title, () => {
       const resource = resourceFromAttributes(otelAttributes);
-      const actual = mapOtelResourceToMonitoredResource(
-        resource,
-        includeUnsupportedResources,
-      );
+      const actual = mapOtelResourceToMonitoredResource(resource);
       snapshot(actual);
     });
   });

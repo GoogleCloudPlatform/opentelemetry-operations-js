@@ -17,8 +17,6 @@ import {Resource} from '@opentelemetry/resources';
 import {
   CLOUDPLATFORMVALUES_AWS_EC2,
   CLOUDPLATFORMVALUES_GCP_APP_ENGINE,
-  CLOUDPLATFORMVALUES_GCP_CLOUD_FUNCTIONS,
-  CLOUDPLATFORMVALUES_GCP_CLOUD_RUN,
   CLOUDPLATFORMVALUES_GCP_COMPUTE_ENGINE,
   SEMRESATTRS_CLOUD_ACCOUNT_ID,
   SEMRESATTRS_CLOUD_AVAILABILITY_ZONE,
@@ -230,21 +228,6 @@ export interface MonitoredResource {
  */
 export function mapOtelResourceToMonitoredResource(
   resource: Resource,
-): MonitoredResource;
-/**
- * @deprecated This overload is deprecated, do not pass the includeUnsupportedResources boolean
- * parameter. It will be removed in the next major version release.
- *
- * @param resource the OTel Resource
- * @returns the corresponding GCM MonitoredResource
- */
-export function mapOtelResourceToMonitoredResource(
-  resource: Resource,
-  includeUnsupportedResources: boolean | undefined,
-): MonitoredResource;
-export function mapOtelResourceToMonitoredResource(
-  resource: Resource,
-  includeUnsupportedResources = false,
 ): MonitoredResource {
   const attrs = resource.attributes;
   const platform = attrs[SEMRESATTRS_CLOUD_PLATFORM];
@@ -256,18 +239,6 @@ export function mapOtelResourceToMonitoredResource(
     mr = createMonitoredResource(GAE_INSTANCE, attrs);
   } else if (platform === CLOUDPLATFORMVALUES_AWS_EC2) {
     mr = createMonitoredResource(AWS_EC2_INSTANCE, attrs);
-  }
-  // Cloud Run and Cloud Functions are not writeable for custom metrics yet
-  else if (
-    includeUnsupportedResources &&
-    platform === CLOUDPLATFORMVALUES_GCP_CLOUD_RUN
-  ) {
-    mr = createMonitoredResource(CLOUD_RUN_REVISION, attrs);
-  } else if (
-    includeUnsupportedResources &&
-    platform === CLOUDPLATFORMVALUES_GCP_CLOUD_FUNCTIONS
-  ) {
-    mr = createMonitoredResource(CLOUD_FUNCTION, attrs);
   } else if (SEMRESATTRS_K8S_CLUSTER_NAME in attrs) {
     // if k8s.cluster.name is set, pattern match for various k8s resources.
     // this will also match non-cloud k8s platforms like minikube.
@@ -341,4 +312,4 @@ function createMonitoredResource(
   };
 }
 
-export {GcpDetector, GcpDetectorSync} from './detector/detector';
+export {GcpDetectorSync} from './detector/detector';
