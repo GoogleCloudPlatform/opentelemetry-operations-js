@@ -47,7 +47,7 @@
     "mocha": "10.7.3",
     "nyc": "17.1.0",
     "ts-mocha": "10.0.0",
-    "typescript": "5.0.4"
+    "typescript": "5.9.2"
   },
   "dependencies": {
     "hex2dec": "^1.0.1"
