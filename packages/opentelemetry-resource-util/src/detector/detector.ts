@@ -199,16 +199,6 @@ async function makeResource(attrs: GcpResourceAttributes): Promise<Resource> {
 }
 
 /**
- * Async Google Cloud resource detector which populates attributes based the on environment
- * this process is running in. If not on GCP, returns an empty resource.
- *
- * @deprecated Async resource detectors are deprecated. Please use {@link GcpDetectorSync} instead.
- */
-export class GcpDetector {
-  detect = detect;
-}
-
-/**
  * Google Cloud resource detector which populates attributes based on the environment this
  * process is running in. If not on GCP, returns an empty resource.
  */
