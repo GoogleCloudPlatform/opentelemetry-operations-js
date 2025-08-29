@@ -45,7 +45,7 @@
     "@opentelemetry/resources": "2.0.1",
     "@opentelemetry/sdk-trace-base": "2.0.1",
     "@types/mocha": "10.0.8",
-    "@types/node": "14.18.63",
+    "@types/node": "18.19.123",
     "@types/sinon": "17.0.3",
     "gcp-metadata": "6.1.0",
     "google-proto-files": "5.0.1",
