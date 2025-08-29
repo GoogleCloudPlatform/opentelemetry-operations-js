@@ -46,8 +46,8 @@
     "@opentelemetry/sdk-trace-base": "2.0.1",
     "@types/mocha": "10.0.8",
     "@types/node": "18.19.123",
-    "@types/sinon": "17.0.3",
-    "gcp-metadata": "6.1.0",
+    "@types/sinon": "17.0.4",
+    "gcp-metadata": "6.1.1",
     "google-proto-files": "5.0.1",
     "gts": "6.0.2",
     "mocha": "10.7.3",
@@ -60,7 +60,7 @@
   "dependencies": {
     "@google-cloud/opentelemetry-resource-util": "^2.4.0",
     "@grpc/grpc-js": "^1.1.8",
-    "@grpc/proto-loader": "^0.7.0",
+    "@grpc/proto-loader": "^0.8.0",
     "google-auth-library": "^9.0.0"
   },
   "peerDependencies": {
