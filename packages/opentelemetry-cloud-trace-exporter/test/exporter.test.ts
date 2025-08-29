@@ -58,7 +58,7 @@ describe('Google Cloud Trace Exporter', () => {
         googleAuthLibrary,
         'GoogleAuth',
         // @ts-expect-error sinon fake
-        () => FakeGoogleAuth
+        () => FakeGoogleAuth,
       );
       const exporter = new TraceExporter();
 
@@ -98,6 +98,16 @@ describe('Google Cloud Trace Exporter', () => {
     let getClientShouldFail: boolean;
     let batchWriteShouldFail: boolean;
 
+    async function doExport(
+      readableSpans: ReadableSpan[],
+    ): Promise<ExportResult> {
+      return await new Promise<ExportResult>(resolve => {
+        void exporter.export(readableSpans, result => {
+          resolve(result);
+        });
+      });
+    }
+
     beforeEach(() => {
       getClientShouldFail = false;
       batchWriteShouldFail = false;
@@ -110,7 +120,7 @@ describe('Google Cloud Trace Exporter', () => {
           } else {
             callback(null);
           }
-        }
+        },
       );
 
       sinon.replace(exporter['_auth'], 'getClient', async () => {
@@ -160,7 +170,7 @@ describe('Google Cloud Trace Exporter', () => {
             }
           };
           return def;
-        }
+        },
       );
       error = sinon.spy();
       sinon.replace(diag, 'error', error);
@@ -193,15 +203,11 @@ describe('Google Cloud Trace Exporter', () => {
         droppedLinksCount: 0,
       };
 
-      const result = await new Promise<ExportResult>(resolve => {
-        exporter.export([readableSpan], result => {
-          resolve(result);
-        });
-      });
+      const result = await doExport([readableSpan]);
 
       assert.deepStrictEqual(
         batchWrite.getCall(0).args[0].spans[0].displayName?.value,
-        'my-span'
+        'my-span',
       );
 
       assert(createSsl.calledOnceWithExactly());
@@ -209,14 +215,14 @@ describe('Google Cloud Trace Exporter', () => {
       assert(
         combineChannelCreds.calledOnceWithExactly(
           mockChannelCreds,
-          mockCallCreds
-        )
+          mockCallCreds,
+        ),
       );
       assert(
         traceServiceConstructor.calledOnceWithExactly(
           'cloudtrace.googleapis.com:443',
-          mockCombinedCreds
-        )
+          mockCombinedCreds,
+        ),
       );
       assert.strictEqual(result.code, ExportResultCode.SUCCESS);
     });
@@ -246,17 +252,8 @@ describe('Google Cloud Trace Exporter', () => {
         droppedLinksCount: 0,
       };
 
-      await new Promise(resolve => {
-        exporter.export([readableSpan], result => {
-          resolve(result);
-        });
-      });
-
-      await new Promise(resolve => {
-        exporter.export([readableSpan], result => {
-          resolve(result);
-        });
-      });
+      await doExport([readableSpan]);
+      await doExport([readableSpan]);
 
       assert(createSsl.calledOnce);
       assert(createFromGoogleCreds.calledOnce);
@@ -291,11 +288,7 @@ describe('Google Cloud Trace Exporter', () => {
 
       getClientShouldFail = true;
 
-      const result = await new Promise<ExportResult>(resolve => {
-        exporter.export([readableSpan], result => {
-          resolve(result);
-        });
-      });
+      const result = await doExport([readableSpan]);
       assert(error.getCall(0).args[0].match(/failed to create client: fail/));
       assert(traceServiceConstructor.calledOnce);
       assert.strictEqual(result.code, ExportResultCode.FAILED);
@@ -328,11 +321,7 @@ describe('Google Cloud Trace Exporter', () => {
 
       batchWriteShouldFail = true;
 
-      const result = await new Promise<ExportResult>(resolve => {
-        exporter.export([readableSpan], result => {
-          resolve(result);
-        });
-      });
+      const result = await doExport([readableSpan]);
       assert.strictEqual(result.code, ExportResultCode.FAILED);
     });
 
@@ -364,12 +353,7 @@ describe('Google Cloud Trace Exporter', () => {
       await exporter['_projectId'];
       exporter['_projectId'] = undefined;
 
-      const result = await new Promise<ExportResult>(resolve => {
-        exporter.export([readableSpan], result => {
-          resolve(result);
-        });
-      });
-
+      const result = await doExport([readableSpan]);
       assert.strictEqual(result.code, ExportResultCode.FAILED);
     });
 
@@ -398,11 +382,7 @@ describe('Google Cloud Trace Exporter', () => {
         droppedLinksCount: 0,
       };
 
-      const result = await new Promise<ExportResult>(resolve => {
-        exporter.export([readableSpan], result => {
-          resolve(result);
-        });
-      });
+      const result = await doExport([readableSpan]);
       assert.deepStrictEqual(result, {
         code: ExportResultCode.SUCCESS,
       });
@@ -414,7 +394,7 @@ describe('Google Cloud Trace Exporter', () => {
       // TODO remove conditional call once node 10 is dropped
       assert.match?.(
         userAgentMetadata[0] as string,
-        /opentelemetry-js \S+; google-cloud-trace-exporter \S+/
+        /opentelemetry-js \S+; google-cloud-trace-exporter \S+/,
       );
     });
   });

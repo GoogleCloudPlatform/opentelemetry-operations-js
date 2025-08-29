@@ -53,7 +53,7 @@ export async function availabilityZoneOrRegion(): Promise<{
   value: string;
 }> {
   const clusterLocation = await metadata.instance<string>(
-    CLUSTER_LOCATION_METADATA_ATTR
+    CLUSTER_LOCATION_METADATA_ATTR,
   );
   switch (countChar(clusterLocation, '-')) {
     case 1:
@@ -62,7 +62,7 @@ export async function availabilityZoneOrRegion(): Promise<{
       return {type: 'zone', value: clusterLocation};
     default:
       throw new Error(
-        `unrecognized format for cluster location: ${clusterLocation}`
+        `unrecognized format for cluster location: ${clusterLocation}`,
       );
   }
 }

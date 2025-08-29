@@ -45,7 +45,7 @@ import {PreciseDate} from '@google-cloud/precise-date';
  */
 export function transformMetricDescriptor(
   metric: MetricData,
-  metricPrefix: string
+  metricPrefix: string,
 ): MetricDescriptor {
   const {
     descriptor: {name, description, unit},
@@ -136,7 +136,7 @@ function transformValueType(metric: MetricData): ValueType {
 export function createTimeSeries(
   metric: MetricData,
   resource: MonitoredResource,
-  metricPrefix: string
+  metricPrefix: string,
 ): TimeSeries[] {
   const metricKind = transformMetricKind(metric);
   const valueType = transformValueType(metric);
@@ -153,7 +153,7 @@ export function createTimeSeries(
 function transformMetric<T>(
   point: DataPoint<T>,
   instrumentDescriptor: InstrumentDescriptor,
-  metricPrefix: string
+  metricPrefix: string,
 ): {type: string; labels: {[key: string]: string}} {
   const type = transformMetricType(metricPrefix, instrumentDescriptor.name);
   const labels: {[key: string]: string} = {};
@@ -169,7 +169,7 @@ function transformMetric<T>(
  */
 function transformPoints(
   metric: MetricData,
-  metricPrefix: string
+  metricPrefix: string,
 ): {point: Point; metric: Metric}[] {
   switch (metric.dataPointType) {
     case DataPointType.SUM:
@@ -179,7 +179,7 @@ function transformPoints(
         point: {
           value: transformNumberValue(
             metric.descriptor.valueType,
-            dataPoint.value
+            dataPoint.value,
           ),
           interval: {
             // Add start time for non-gauge points
@@ -219,7 +219,7 @@ function transformPoints(
       diag.info(
         'Encountered unexpected dataPointType=%s, dropping %s points',
         (metric as MetricData).dataPointType,
-        (metric as MetricData).dataPoints.length
+        (metric as MetricData).dataPoints.length,
       );
       break;
   }
@@ -229,7 +229,7 @@ function transformPoints(
 /** Transforms a OpenTelemetry Point's value to a GCM Point value. */
 function transformNumberValue(
   valueType: OTValueType,
-  value: number
+  value: number,
 ): monitoring_v3.Schema$TypedValue {
   if (valueType === OTValueType.INT) {
     return {int64Value: value.toString()};
@@ -241,7 +241,7 @@ function transformNumberValue(
 }
 
 function transformHistogramValue(
-  value: Histogram
+  value: Histogram,
 ): monitoring_v3.Schema$TypedValue {
   return {
     distributionValue: {
@@ -257,7 +257,7 @@ function transformHistogramValue(
 }
 
 function transformExponentialHistogramValue(
-  value: ExponentialHistogram
+  value: ExponentialHistogram,
 ): monitoring_v3.Schema$TypedValue {
   // Adapated from reference impl in Go which has more explanatory comments
   // https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/v1.8.0/exporter/collector/metrics.go#L582

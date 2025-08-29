@@ -71,7 +71,7 @@ export class TraceExporter implements SpanExporter {
    */
   async export(
     spans: ReadableSpan[],
-    resultCallback: (result: ExportResult) => void
+    resultCallback: (result: ExportResult) => void,
   ): Promise<void> {
     if (this._projectId instanceof Promise) {
       this._projectId = await this._projectId;
@@ -92,8 +92,8 @@ export class TraceExporter implements SpanExporter {
         getReadableSpanTransformer(
           this._projectId,
           this._resourceFilter,
-          this._stringifyArrayAttributes
-        )
+          this._stringifyArrayAttributes,
+        ),
       ),
     };
 
@@ -124,7 +124,7 @@ export class TraceExporter implements SpanExporter {
     metadata.add('user-agent', TRACE_USER_AGENT);
 
     const batchWriteSpans = promisify(
-      this._traceServiceClient.BatchWriteSpans
+      this._traceServiceClient.BatchWriteSpans,
     ).bind(this._traceServiceClient);
     try {
       await batchWriteSpans(spans, metadata);
@@ -149,7 +149,7 @@ export class TraceExporter implements SpanExporter {
     diag.debug('Google Cloud Trace authenticating');
     const creds = await this._auth.getClient();
     diag.debug(
-      'Google Cloud Trace got authentication. Initializaing rpc client'
+      'Google Cloud Trace got authentication. Initializaing rpc client',
     );
 
     const packageDefinition = protoloader.fromJSON(protoJson);
@@ -164,7 +164,7 @@ export class TraceExporter implements SpanExporter {
     return new traceService(
       this._apiEndpoint,
       grpc.credentials.combineChannelCredentials(sslCreds, callCreds),
-      OPTIONS
+      OPTIONS,
     );
   }
 }

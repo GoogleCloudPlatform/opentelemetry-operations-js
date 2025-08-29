@@ -243,7 +243,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
       const resource = resourceFromAttributes(otelAttributes);
       const actual = mapOtelResourceToMonitoredResource(
         resource,
-        includeUnsupportedResources
+        includeUnsupportedResources,
       );
       snapshot(actual);
     });
@@ -365,7 +365,7 @@ describe('mapOtelResourceToMonitoredResource', () => {
       [['a', null, 'c', 'd', undefined], '["a",null,"c","d",null]'],
     ].forEach(([value, expect]) => {
       const monitoredResource = mapOtelResourceToMonitoredResource(
-        resourceFromAttributes({'host.id': value})
+        resourceFromAttributes({'host.id': value}),
       );
       const mappedValue = monitoredResource.labels['node_id'];
 

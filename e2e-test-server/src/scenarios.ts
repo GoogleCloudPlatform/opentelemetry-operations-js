@@ -52,7 +52,7 @@ async function withTracer<R>(
   options: {
     tracerConfig?: TracerConfig;
     exporterConfig?: TraceExporterOptions;
-  } = {}
+  } = {},
 ): Promise<R> {
   const exporter = new TraceExporter({
     projectId: constants.PROJECT_ID,
@@ -105,12 +105,12 @@ async function complexTrace(request: Request): Promise<Response> {
               })
               .end();
             span.end();
-          }
+          },
         );
         tracer.startSpan('complexTrace/child3', {attributes}).end();
         span.end();
         return span.spanContext().traceId;
-      }
+      },
     );
     return {statusCode: Status.OK, headers: {[constants.TRACE_ID]: traceId}};
   });
@@ -137,7 +137,7 @@ async function detectResource(request: Request): Promise<Response> {
         // semantic convention attributes to be present.
         resourceFilter: /.*/,
       },
-    }
+    },
   );
 }
 

@@ -36,5 +36,5 @@ async function rollDice() {
 
 const intervalId = setInterval(rollDice, 10 * 1000);
 console.log(
-  `Rolling dice every ${INTERVAL_MS} ms with interval ID: ${intervalId}`
+  `Rolling dice every ${INTERVAL_MS} ms with interval ID: ${intervalId}`,
 );

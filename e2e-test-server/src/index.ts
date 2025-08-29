@@ -58,7 +58,7 @@ function pubSubPull() {
     });
   logger.info(
     'Listening on subscription %s for pubsub message',
-    constants.REQUEST_SUBSCRIPTION_NAME
+    constants.REQUEST_SUBSCRIPTION_NAME,
   );
 }
 
@@ -107,7 +107,7 @@ function pubSubPush() {
     .listen(constants.PUSH_PORT, () => {
       logger.info(
         'Listening on port %s for pubsub push messages',
-        constants.PUSH_PORT
+        constants.PUSH_PORT,
       );
     });
 }
@@ -117,9 +117,9 @@ function pubSubPush() {
  * https://cloud.google.com/functions/docs/writing/write-event-driven-functions#cloudevent-example-nodejs
  */
 function registerCloudFunction() {
-  functions.cloudEvent<PubSubPushPayload>(
+  functions.cloudEvent(
     'cloudFunctionHandler',
-    cloudEvent =>
+    (cloudEvent: functions.CloudEvent<PubSubPushPayload>) =>
       new Promise<void>((resolve, reject) => {
         logger.info('Received Cloud Event');
         const payload = cloudEvent.data!;
@@ -131,7 +131,7 @@ function registerCloudFunction() {
           nack: reject,
         };
         return onRequestMessage(message);
-      })
+      }),
   );
 }
 
@@ -183,7 +183,7 @@ async function respond(testId: string, res: scenarios.Response): Promise<void> {
     constants.RESPONSE_TOPIC_NAME,
     statusCode,
     data,
-    headers
+    headers,
   );
   await responseTopic.publishMessage({
     data,
@@ -213,7 +213,7 @@ function main(): void {
     case undefined:
       // this happens for cloud function runs which rely on functions framework to provide the entrypoint
       logger.info(
-        'Registering functions framework handler for Cloud Functions'
+        'Registering functions framework handler for Cloud Functions',
       );
       registerCloudFunction();
       return;
