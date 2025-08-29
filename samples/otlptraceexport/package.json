@@ -30,7 +30,7 @@
     "@grpc/grpc-js": "1.11.3",
     "express": "4.21.0",
     "google-auth-library": "9.14.1",
-    "axios": "1.7.7"
+    "axios": "1.8.2"
   },
   "devDependencies": {
     "gts": "5.3.1",
