@@ -12,8 +12,8 @@
   },
   "repository": "GoogleCloudPlatform/opentelemetry-operations-js",
   "dependencies": {
-    "@google-cloud/opentelemetry-cloud-monitoring-exporter": "^0.20.0",
-    "@google-cloud/opentelemetry-resource-util": "^2.0.0",
+    "@google-cloud/opentelemetry-cloud-monitoring-exporter": "^0.21.0",
+    "@google-cloud/opentelemetry-resource-util": "^3.0.0",
     "@opentelemetry/api": "1.9.0",
     "@opentelemetry/resources": "2.0.1",
     "@opentelemetry/sdk-metrics": "2.0.1"
