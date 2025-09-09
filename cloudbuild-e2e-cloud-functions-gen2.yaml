@@ -14,7 +14,7 @@
 steps:
   # Cloud Functions doesn't play nice with lerna monorepos, so bundle in the local dependencies
   # before creating the zip file.
-  - name: node:16-alpine
+  - name: node:20-alpine
     id: build
     script: |
       set -x
