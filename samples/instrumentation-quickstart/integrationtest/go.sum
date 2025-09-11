@@ -12,6 +12,8 @@ github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/GoogleCloudPlatform/opentelemetry-operations-e2e-testing/quickstarttest v0.0.0-20240906192831-0f115162e7ee h1:oxQiyJwa7vfHP6h1Ds3Z1kayJCOsOqN8YLrDr+x9NHA=
 github.com/GoogleCloudPlatform/opentelemetry-operations-e2e-testing/quickstarttest v0.0.0-20240906192831-0f115162e7ee/go.mod h1:rO1zHFu/xDhYgOK4xQWzwwrmyegPn7ywl7R90t7zPcE=
+github.com/GoogleCloudPlatform/opentelemetry-operations-e2e-testing/quickstarttest v0.0.0-20250114143142-e149ed7094ab h1:9OXXzInvP4VS3HDWKffd3VWj4R4AF2GAtk32UZpeQGM=
+github.com/GoogleCloudPlatform/opentelemetry-operations-e2e-testing/quickstarttest v0.0.0-20250114143142-e149ed7094ab/go.mod h1:rO1zHFu/xDhYgOK4xQWzwwrmyegPn7ywl7R90t7zPcE=
 github.com/Masterminds/semver/v3 v3.2.1 h1:RN9w6+7QoMeJVGyfmbcgs28Br8cvmnucEXnY0rYXWg0=
 github.com/Masterminds/semver/v3 v3.2.1/go.mod h1:qvl/7zhW3nngYb5+80sSMF+FG2BjYrf8m9wsX0PNOMQ=
 github.com/Microsoft/go-winio v0.6.2 h1:F2VQgta7ecxGYO8k3ZZz3RS8fVIXVxONVUPlNERoyfY=
