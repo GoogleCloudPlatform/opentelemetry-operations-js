@@ -41,7 +41,7 @@
     "@google-cloud/ops-js-scripts": "^1.0.0",
     "@opentelemetry/api": "1.9.0",
     "@opentelemetry/core": "2.0.1",
-    "@types/mocha": "10.0.8",
+    "@types/mocha": "10.0.10",
     "@types/node": "18.19.123",
     "gts": "6.0.2",
     "mocha": "11.7.2",
