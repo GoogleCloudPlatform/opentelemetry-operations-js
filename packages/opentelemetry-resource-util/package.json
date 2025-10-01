@@ -59,7 +59,7 @@
     "sinon": "17.0.2",
     "snap-shot-it": "7.9.10",
     "ts-mocha": "11.1.0",
-    "typescript": "5.0.4"
+    "typescript": "5.9.3"
   },
   "peerDependencies": {
     "@opentelemetry/core": "^2.0.0",
