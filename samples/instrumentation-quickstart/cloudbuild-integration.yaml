@@ -13,7 +13,7 @@
 # limitations under the License.
 
 steps:
-  - name: golang:1.23
+  - name: golang:1.25
     dir: samples/instrumentation-quickstart/integrationtest
     env:
       - COMPOSE_OVERRIDE_FILE=../docker-compose.cloudbuild.yaml
