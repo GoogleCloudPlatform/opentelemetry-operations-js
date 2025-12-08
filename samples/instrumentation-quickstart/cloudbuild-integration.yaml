@@ -20,6 +20,8 @@ steps:
       # https://github.com/testcontainers/testcontainers-go/issues/2754
       - TESTCONTAINERS_RYUK_CONNECTION_TIMEOUT=10m
       - TESTCONTAINERS_RYUK_RECONNECTION_TIMEOUT=10m
+      - GOOGLE_CLOUD_PROJECT=${_GOOGLE_CLOUD_PROJECT}
+      - GOOGLE_CLOUD_QUOTA_PROJECT=${_GOOGLE_CLOUD_PROJECT}
     script: go test -v
 
 logsBucket: gs://opentelemetry-ops-e2e-cloud-build-logs
