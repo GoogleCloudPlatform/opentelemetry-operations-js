@@ -13,13 +13,15 @@
 # limitations under the License.
 
 steps:
-  - name: golang:1.23
+  - name: golang:1.25
     dir: samples/instrumentation-quickstart/integrationtest
     env:
       - COMPOSE_OVERRIDE_FILE=../docker-compose.cloudbuild.yaml
       # https://github.com/testcontainers/testcontainers-go/issues/2754
       - TESTCONTAINERS_RYUK_CONNECTION_TIMEOUT=10m
       - TESTCONTAINERS_RYUK_RECONNECTION_TIMEOUT=10m
+      - GOOGLE_CLOUD_PROJECT=${_GOOGLE_CLOUD_PROJECT}
+      - GOOGLE_CLOUD_QUOTA_PROJECT=${_GOOGLE_CLOUD_PROJECT}
     script: go test -v
 
 logsBucket: gs://opentelemetry-ops-e2e-cloud-build-logs
