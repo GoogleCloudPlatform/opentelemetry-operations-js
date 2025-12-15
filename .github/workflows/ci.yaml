@@ -20,7 +20,7 @@ jobs:
       - run: npm install
       - run: npm test
       - name: Report Coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: true
           verbose: true
