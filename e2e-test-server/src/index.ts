@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as express from 'express';
+import express from 'express';
 import * as functions from '@google-cloud/functions-framework';
 import {PubSub, Message as PubSubMessage} from '@google-cloud/pubsub';
 import {Status} from '@grpc/grpc-js/build/src/constants';

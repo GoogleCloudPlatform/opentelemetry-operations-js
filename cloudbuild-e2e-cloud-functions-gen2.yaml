@@ -30,7 +30,7 @@ steps:
       cd e2e-test-server
       # --external will avoid bundling functions-framework. Needed so we only have one copy of
       # global variables in that package when GCF executes it.
-      npm run bundle -- --external @google-cloud/functions-framework
+      npm run bundle -- --external:@google-cloud/functions-framework
 
       # create a new fake package.json in dist/ and zip it up into a source zip for Cloud
       # Functions
