@@ -42,7 +42,7 @@
     "@opentelemetry/api": "1.9.0",
     "@opentelemetry/core": "2.0.1",
     "@types/mocha": "10.0.8",
-    "@types/node": "18.19.123",
+    "@types/node": "18.19.130",
     "gts": "6.0.2",
     "mocha": "11.7.2",
     "nyc": "17.1.0",

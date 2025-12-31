@@ -2,7 +2,7 @@ module integrationtest
 
 go 1.24.9
 
-toolchain go1.24.11
+toolchain go1.25.5
 
 require github.com/GoogleCloudPlatform/opentelemetry-operations-e2e-testing/quickstarttest v0.0.0-20251208180208-d58ab0851963
 

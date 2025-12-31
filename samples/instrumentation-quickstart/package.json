@@ -24,7 +24,7 @@
     "posttest": "npm run lint"
   },
   "devDependencies": {
-    "@types/node": "18.19.123",
+    "@types/node": "18.19.130",
     "gts": "6.0.2",
     "typescript": "5.0.4"
   },
@@ -36,6 +36,6 @@
     "@opentelemetry/sdk-node": "0.203.0",
     "axios": "1.11.0",
     "fastify": "4.23.2",
-    "pino": "9.9.0"
+    "pino": "9.14.0"
   }
 }
