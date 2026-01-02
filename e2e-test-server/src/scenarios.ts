@@ -28,7 +28,7 @@ import {
   TraceExporter,
   TraceExporterOptions,
 } from '@google-cloud/opentelemetry-cloud-trace-exporter';
-import {GcpDetectorSync} from '@google-cloud/opentelemetry-resource-util';
+import {gcpDetector} from '@opentelemetry/resource-detector-gcp';
 import * as constants from './constants';
 import {context, SpanKind, Tracer} from '@opentelemetry/api';
 import {AsyncHooksContextManager} from '@opentelemetry/context-async-hooks';
@@ -117,8 +117,8 @@ async function complexTrace(request: Request): Promise<Response> {
 }
 
 async function detectResource(request: Request): Promise<Response> {
-  const resource = await detectResources({
-    detectors: [new GcpDetectorSync(), envDetector],
+  const resource = detectResources({
+    detectors: [gcpDetector, envDetector],
   });
 
   return withTracer(
