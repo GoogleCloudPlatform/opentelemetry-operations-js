@@ -21,21 +21,21 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@grpc/grpc-js": "1.14.3",
     "@opentelemetry/api": "1.9.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "0.203.0",
+    "@opentelemetry/exporter-trace-otlp-http": "0.203.0",
+    "@opentelemetry/exporter-trace-otlp-proto": "0.203.0",
     "@opentelemetry/resources": "2.0.1",
     "@opentelemetry/sdk-node": "0.203.0",
-    "@opentelemetry/exporter-trace-otlp-grpc": "0.203.0",
-    "@opentelemetry/exporter-trace-otlp-proto": "0.203.0",
-    "@opentelemetry/exporter-trace-otlp-http": "0.203.0",
-    "@grpc/grpc-js": "1.14.3",
+    "axios": "1.13.2",
     "express": "4.22.1",
-    "google-auth-library": "9.15.1",
-    "axios": "1.11.0"
+    "google-auth-library": "9.15.1"
   },
   "devDependencies": {
     "gts": "6.0.2",
-    "typescript": "5.0.4",
-    "ts-node": "10.9.2"
+    "ts-node": "10.9.2",
+    "typescript": "5.0.4"
   },
   "description": "This example shows how to send traces to an OTLP *(OpenTelemetry Protocol)* endpoint that is protected by GCP authentication over gRPC."
 }
