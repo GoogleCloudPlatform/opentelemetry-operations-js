@@ -199,8 +199,14 @@ async function makeResource(attrs: GcpResourceAttributes): Promise<Resource> {
 }
 
 /**
- * Google Cloud resource detector which populates attributes based on the environment this
- * process is running in. If not on GCP, returns an empty resource.
+ * @deprecated The resource detector has been moved upstream to
+ * {@link https://www.npmjs.com/package/@opentelemetry/resource-detector-gcp | @opentelemetry/resource-detector-gcp }
+ * and should be used instead.
+ *
+ * Install and import the resource detector from that package instead:
+ * ```js
+ * import {gcpDetector} from '@opentelemetry/resource-detector-gcp';
+ * ```
  */
 export class GcpDetectorSync implements ResourceDetector {
   private async _asyncAttributes(): Promise<Attributes> {
