@@ -16,13 +16,18 @@ import express, {Request, Response} from 'express';
 import {rollTheDice} from './dice';
 
 import {NodeSDK} from '@opentelemetry/sdk-node';
+// [START opentelemetry_otlp_grpc_imports]
 import {OTLPTraceExporter} from '@opentelemetry/exporter-trace-otlp-grpc';
+// [END opentelemetry_otlp_grpc_imports]
+// [START opentelemetry_otlp_grpc_auth_imports]
 import {AuthClient, GoogleAuth} from 'google-auth-library';
 import {credentials} from '@grpc/grpc-js';
+// [END opentelemetry_otlp_grpc_auth_imports]
 
 const PORT = parseInt(process.env.PORT || '8080');
 const app = express();
 
+// [START opentelemetry_otlp_grpc_auth_setup]
 async function getAuthenticatedClient(): Promise<AuthClient> {
   const auth: GoogleAuth = new GoogleAuth({
     scopes: 'https://www.googleapis.com/auth/cloud-platform',
@@ -34,6 +39,8 @@ async function getAuthenticatedClient(): Promise<AuthClient> {
 async function main() {
   const authenticatedClient: AuthClient = await getAuthenticatedClient();
 
+  // [START_EXCLUDE]
+  // [START opentelemetry_otlp_grpc_init]
   const sdk = new NodeSDK({
     traceExporter: new OTLPTraceExporter({
       credentials: credentials.combineChannelCredentials(
@@ -43,6 +50,7 @@ async function main() {
     }),
   });
   sdk.start();
+  // [END opentelemetry_otlp_grpc_init]
 
   app.get('/rolldice', (req: Request, res: Response) => {
     const rolls = req.query.rolls ? parseInt(req.query.rolls.toString()) : NaN;
@@ -58,6 +66,7 @@ async function main() {
   app.listen(PORT, () => {
     console.log(`Listening for requests on http://localhost:${PORT}`);
   });
+  // [END_EXCLUDE]
 }
-
+// [END opentelemetry_otlp_grpc_auth_setup]
 main().catch(console.error);
