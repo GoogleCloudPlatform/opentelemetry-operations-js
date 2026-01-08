@@ -35,7 +35,7 @@
   "devDependencies": {
     "gts": "6.0.2",
     "ts-node": "10.9.2",
-    "typescript": "5.0.4"
+    "typescript": "5.9.3"
   },
   "description": "This example shows how to send traces to an OTLP *(OpenTelemetry Protocol)* endpoint that is protected by GCP authentication over gRPC."
 }

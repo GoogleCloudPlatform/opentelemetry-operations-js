@@ -31,7 +31,7 @@
     "@types/node": "18.19.130",
     "esbuild": "0.27.2",
     "gts": "6.0.2",
-    "typescript": "5.0.4"
+    "typescript": "5.9.3"
   },
   "dependencies": {
     "@google-cloud/functions-framework": "^3.1.3",
