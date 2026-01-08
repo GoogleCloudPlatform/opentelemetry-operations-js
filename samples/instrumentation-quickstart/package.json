@@ -30,10 +30,10 @@
   },
   "dependencies": {
     "@opentelemetry/api": "1.9.0",
-    "@opentelemetry/auto-instrumentations-node": "0.62.1",
-    "@opentelemetry/exporter-metrics-otlp-proto": "0.203.0",
-    "@opentelemetry/sdk-metrics": "2.0.1",
-    "@opentelemetry/sdk-node": "0.203.0",
+    "@opentelemetry/auto-instrumentations-node": "0.67.3",
+    "@opentelemetry/exporter-metrics-otlp-proto": "0.209.0",
+    "@opentelemetry/sdk-metrics": "2.3.0",
+    "@opentelemetry/sdk-node": "0.209.0",
     "axios": "1.13.2",
     "fastify": "4.23.2",
     "pino": "9.14.0"
