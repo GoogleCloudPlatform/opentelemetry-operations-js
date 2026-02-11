@@ -28,7 +28,7 @@
     "@opentelemetry/exporter-trace-otlp-proto": "0.203.0",
     "@opentelemetry/resources": "2.0.1",
     "@opentelemetry/sdk-node": "0.203.0",
-    "axios": "1.13.2",
+    "axios": "1.13.5",
     "express": "4.22.1",
     "google-auth-library": "9.15.1"
   },
