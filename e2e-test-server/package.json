@@ -44,7 +44,7 @@
     "@opentelemetry/resource-detector-gcp": "^0.44.0",
     "@opentelemetry/resources": "^2.0.0",
     "@opentelemetry/sdk-trace-base": "^2.0.0",
-    "express": "^4.21.0",
+    "express": "^4.22.2",
     "winston": "^3.3.3"
   }
 }
