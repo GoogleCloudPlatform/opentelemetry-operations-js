@@ -26,14 +26,19 @@ steps:
   - name: $_TEST_RUNNER_IMAGE
     id: run-tests-gce
     dir: /
-    env: ["PROJECT_ID=$PROJECT_ID"]
+    env: ["PROJECT_ID=$PROJECT_ID", "TEST_RUN_ID=$BUILD_ID"]
     args:
       - gce
       - --image=$_TEST_SERVER_IMAGE
       - --health-check-timeout=8m
+      - --skip-cleanup
 
 logsBucket: gs://opentelemetry-ops-e2e-cloud-build-logs
 timeout: 20m
 substitutions:
   _TEST_RUNNER_IMAGE: us-central1-docker.pkg.dev/${PROJECT_ID}/e2e-testing/opentelemetry-operations-e2e-testing:0.22.0
   _TEST_SERVER_IMAGE: us-central1-docker.pkg.dev/${PROJECT_ID}/e2e-testing/opentelemetry-operations-js-e2e-test-server:${SHORT_SHA}
+
+options:
+  # Notify for Cloud Build async cleanup trigger
+  pubsubTopic: projects/opentelemetry-ops-e2e/topics/e2e-cleanup
