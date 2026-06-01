@@ -33,6 +33,8 @@ import {VERSION, OT_VERSION} from './version';
 
 const AGENT_LABEL_KEY = 'g.co/agent';
 const AGENT_LABEL_VALUE = `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`;
+const OTEL_SCOPE_NAME_KEY = 'otel.scope.name';
+const OTEL_SCOPE_VERSION_KEY = 'otel.scope.version';
 
 export function getReadableSpanTransformer(
   projectId: string,
@@ -45,6 +47,10 @@ export function getReadableSpanTransformer(
       transformAttributes(
         {
           ...span.attributes,
+          [OTEL_SCOPE_NAME_KEY]: span.instrumentationScope.name,
+          ...(span.instrumentationScope.version
+            ? {[OTEL_SCOPE_VERSION_KEY]: span.instrumentationScope.version}
+            : {}),
           [AGENT_LABEL_KEY]: AGENT_LABEL_VALUE,
         },
         stringifyArrayAttributes,

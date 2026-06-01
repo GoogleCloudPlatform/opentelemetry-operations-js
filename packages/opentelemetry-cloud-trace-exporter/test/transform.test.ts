@@ -71,6 +71,16 @@ describe('transform', () => {
               value: `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`,
             },
           },
+          'otel.scope.name': {
+            stringValue: {
+              value: 'default',
+            },
+          },
+          'otel.scope.version': {
+            stringValue: {
+              value: '0.0.1',
+            },
+          },
           'g.co/r/generic_node/location': {
             stringValue: {
               value: 'global',
@@ -111,6 +121,31 @@ describe('transform', () => {
   it('should transform spans without parent', () => {
     const result = transformer(readableSpan);
     assert.deepStrictEqual(result.parentSpanId, undefined);
+  });
+
+  it('should transform instrumentation scope metadata', () => {
+    readableSpan = {
+      ...readableSpan,
+      instrumentationScope: {
+        name: 'custom-instrumentation',
+        version: '1.2.3',
+      },
+    };
+
+    const result = transformer(readableSpan);
+
+    assert.deepStrictEqual(
+      result.attributes!.attributeMap!['otel.scope.name'],
+      {
+        stringValue: {value: 'custom-instrumentation'},
+      },
+    );
+    assert.deepStrictEqual(
+      result.attributes!.attributeMap!['otel.scope.version'],
+      {
+        stringValue: {value: '1.2.3'},
+      },
+    );
   });
 
   it('should transform remote spans', () => {
@@ -216,8 +251,9 @@ describe('transform', () => {
     readableSpan.attributes.testUnknownType = {message: 'dropped'};
     const result = transformer(readableSpan);
     assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 1);
-    // count of 4 for the g.co/agent attribute + three g.co/r/generic_node/{label} labels
-    assert.strictEqual(Object.keys(result.attributes!.attributeMap!).length, 4);
+    // count of 6 for g.co/agent, two otel.scope attributes, and three
+    // g.co/r/generic_node/{label} labels
+    assert.strictEqual(Object.keys(result.attributes!.attributeMap!).length, 6);
   });
 
   it('should transform links', () => {
@@ -398,6 +434,16 @@ describe('transform', () => {
             value: `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`,
           },
         },
+        'otel.scope.name': {
+          stringValue: {
+            value: 'default',
+          },
+        },
+        'otel.scope.version': {
+          stringValue: {
+            value: '0.0.1',
+          },
+        },
         'g.co/r/gce_instance/instance_id': {
           stringValue: {
             value: 'foobar.com',
@@ -442,6 +488,16 @@ describe('transform', () => {
         'g.co/agent': {
           stringValue: {
             value: `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`,
+          },
+        },
+        'otel.scope.name': {
+          stringValue: {
+            value: 'default',
+          },
+        },
+        'otel.scope.version': {
+          stringValue: {
+            value: '0.0.1',
           },
         },
         'g.co/r/generic_node/location': {
