@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "@google-cloud/opentelemetry-resource-util": "^3.0.0",
-    "@grpc/grpc-js": "^1.1.8",
+    "@grpc/grpc-js": "^1.14.4",
     "@grpc/proto-loader": "^0.8.0",
     "google-auth-library": "^9.0.0"
   },
