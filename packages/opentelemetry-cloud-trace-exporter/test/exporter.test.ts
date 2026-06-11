@@ -48,6 +48,27 @@ describe('Google Cloud Trace Exporter', () => {
       assert.strictEqual(id, 'not-real');
     });
 
+    it('should prefer an explicitly configured projectId', async () => {
+      const getProjectIdFake = sinon.fake.resolves('quota-project');
+      class FakeGoogleAuth {
+        getProjectId = getProjectIdFake;
+      }
+      sinon.replaceGetter(
+        googleAuthLibrary,
+        'GoogleAuth',
+        // @ts-expect-error sinon fake
+        () => FakeGoogleAuth,
+      );
+
+      const exporter = new TraceExporter({
+        projectId: 'explicit-project',
+      });
+
+      const id = (await exporter['_projectId']) as string;
+      assert.strictEqual(id, 'explicit-project');
+      assert.ok(getProjectIdFake.notCalled);
+    });
+
     it('should construct exporter in GCE/GCP environment without args', async () => {
       delete process.env.GCLOUD_PROJECT;
       const getProjectIdFake = sinon.fake.resolves('fake-project-id');

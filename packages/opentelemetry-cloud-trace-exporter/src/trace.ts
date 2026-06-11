@@ -54,11 +54,15 @@ export class TraceExporter implements SpanExporter {
       scopes: ['https://www.googleapis.com/auth/cloud-platform'],
     });
 
-    // Start this async process as early as possible. It will be
-    // awaited on the first export because constructors are synchronous
-    this._projectId = this._auth.getProjectId().catch(err => {
-      diag.error(err);
-    });
+    if (options.projectId) {
+      this._projectId = options.projectId;
+    } else {
+      // Start this async process as early as possible. It will be
+      // awaited on the first export because constructors are synchronous
+      this._projectId = this._auth.getProjectId().catch(err => {
+        diag.error(err);
+      });
+    }
 
     if (options.apiEndpoint) {
       this._apiEndpoint = options.apiEndpoint;
