@@ -149,7 +149,7 @@ export class TraceExporter implements SpanExporter {
     diag.debug('Google Cloud Trace authenticating');
     const creds = await this._auth.getClient();
     diag.debug(
-      'Google Cloud Trace got authentication. Initializaing rpc client',
+      'Google Cloud Trace got authentication. Initializing rpc client',
     );
 
     const packageDefinition = protoloader.fromJSON(protoJson);

@@ -121,7 +121,7 @@ export class MetricExporter implements PushMetricExporter {
   async forceFlush(): Promise<void> {}
 
   /**
-   * Asnyc wrapper for the {@link export} implementation.
+   * Async wrapper for the {@link export} implementation.
    * Writes the current values of all exported {@link MetricRecord}s
    * to the Google Cloud Monitoring backend.
    *
