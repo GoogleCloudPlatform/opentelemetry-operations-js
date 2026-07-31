@@ -211,7 +211,7 @@ describe('Google Cloud Trace Exporter', () => {
       );
 
       assert(createSsl.calledOnceWithExactly());
-      assert(createFromGoogleCreds.calledOnceWithExactly(mockClient));
+      assert(createFromGoogleCreds.calledOnce);
       assert(
         combineChannelCreds.calledOnceWithExactly(
           mockChannelCreds,
@@ -259,6 +259,47 @@ describe('Google Cloud Trace Exporter', () => {
       assert(createFromGoogleCreds.calledOnce);
       assert(combineChannelCreds.calledOnce);
       assert(traceServiceConstructor.calledOnce);
+    });
+
+    it('should convert WHATWG Headers to plain object for createFromGoogleCredential', async () => {
+      const readableSpan: ReadableSpan = {
+        attributes: {},
+        duration: [32, 800000000],
+        startTime: [1566156729, 709],
+        endTime: [1566156731, 709],
+        ended: true,
+        events: [],
+        kind: types.SpanKind.CLIENT,
+        links: [],
+        name: 'my-span',
+        spanContext: () => ({
+          traceId: 'd4cda95b652f4a1592b449d5929fda1b',
+          spanId: '6e0c63257de34c92',
+          traceFlags: TraceFlags.NONE,
+          isRemote: true,
+        }),
+        status: {code: types.SpanStatusCode.OK},
+        resource: emptyResource(),
+        instrumentationScope: {name: 'default', version: '0.0.1'},
+        droppedAttributesCount: 0,
+        droppedEventsCount: 0,
+        droppedLinksCount: 0,
+      };
+
+      await doExport([readableSpan]);
+      const authAdapter = createFromGoogleCreds.getCall(0).args[0];
+
+      const mockHeaders = new Headers({
+        Authorization: 'Bearer fake-token',
+      });
+      mockClient.getRequestHeaders = sinon.fake.resolves(mockHeaders);
+
+      const headers = await authAdapter.getRequestHeaders(
+        'https://test.googleapis.com',
+      );
+      assert.deepStrictEqual(headers, {
+        authorization: 'Bearer fake-token',
+      });
     });
 
     it('should return FAILED if authorization fails', async () => {

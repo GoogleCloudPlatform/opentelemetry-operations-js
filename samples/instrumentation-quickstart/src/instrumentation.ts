@@ -72,7 +72,7 @@ function getMetricReader() {
       return undefined;
     default:
       throw Error(
-        `no valid option for OTEL_METRICS_EXPORTER: ${process.env.OTEL_METRICS_EXPORTER}`
+        `no valid option for OTEL_METRICS_EXPORTER: ${process.env.OTEL_METRICS_EXPORTER}`,
       );
   }
 }
@@ -82,8 +82,8 @@ function getMetricReader() {
 diag.setLogger(
   new DiagConsoleLogger(),
   opentelemetry.core.diagLogLevelFromString(
-    opentelemetry.core.getStringFromEnv('OTEL_LOG_LEVEL')
-  )
+    opentelemetry.core.getStringFromEnv('OTEL_LOG_LEVEL'),
+  ),
 );
 
 const sdk = new opentelemetry.NodeSDK({
@@ -101,7 +101,7 @@ try {
 } catch (error) {
   diag.error(
     'Error initializing OpenTelemetry SDK. Your application is not instrumented and will not produce telemetry',
-    error
+    error,
   );
 }
 
