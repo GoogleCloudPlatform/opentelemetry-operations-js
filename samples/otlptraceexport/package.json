@@ -22,12 +22,12 @@
   },
   "dependencies": {
     "@grpc/grpc-js": "1.14.4",
-    "@opentelemetry/api": "1.9.0",
-    "@opentelemetry/exporter-trace-otlp-grpc": "0.203.0",
-    "@opentelemetry/exporter-trace-otlp-http": "0.203.0",
-    "@opentelemetry/exporter-trace-otlp-proto": "0.203.0",
-    "@opentelemetry/resources": "2.0.1",
-    "@opentelemetry/sdk-node": "0.217.0",
+    "@opentelemetry/api": "1.9.1",
+    "@opentelemetry/exporter-trace-otlp-grpc": "0.221.0",
+    "@opentelemetry/exporter-trace-otlp-http": "0.221.0",
+    "@opentelemetry/exporter-trace-otlp-proto": "0.221.0",
+    "@opentelemetry/resources": "2.10.0",
+    "@opentelemetry/sdk-node": "0.221.0",
     "axios": "1.15.2",
     "express": "4.22.1",
     "google-auth-library": "10.5.0"
