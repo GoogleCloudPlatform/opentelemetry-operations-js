@@ -45,7 +45,14 @@ async function main() {
     traceExporter: new OTLPTraceExporter({
       credentials: credentials.combineChannelCredentials(
         credentials.createSsl(),
-        credentials.createFromGoogleCredential(authenticatedClient),
+        credentials.createFromGoogleCredential({
+          async getRequestHeaders(
+            url?: string,
+          ): Promise<{[index: string]: string}> {
+            const headers = await authenticatedClient.getRequestHeaders(url);
+            return Object.fromEntries(headers.entries());
+          },
+        }),
       ),
     }),
   });

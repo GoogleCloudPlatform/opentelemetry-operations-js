@@ -159,8 +159,17 @@ export class TraceExporter implements SpanExporter {
     const traceService: new (
       ...args: ConstructorParameters<typeof grpc.Client>
     ) => TraceService = google.devtools.cloudtrace.v2.TraceService;
+
     const sslCreds = grpc.credentials.createSsl();
-    const callCreds = grpc.credentials.createFromGoogleCredential(creds);
+    const callCreds = grpc.credentials.createFromGoogleCredential({
+      async getRequestHeaders(
+        url?: string,
+      ): Promise<{[index: string]: string}> {
+        const headers = await creds.getRequestHeaders(url);
+        return Object.fromEntries(headers.entries());
+      },
+    });
+
     return new traceService(
       this._apiEndpoint,
       grpc.credentials.combineChannelCredentials(sslCreds, callCreds),
