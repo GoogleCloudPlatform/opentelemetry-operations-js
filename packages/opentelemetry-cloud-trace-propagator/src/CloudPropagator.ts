@@ -38,7 +38,10 @@ import {decToHex, hexToDec} from 'hex2dec';
  *  {TRACE_TRUE} must be 1 to trace request. Specify 0 to not trace the request.
  */
 
-/** Header that carries span context across Google infrastructure. */
+/**
+ * Legacy Google Cloud Trace header that carries span context across some Google
+ * infrastructure. Prefer W3C Trace Context where possible.
+ */
 export const X_CLOUD_TRACE_HEADER = 'x-cloud-trace-context';
 const FIELDS = [X_CLOUD_TRACE_HEADER];
 
