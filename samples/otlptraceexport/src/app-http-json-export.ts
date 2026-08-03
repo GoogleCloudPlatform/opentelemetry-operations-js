@@ -32,12 +32,13 @@ async function getAuthenticatedClient(): Promise<AuthClient> {
 // Express App that exports traces over HTTP with JSON
 async function main() {
   const authenticatedClient = await getAuthenticatedClient();
-  const rawHeaders = await authenticatedClient.getRequestHeaders();
-  const requestHeaders = Object.fromEntries(rawHeaders.entries());
 
   const sdk = new NodeSDK({
     traceExporter: new OTLPTraceExporter({
-      headers: requestHeaders,
+      async headers() {
+        const rawHeaders = await authenticatedClient.getRequestHeaders();
+        return Object.fromEntries(rawHeaders.entries());
+      },
     }),
   });
   sdk.start();
