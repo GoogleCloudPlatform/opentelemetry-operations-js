@@ -34,7 +34,7 @@
     "@opentelemetry/exporter-metrics-otlp-proto": "0.221.0",
     "@opentelemetry/sdk-metrics": "2.10.0",
     "@opentelemetry/sdk-node": "0.221.0",
-    "axios": "1.15.2",
+    "axios": "1.16.0",
     "fastify": "4.23.2",
     "pino": "9.14.0"
   }
