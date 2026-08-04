@@ -45,12 +45,14 @@
       ],
       "groupName": "fastify"
     },
+    // Block google-auth-library updates to prevent duplicate nested package installs
+    // and TS2769 nominal type errors until googleapis-common (googleapis/google-cloud-node)
+    // upgrades or unpins its exact google-auth-library@10.5.0 dependency.
     {
-      "groupName": "google-auth-library monorepo sync",
       "matchPackageNames": [
         "google-auth-library"
       ],
-      "rangeStrategy": "pin"
+      "enabled": false
     }
   ]
 }
