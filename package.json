@@ -36,8 +36,5 @@
     "samples/*",
     "e2e-test-server",
     "scripts"
-  ],
-  "dependencies": {
-    "google-auth-library": "^10.5.0"
-  }
+  ]
 }
