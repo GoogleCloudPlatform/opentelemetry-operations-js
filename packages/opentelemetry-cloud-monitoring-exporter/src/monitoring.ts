@@ -52,6 +52,11 @@ const OT_REQUEST_HEADER = {
 
 /**
  * Format and sends metrics information to Google Cloud Monitoring.
+ * @deprecated This exporter is deprecated. Please use native OpenTelemetry Protocol (OTLP)
+ * endpoints via the Telemetry API and the community-maintained OTLP exporters instead
+ * (e.g., `@opentelemetry/exporter-metrics-otlp-http` or `@opentelemetry/exporter-metrics-otlp-grpc`).
+ * See the {@link https://docs.cloud.google.com/stackdriver/docs/reference/telemetry/overview | Telemetry API documentation}
+ * for more information.
  */
 export class MetricExporter implements PushMetricExporter {
   private _projectId: string | void | Promise<string | void>;

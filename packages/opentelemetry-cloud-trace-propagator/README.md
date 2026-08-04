@@ -1,3 +1,6 @@
+> [!WARNING]
+> This package is **deprecated**. Google Cloud infrastructure now natively supports standard W3C Trace Context headers. Please use standard W3C Trace Context propagation (e.g., `@opentelemetry/core` `W3CTraceContextPropagator`) instead.
+
 # OpenTelemetry Google Cloud Trace Propagator
 [![NPM Published Version][npm-img]][npm-url]
 [![Apache License][license-image]][license-image]

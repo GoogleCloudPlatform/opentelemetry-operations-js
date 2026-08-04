@@ -1,3 +1,6 @@
+> [!WARNING]
+> This package is **deprecated**. Please migrate to community-maintained OTLP exporters (e.g., `@opentelemetry/exporter-metrics-otlp-http` or `@opentelemetry/exporter-metrics-otlp-grpc`). See the [Telemetry API Documentation](https://cloud.google.com/stackdriver/docs/reference/telemetry/overview) for details.
+
 # OpenTelemetry Google Cloud Monitoring Exporter
 [![NPM Published Version][npm-img]][npm-url]
 [![Apache License][license-image]][license-image]

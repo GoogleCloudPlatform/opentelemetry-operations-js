@@ -1,3 +1,6 @@
+> [!WARNING]
+> This package is **deprecated**. Please migrate to community-maintained OTLP exporters (e.g., `@opentelemetry/exporter-trace-otlp-http` or `@opentelemetry/exporter-trace-otlp-grpc`). See the [Migration Guide](https://docs.cloud.google.com/stackdriver/docs/instrumentation/migrate-to-otlp-endpoints) for details.
+
 # OpenTelemetry Google Cloud Trace Exporter
 [![NPM Published Version][npm-img]][npm-url]
 [![Apache License][license-image]][license-image]

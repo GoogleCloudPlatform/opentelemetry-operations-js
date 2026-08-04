@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * @deprecated This interface is deprecated along with the legacy `TraceExporter`.
+ * Please migrate to community-maintained OTLP exporters.
+ */
 export interface TraceExporterOptions {
   /**
    * Google Cloud Platform project ID where your traces will be stored.
@@ -54,6 +58,10 @@ export interface TraceExporterOptions {
   stringifyArrayAttributes?: boolean;
 }
 
+/**
+ * @deprecated This interface is deprecated along with the legacy `TraceExporter`.
+ * Please migrate to community-maintained OTLP exporters.
+ */
 export interface Credentials {
   client_email?: string;
   private_key?: string;
