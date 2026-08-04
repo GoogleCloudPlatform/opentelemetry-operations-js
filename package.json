@@ -31,6 +31,11 @@
   "devDependencies": {
     "lerna": "8.2.4"
   },
+  "overrides": {
+    "googleapis-common": {
+      "google-auth-library": "10.9.1"
+    }
+  },
   "workspaces": [
     "packages/*",
     "samples/*",
