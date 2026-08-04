@@ -199,7 +199,8 @@ async function makeResource(attrs: GcpResourceAttributes): Promise<Resource> {
 }
 
 /**
- * @deprecated The resource detector has been moved upstream to
+ * @deprecated The resource detector is deprecated and will be archived after October 30th, 2026.
+ * It has been moved upstream to
  * {@link https://www.npmjs.com/package/@opentelemetry/resource-detector-gcp | @opentelemetry/resource-detector-gcp }
  * and should be used instead.
  *
@@ -207,8 +208,20 @@ async function makeResource(attrs: GcpResourceAttributes): Promise<Resource> {
  * ```js
  * import {gcpDetector} from '@opentelemetry/resource-detector-gcp';
  * ```
+ *
+ * See the {@link https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/MIGRATION.md | Migration Guide}
+ * for more information.
  */
 export class GcpDetectorSync implements ResourceDetector {
+  constructor() {
+    process.emitWarning(
+      'Google Cloud OpenTelemetry Resource Detector (@google-cloud/opentelemetry-resource-util) is deprecated and will be archived after October 30th, 2026. Please migrate to @opentelemetry/resource-detector-gcp. For migration details, see https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/MIGRATION.md',
+      'DeprecationWarning',
+      'DEP_GCP_OTEL_RESOURCE_DETECTOR',
+      GcpDetectorSync,
+    );
+  }
+
   private async _asyncAttributes(): Promise<Attributes> {
     return (await detect()).attributes;
   }

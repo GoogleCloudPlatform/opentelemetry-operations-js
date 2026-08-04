@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * @deprecated This interface is deprecated along with the legacy `MetricExporter`.
+ * Please migrate to community-maintained OTLP exporters.
+ */
 export interface ExporterOptions {
   /**
    * Google Cloud Platform project ID where your metrics will be stored.
@@ -64,6 +68,10 @@ export interface ExporterOptions {
   };
 }
 
+/**
+ * @deprecated This interface is deprecated along with the legacy `MetricExporter`.
+ * Please migrate to community-maintained OTLP exporters.
+ */
 export interface Credentials {
   client_email?: string;
   private_key?: string;

@@ -38,6 +38,18 @@ describe('MetricExporter', () => {
   });
 
   describe('constructor', () => {
+    it('should emit a deprecation warning', () => {
+      const emitWarningStub = sinon.stub(process, 'emitWarning');
+      new MetricExporter();
+      sinon.assert.calledWith(
+        emitWarningStub as sinon.SinonSpy,
+        sinon.match(/deprecated and will be archived/),
+        'DeprecationWarning',
+        'DEP_GCP_OTEL_MONITORING_EXPORTER',
+        MetricExporter,
+      );
+    });
+
     it('should construct an exporter', () => {
       const exporter = new MetricExporter();
       assert.ok(typeof exporter.export === 'function');

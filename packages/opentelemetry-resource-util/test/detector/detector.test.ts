@@ -44,6 +44,18 @@ describe('GcpDetectorSync', () => {
     sinon.restore();
   });
 
+  it('should emit a deprecation warning', () => {
+    const emitWarningStub = sinon.stub(process, 'emitWarning');
+    new GcpDetectorSync();
+    sinon.assert.calledWith(
+      emitWarningStub as sinon.SinonSpy,
+      sinon.match(/deprecated and will be archived/),
+      'DeprecationWarning',
+      'DEP_GCP_OTEL_RESOURCE_DETECTOR',
+      GcpDetectorSync,
+    );
+  });
+
   it('returns empty resource when metadata server is not available', async () => {
     metadataStub.isAvailable.resolves(false);
     const resource = await detectAndWait(new GcpDetectorSync());

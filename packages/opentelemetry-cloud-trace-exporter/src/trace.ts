@@ -33,6 +33,13 @@ const OPTIONS: grpc.ClientOptions = {
 
 /**
  * Format and sends span information to Google Cloud Trace.
+ * @deprecated This exporter is deprecated and will be archived after October 30th, 2026.
+ * Please use native OpenTelemetry Protocol (OTLP) endpoints via the Telemetry API and the
+ * community-maintained OTLP exporters instead (e.g., `@opentelemetry/exporter-trace-otlp-http`
+ * or `@opentelemetry/exporter-trace-otlp-grpc`).
+ * See the {@link https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/MIGRATION.md | Migration Guide}
+ * and {@link https://docs.cloud.google.com/stackdriver/docs/instrumentation/migrate-to-otlp-endpoints | Google Cloud documentation}
+ * for more information.
  */
 export class TraceExporter implements SpanExporter {
   private _projectId: string | void | Promise<string | void>;
@@ -43,6 +50,12 @@ export class TraceExporter implements SpanExporter {
   private _apiEndpoint = 'cloudtrace.googleapis.com:443';
 
   constructor(options: TraceExporterOptions = {}) {
+    process.emitWarning(
+      'Google Cloud OpenTelemetry Trace exporter for Node.js is deprecated and will be archived after October 30th, 2026. Please migrate to the OpenTelemetry OTLP exporters. For migration details, see https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/MIGRATION.md',
+      'DeprecationWarning',
+      'DEP_GCP_OTEL_TRACE_EXPORTER',
+      TraceExporter,
+    );
     this._resourceFilter = options.resourceFilter;
     this._stringifyArrayAttributes = options.stringifyArrayAttributes ?? false;
 

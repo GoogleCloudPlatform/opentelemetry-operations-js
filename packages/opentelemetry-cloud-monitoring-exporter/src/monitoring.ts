@@ -52,6 +52,13 @@ const OT_REQUEST_HEADER = {
 
 /**
  * Format and sends metrics information to Google Cloud Monitoring.
+ * @deprecated This exporter is deprecated and will be archived after October 30th, 2026.
+ * Please use native OpenTelemetry Protocol (OTLP) endpoints via the Telemetry API and the
+ * community-maintained OTLP exporters instead (e.g., `@opentelemetry/exporter-metrics-otlp-http`
+ * or `@opentelemetry/exporter-metrics-otlp-grpc`).
+ * See the {@link https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/MIGRATION.md | Migration Guide}
+ * and {@link https://docs.cloud.google.com/stackdriver/docs/reference/telemetry/overview | Telemetry API documentation}
+ * for more information.
  */
 export class MetricExporter implements PushMetricExporter {
   private _projectId: string | void | Promise<string | void>;
@@ -70,6 +77,12 @@ export class MetricExporter implements PushMetricExporter {
   private _monitoring: monitoring_v3.Monitoring;
 
   constructor(options: ExporterOptions = {}) {
+    process.emitWarning(
+      'Google Cloud OpenTelemetry Monitoring exporter for Node.js is deprecated and will be archived after October 30th, 2026. Please migrate to the OpenTelemetry OTLP exporters. For migration details, see https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/MIGRATION.md',
+      'DeprecationWarning',
+      'DEP_GCP_OTEL_MONITORING_EXPORTER',
+      MetricExporter,
+    );
     this._metricPrefix = options.prefix ?? MetricExporter.DEFAULT_METRIC_PREFIX;
     this._disableCreateMetricDescriptors =
       !!options.disableCreateMetricDescriptors;
