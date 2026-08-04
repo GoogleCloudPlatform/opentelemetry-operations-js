@@ -1,6 +1,0 @@
-.git
-node_modules/
-Dockerfile
-docker-compose.*
-otel-collector-config.yaml
-**/build/
