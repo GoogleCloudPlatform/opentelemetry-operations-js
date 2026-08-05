@@ -77,6 +77,9 @@ When exporting OTLP telemetry directly from your application to Google Cloud end
 npm install google-auth-library
 # If using gRPC:
 npm install @grpc/grpc-js
+
+# Set the target endpoint in your environment
+export OTEL_EXPORTER_OTLP_ENDPOINT="https://telemetry.googleapis.com"
 ```
 
 *OTLP/HTTP Dynamic Auth Example:*
@@ -272,23 +275,31 @@ counter.add(1, { job_type: 'import', status: 'success' });
 Run both the legacy exporter and the OTLP exporter concurrently:
 
 ```typescript
+import { metrics } from '@opentelemetry/api';
+import { MeterProvider, PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { MetricExporter } from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-proto';
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 
 const legacyExporter = new MetricExporter();
 const otlpExporter = new OTLPMetricExporter({
   url: 'https://telemetry.googleapis.com/v1/metrics',
 });
 
-const sdk = new NodeSDK({
-  metricReader: new PeriodicExportingMetricReader({
-    exporter: legacyExporter, // Prefer wrapping or configuring MeterProvider directly when registering multiple periodic readers.
-  }),
+// Configure MeterProvider with two PeriodicExportingMetricReaders to export to both backends
+const meterProvider = new MeterProvider({
+  readers: [
+    new PeriodicExportingMetricReader({
+      exporter: legacyExporter,
+      exportIntervalMillis: 60000,
+    }),
+    new PeriodicExportingMetricReader({
+      exporter: otlpExporter,
+      exportIntervalMillis: 60000,
+    }),
+  ],
 });
 
-sdk.start();
+metrics.setGlobalMeterProvider(meterProvider);
 ```
 
 #### Verification and Cutover
