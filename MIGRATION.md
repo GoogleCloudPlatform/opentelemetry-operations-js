@@ -19,39 +19,30 @@ When migrating to OTLP exporters, installing the upstream GCP Resource Detector 
 ### Installation
 
 ```bash
-npm install @opentelemetry/resource-detector-gcp @opentelemetry/resources @opentelemetry/sdk-node
+npm install @opentelemetry/resource-detector-gcp @opentelemetry/sdk-node
 ```
 
 ### Usage & Configuration
 
-* **Manual SDK Setup (In Code):** Because the GCP resource detector performs asynchronous network I/O to fetch details from the GCP metadata server, you must use the asynchronous `detectResources` function. The modern and recommended way to initialize the SDK in Node.js is using `NodeSDK`:
+* **Manual SDK Setup (In Code):** In OpenTelemetry JS SDK 2.x, pass `gcpDetector` directly to the `resourceDetectors` array in `NodeSDK`. `NodeSDK` automatically handles detector execution, asynchronous attribute resolution, and merging with default resources:
 
 ```typescript
-import { detectResources } from '@opentelemetry/resources';
 import { gcpDetector } from '@opentelemetry/resource-detector-gcp';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
 
-async function initialize(): Promise<void> {
-  const resource = await detectResources({
-    detectors: [gcpDetector],
-  });
+const sdk = new NodeSDK({
+  resourceDetectors: [gcpDetector],
+  traceExporter: new OTLPTraceExporter(),
+});
 
-  const sdk = new NodeSDK({
-    resource: resource,
-    traceExporter: new OTLPTraceExporter(),
-  });
+sdk.start();
 
-  sdk.start();
-
-  process.on('SIGTERM', () => {
-    sdk.shutdown()
-      .then(() => console.log('OpenTelemetry SDK terminated'))
-      .catch((error) => console.error('Error terminating OpenTelemetry SDK', error));
-  });
-}
-
-initialize().catch(console.error);
+process.on('SIGTERM', () => {
+  sdk.shutdown()
+    .then(() => console.log('OpenTelemetry SDK terminated'))
+    .catch((error) => console.error('Error terminating OpenTelemetry SDK', error));
+});
 ```
 
 * **Autoconfiguration / Zero-Code Instrumentation:** When using `@opentelemetry/auto-instrumentations-node`, enable the GCP resource detector via the `OTEL_NODE_RESOURCE_DETECTORS` environment variable:
@@ -124,6 +115,7 @@ async function main(): Promise<void> {
 
   const sdk = new NodeSDK({
     traceExporter: new OTLPTraceExporter({
+      url: 'https://telemetry.googleapis.com/v1/traces',
       async headers(): Promise<{ [index: string]: string }> {
         const rawHeaders = await authenticatedClient.getRequestHeaders();
         return Object.fromEntries(rawHeaders.entries());
@@ -136,43 +128,7 @@ async function main(): Promise<void> {
 main().catch(console.error);
 ```
 
-*OTLP/gRPC Dynamic Auth Example:*
-```typescript
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
-import { AuthClient, GoogleAuth } from 'google-auth-library';
-import { credentials } from '@grpc/grpc-js';
-import { NodeSDK } from '@opentelemetry/sdk-node';
-
-async function getAuthenticatedClient(): Promise<AuthClient> {
-  const auth = new GoogleAuth({
-    scopes: 'https://www.googleapis.com/auth/cloud-platform',
-  });
-  return await auth.getClient();
-}
-
-async function main(): Promise<void> {
-  const authenticatedClient: AuthClient = await getAuthenticatedClient();
-
-  const sdk = new NodeSDK({
-    traceExporter: new OTLPTraceExporter({
-      credentials: credentials.combineChannelCredentials(
-        credentials.createSsl(),
-        credentials.createFromGoogleCredential({
-          async getRequestHeaders(
-            url?: string,
-          ): Promise<{ [index: string]: string }> {
-            const rawHeaders = await authenticatedClient.getRequestHeaders(url);
-            return Object.fromEntries(rawHeaders.entries());
-          },
-        }),
-      ),
-    }),
-  });
-  sdk.start();
-}
-
-main().catch(console.error);
-```
+*For gRPC export using Application Default Credentials, see the official [`app-grpc-export.ts`](https://github.com/GoogleCloudPlatform/opentelemetry-samples/blob/main/javascript/otlptraceexport/src/app-grpc-export.ts) sample in the `opentelemetry-samples` repository.*
 
 ### 3. Follow the Migration Guide
 
@@ -260,10 +216,12 @@ const exporter = new OTLPMetricExporter({
 });
 
 const sdk = new NodeSDK({
-  metricReader: new PeriodicExportingMetricReader({
-    exporter: exporter,
-    exportIntervalMillis: 60000,
-  }),
+  metricReaders: [
+    new PeriodicExportingMetricReader({
+      exporter: exporter,
+      exportIntervalMillis: 60000,
+    }),
+  ],
 });
 
 sdk.start();
@@ -341,7 +299,8 @@ import {
   ResourceMetrics,
   InstrumentType,
   AggregationTemporality,
-  Aggregation,
+  AggregationOption,
+  AggregationType,
 } from '@opentelemetry/sdk-metrics';
 import { ExportResult } from '@opentelemetry/core';
 
@@ -397,11 +356,11 @@ export class PrefixedMetricExporter implements PushMetricExporter {
     return AggregationTemporality.CUMULATIVE;
   }
 
-  selectAggregation(instrumentType: InstrumentType): Aggregation | undefined {
+  selectAggregation(instrumentType: InstrumentType): AggregationOption {
     if (this._delegate.selectAggregation) {
       return this._delegate.selectAggregation(instrumentType);
     }
-    return undefined;
+    return { type: AggregationType.DEFAULT };
   }
 }
 ```
@@ -423,10 +382,12 @@ const prefixedExporter = new PrefixedMetricExporter(
 );
 
 const sdk = new NodeSDK({
-  metricReader: new PeriodicExportingMetricReader({
-    exporter: prefixedExporter,
-    exportIntervalMillis: 60000,
-  }),
+  metricReaders: [
+    new PeriodicExportingMetricReader({
+      exporter: prefixedExporter,
+      exportIntervalMillis: 60000,
+    }),
+  ],
 });
 
 sdk.start();
