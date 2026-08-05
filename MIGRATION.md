@@ -71,25 +71,7 @@ npm install @opentelemetry/exporter-trace-otlp-proto # Recommended for HTTP/Prot
 
 ### 2. Configure the SDK
 
-Standard OTel JS environment variables automatically append protocol path suffixes (`/v1/traces`), but passing a URL explicitly to the programmatic constructor does **not**. When exporting telemetry data to Google Cloud, you can configure your exporter using one of the following supported patterns:
-
-**Option A: Environment Variables (Recommended)**
-Do not pass arguments to the constructor; it will automatically honor environment variables and append protocol paths. This option is ideal when authentication is handled externally (for example, when exporting to an OpenTelemetry Collector):
-
-```bash
-export OTEL_EXPORTER_OTLP_ENDPOINT="https://telemetry.googleapis.com"
-export OTEL_TRACES_EXPORTER="otlp"
-export OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
-```
-
-```typescript
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
-
-const exporter = new OTLPTraceExporter(); // Automatically points to https://telemetry.googleapis.com/v1/traces
-```
-
-**Option B: Programmatic Configuration with Dynamic Google Auth (TypeScript)**
-You can export OTLP telemetry directly from your application to Google Cloud endpoints (`https://telemetry.googleapis.com`) without external infrastructure by using `google-auth-library` to supply Application Default Credentials (ADC). Because OAuth2 tokens expire after 1 hour, standard OpenTelemetry JS OTLP exporters natively support async header callbacks (for HTTP) and channel credentials wrapping (for gRPC) to dynamically supply fresh tokens:
+When exporting OTLP telemetry directly from your application to Google Cloud endpoints (`https://telemetry.googleapis.com`), you can use `google-auth-library` to supply Application Default Credentials (ADC). Because OAuth2 tokens expire after 1 hour, standard OpenTelemetry JS OTLP exporters natively support async header callbacks (for HTTP) and channel credentials wrapping (for gRPC) to dynamically supply fresh tokens:
 
 ```bash
 npm install google-auth-library
@@ -164,11 +146,6 @@ async function main(): Promise<void> {
 
 main().catch(console.error);
 ```
-
-**Option C: Export via OpenTelemetry Collector**
-Teams wishing to offload token lifecycle management, batching, and retries from application code can send telemetry to a local **OpenTelemetry Collector** (e.g., `http://localhost:4318`) running as a sidecar or gateway, configured with the `googleclientauth` extension and `otlphttp` / `googlecloud` exporter.
-
-*For complete end-to-end TypeScript implementations, see the official [GoogleCloudPlatform/opentelemetry-samples](https://github.com/GoogleCloudPlatform/opentelemetry-samples/tree/main/javascript) repository.*
 
 ### 3. Follow the Migration Guide
 
@@ -295,12 +272,12 @@ counter.add(1, { job_type: 'import', status: 'success' });
 Run both the legacy exporter and the OTLP exporter concurrently:
 
 ```typescript
-import { MetricExporter as LegacyMetricExporter } from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
+import { MetricExporter } from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-proto';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 
-const legacyExporter = new LegacyMetricExporter();
+const legacyExporter = new MetricExporter();
 const otlpExporter = new OTLPMetricExporter({
   url: 'https://telemetry.googleapis.com/v1/metrics',
 });
@@ -318,7 +295,7 @@ sdk.start();
 
 1. **Verify New Metrics Ingestion:** Once double-writing is deployed, verify in Metrics Explorer that new metrics are arriving successfully under the `prometheus.googleapis.com/` domain.
 2. **Update Dashboards & Alerts:** Duplicate or update existing Cloud Monitoring dashboards and alerting policies to query `prometheus.googleapis.com/` metric names instead of `workload.googleapis.com/`.
-3. **Decommission:** Once all dashboards are verified against the new OTLP metric data streams, remove `LegacyMetricExporter` to complete the migration and eliminate double-ingestion costs.
+3. **Decommission:** Once all dashboards are verified against the new OTLP metric data streams, remove `MetricExporter` to complete the migration and eliminate double-ingestion costs.
 
 ---
 
@@ -432,19 +409,9 @@ The following features of the legacy `MetricExporter` are not supported in stand
 * **Custom Prefix via Exporter Option (`prefix`)**: Legacy exporter accepted a `prefix` constructor option. Standard OTLP exporters ingest under `prometheus.googleapis.com/` by default. Preserving prefixes requires instrumentation changes or Strategy 3 (wrapped exporter).
 * **Custom User-Agent Overrides (`userAgent`)**: Custom User-Agent overrides via exporter options are not supported in standard OTLP exporters; use standard OpenTelemetry resource attributes (`service.name`, `service.version`).
 
-### Telemetry API Server-Side Conversion Nuances
+The Google Cloud Telemetry API converts OTLP metric data according to the official [Google Cloud Telemetry API Metric Mapping specification](https://docs.cloud.google.com/stackdriver/docs/reference/telemetry/v1.metrics#metric-mapping-reference-info).
 
-The backend converts OTLP metric data according to the [Google Cloud Telemetry API Metric Mapping specification](https://docs.cloud.google.com/stackdriver/docs/reference/telemetry/v1.metrics#metric-mapping-reference-info). Key differences include:
-
-* **Value Types (INT64 vs DOUBLE):** The Telemetry API translates **all OTLP `INT64` scalar metrics to `DOUBLE`** in Cloud Monitoring to prevent Monarch value-type schema collisions.
-* **Metric Kind & Temporality:** 
-  - Monotonic cumulative sums map to `CUMULATIVE` (suffixed with `/counter`).
-  - Monotonic delta sums map to `DELTA` (suffixed with `/delta`).
-  - Non-monotonic sums map to `GAUGE` (suffixed with `/gauge`). Non-monotonic delta sums are not supported.
-  - **Histograms:** Support both `CUMULATIVE` (suffixed with `/histogram`) and `DELTA` (suffixed with `/histogram:delta`) distributions.
-  - **Summary Metrics:** Expanded into individual time series for `_count` (`CUMULATIVE`), `_sum` (`CUMULATIVE`), and `quantile` (`GAUGE` with a `quantile` label).
-* **Resource Attributes & `target_info` Metric:** The API maps resources server-side and automatically generates a `target_info` metric for each unique OpenTelemetry resource containing non-identifying resource attributes.
-* **Special Characters:** The Telemetry API preserves `.` and `/` characters in OTLP metric names rather than replacing them with underscores (`_`).
+Please refer to the specification documentation for complete, up-to-date details on how metric kinds, temporality, value types (`INT64` to `DOUBLE`), special characters, and resource attributes are mapped server-side in Google Cloud Monitoring.
 
 ### Mapping and Limitations
 
@@ -462,6 +429,9 @@ The backend converts OTLP metric data according to the [Google Cloud Telemetry A
 ## Migrate from Google Cloud Trace Propagator (`CloudPropagator`) to Standard Propagation
 
 To migrate from the legacy `@google-cloud/opentelemetry-cloud-trace-propagator`, replace it with the standard OpenTelemetry W3C Trace Context propagator. Google Cloud infrastructure natively supports standard W3C Trace Context headers.
+
+> [!NOTE]
+> **Out-of-the-Box Default:** When initializing your application with `NodeSDK` (`@opentelemetry/sdk-node`), `W3CTraceContextPropagator` and `W3CBaggagePropagator` are configured automatically by default. You do not need to call `setGlobalPropagator` manually unless you are modifying or extending the default propagator chain.
 
 ### 1. Update Dependencies
 
@@ -481,6 +451,3 @@ import { W3CTraceContextPropagator } from '@opentelemetry/core';
 // Set the global propagator to use standard W3C Trace Context
 propagation.setGlobalPropagator(new W3CTraceContextPropagator());
 ```
-
-> [!NOTE]
-> **Out-of-the-Box Default:** When initializing your application with `NodeSDK` (`@opentelemetry/sdk-node`), `W3CTraceContextPropagator` and `W3CBaggagePropagator` are configured automatically by default. You do not need to call `setGlobalPropagator` manually unless you are modifying or extending the default propagator chain.

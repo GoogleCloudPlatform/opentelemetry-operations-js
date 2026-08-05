@@ -1,7 +1,7 @@
 > [!WARNING]
-> This repository and all its packages are **deprecated**. Google Cloud Platform now supports native OpenTelemetry Protocol (OTLP) endpoints via the [Telemetry API](https://cloud.google.com/stackdriver/docs/reference/telemetry/overview). Please migrate to use community-maintained OTLP exporters instead.
+> This repository and all its packages are **deprecated** and will be archived after September 30th, 2026. Google Cloud Platform now supports native OpenTelemetry Protocol (OTLP) endpoints via the [Telemetry API](https://cloud.google.com/stackdriver/docs/reference/telemetry/overview).
 > 
-> See the [Migration Guide](https://docs.cloud.google.com/stackdriver/docs/instrumentation/migrate-to-otlp-endpoints) for traces, and the [Telemetry API Documentation](https://cloud.google.com/stackdriver/docs/reference/telemetry/overview) for metrics.
+> Please see the [Migration Guide](./MIGRATION.md) in this repository for step-by-step instructions on migrating to community-maintained OTLP exporters.
 
 # OpenTelemetry Operations Exporters for JavaScript
 

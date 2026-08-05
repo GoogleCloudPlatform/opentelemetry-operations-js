@@ -38,19 +38,10 @@ import {decToHex, hexToDec} from 'hex2dec';
  *  {TRACE_TRUE} must be 1 to trace request. Specify 0 to not trace the request.
  */
 
-/**
- * Header that carries span context across Google infrastructure.
- * @deprecated This header is legacy and discouraged. Standard W3C Trace Context headers
- * are natively supported by Google Cloud infrastructure.
- */
+/** Header that carries span context across Google infrastructure. */
 export const X_CLOUD_TRACE_HEADER = 'x-cloud-trace-context';
 const FIELDS = [X_CLOUD_TRACE_HEADER];
 
-/**
- * @deprecated This propagator is legacy and deprecated. Please use standard
- * W3C Trace Context propagation (e.g., `@opentelemetry/core` `W3CTraceContextPropagator`)
- * instead.
- */
 export class CloudPropagator implements TextMapPropagator {
   inject(
     context: Context,

@@ -33,11 +33,6 @@ const OPTIONS: grpc.ClientOptions = {
 
 /**
  * Format and sends span information to Google Cloud Trace.
- * @deprecated This exporter is deprecated. Please use native OpenTelemetry Protocol (OTLP)
- * endpoints via the Telemetry API and the community-maintained OTLP exporters instead
- * (e.g., `@opentelemetry/exporter-trace-otlp-http` or `@opentelemetry/exporter-trace-otlp-grpc`).
- * See the {@link https://docs.cloud.google.com/stackdriver/docs/instrumentation/migrate-to-otlp-endpoints | Migration Guide}
- * for more information.
  */
 export class TraceExporter implements SpanExporter {
   private _projectId: string | void | Promise<string | void>;

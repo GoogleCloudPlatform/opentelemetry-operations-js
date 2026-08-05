@@ -1,5 +1,5 @@
 > [!WARNING]
-> This package is **deprecated**. It was used by the legacy exporters in this repository. Please migrate to the upstream [@opentelemetry/resource-detector-gcp](https://www.npmjs.com/package/@opentelemetry/resource-detector-gcp) package for resource detection, and to standard OTLP exporters for exporting telemetry.
+> This package is **deprecated** and will be archived after September 30th, 2026. It was used by the legacy exporters in this repository. Please migrate to the upstream [@opentelemetry/resource-detector-gcp](https://www.npmjs.com/package/@opentelemetry/resource-detector-gcp) package for resource detection, and to standard OTLP exporters for exporting telemetry. See the [Migration Guide](https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/MIGRATION.md) for details.
 
 # OpenTelemetry Google Resource Util
 
