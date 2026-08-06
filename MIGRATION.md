@@ -251,25 +251,6 @@ main().catch(console.error);
 
 *For complete runnable examples using Application Default Credentials, see the official [`javascript/otlpmetricexport`](https://github.com/GoogleCloudPlatform/opentelemetry-samples/tree/main/javascript/otlpmetricexport) sample in the `opentelemetry-samples` repository.*
 
-#### 3. Recording Metrics and Adding Attributes
-
-When migrating your application code, use standard OpenTelemetry API methods to create instruments and record measurements with metric attributes:
-
-```typescript
-import { metrics } from '@opentelemetry/api';
-
-// Create a meter
-const meter = metrics.getMeter('my-instrumentation');
-
-// Metrics without a domain prefix default to prometheus.googleapis.com/
-const counter = meter.createCounter('processed_jobs', {
-  description: 'Number of processed jobs',
-});
-
-// Record a measurement with metric attributes
-counter.add(1, { job_type: 'import', status: 'success' });
-```
-
 ### Strategy 2: Transition via Double-Writing
 
 > [!IMPORTANT]
