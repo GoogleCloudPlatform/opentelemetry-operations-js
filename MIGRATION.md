@@ -8,7 +8,7 @@ Google Cloud supports native OTLP (OpenTelemetry Protocol) ingestion for Cloud T
 
 ## Deprecation Notice
 
-All packages in this repository (`@google-cloud/opentelemetry-cloud-trace-exporter`, `@google-cloud/opentelemetry-cloud-monitoring-exporter`, `@google-cloud/opentelemetry-cloud-trace-propagator`, and `@google-cloud/opentelemetry-resource-util`) are deprecated. **They will be archived after September 30th, 2026.** Please migrate to standard OTLP exporters and standard OpenTelemetry libraries before this date.
+All packages in this repository (`@google-cloud/opentelemetry-cloud-trace-exporter`, `@google-cloud/opentelemetry-cloud-monitoring-exporter`, `@google-cloud/opentelemetry-cloud-trace-propagator`, and `@google-cloud/opentelemetry-resource-util`) are deprecated. **They will be archived after October 30th, 2026.** Please migrate to standard OTLP exporters and standard OpenTelemetry libraries before this date.
 
 ---
 
@@ -181,7 +181,7 @@ Cloud Trace’s internal storage system uses the OpenTelemetry data model native
 
 * **Standardization:** Aligns your application with the industry-standard OTLP protocol.
 * **Google Managed Prometheus (GMP) Cost Savings:** Standard OTLP metrics are ingested into GMP, offering a highly scalable and cost-effective monitoring solution (~20x cheaper ingestion cost than legacy Cloud Monitoring API ingestion).
-* **Future-proofing:** The legacy Google Cloud Monitoring exporter is deprecated and will be archived after September 30th, 2026. Migrating now ensures your monitoring pipeline remains supported.
+* **Future-proofing:** The legacy Google Cloud Monitoring exporter is deprecated and will be archived after October 30th, 2026. Migrating now ensures your monitoring pipeline remains supported.
 
 ### Migration Strategies
 
