@@ -115,7 +115,6 @@ async function main(): Promise<void> {
 
   const sdk = new NodeSDK({
     traceExporter: new OTLPTraceExporter({
-      url: 'https://telemetry.googleapis.com/v1/traces',
       async headers(): Promise<{ [index: string]: string }> {
         const rawHeaders = await authenticatedClient.getRequestHeaders();
         return Object.fromEntries(rawHeaders.entries());
@@ -208,6 +207,20 @@ npm install @opentelemetry/exporter-metrics-otlp-proto @opentelemetry/resource-d
 
 #### 2. Configure the SDK
 
+#### Configure Environment Variables
+
+Configure the destination endpoint and resource attributes:
+
+```bash
+# Destination endpoint
+export OTEL_EXPORTER_OTLP_ENDPOINT="https://telemetry.googleapis.com"
+
+# Resource attributes (specifying the Google Cloud project ID)
+export OTEL_RESOURCE_ATTRIBUTES="gcp.project_id=your-project-id"
+```
+
+#### Configure Authentication (Required for Direct In-App Export)
+
 When exporting directly from your application to `https://telemetry.googleapis.com`, configure `google-auth-library` to dynamically supply fresh OAuth2 tokens via the async `headers()` callback:
 
 ```typescript
@@ -227,7 +240,6 @@ async function main(): Promise<void> {
   const authenticatedClient: AuthClient = await getAuthenticatedClient();
 
   const exporter = new OTLPMetricExporter({
-    url: 'https://telemetry.googleapis.com/v1/metrics',
     async headers(): Promise<{ [index: string]: string }> {
       const rawHeaders = await authenticatedClient.getRequestHeaders();
       return Object.fromEntries(rawHeaders.entries());
@@ -266,7 +278,6 @@ import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-proto';
 
 const legacyExporter = new MetricExporter();
 const otlpExporter = new OTLPMetricExporter({
-  url: 'https://telemetry.googleapis.com/v1/metrics',
   // Configure authentication as shown in Strategy 1
 });
 
@@ -379,7 +390,7 @@ import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { PrefixedMetricExporter } from './PrefixedMetricExporter';
 
 const otlpExporter = new OTLPMetricExporter({
-  url: 'https://telemetry.googleapis.com/v1/metrics',
+  // Configure authentication as shown in Strategy 1
 });
 
 const prefixedExporter = new PrefixedMetricExporter(
@@ -442,12 +453,14 @@ npm install @opentelemetry/api @opentelemetry/core
 
 ### 2. Configure the SDK
 
-Replace `CloudPropagator` with `W3CTraceContextPropagator`:
+As noted above, manual configuration is typically not required if you are using `NodeSDK` because standard W3C propagators are configured by default.
+
+If you are configuring propagation manually outside of `NodeSDK` (or customizing your propagator chain), replace `CloudPropagator` with `W3CTraceContextPropagator`:
 
 ```typescript
 import { propagation } from '@opentelemetry/api';
 import { W3CTraceContextPropagator } from '@opentelemetry/core';
 
-// Set the global propagator to use standard W3C Trace Context
+// Set the global propagator to use standard W3C Trace Context (only needed if not using NodeSDK defaults)
 propagation.setGlobalPropagator(new W3CTraceContextPropagator());
 ```
