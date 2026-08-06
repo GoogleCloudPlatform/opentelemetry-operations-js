@@ -68,3 +68,9 @@ See [README.md](packages/opentelemetry-cloud-trace-propagator/README.md) for ins
 OpenTelemetry Google Cloud Monitoring Exporter allows the user to send collected metrics to Google Cloud Monitoring.
 
 See [README.md](packages/opentelemetry-cloud-monitoring-exporter/README.md) for installation and usage information.
+
+## Samples
+
+Examples demonstrating how to use the Google Cloud Trace and Google Cloud Monitoring exporters in this repository can be found in the [samples](./samples) directory.
+
+For general OpenTelemetry JavaScript samples (including auto-instrumentation quickstarts and OTLP exporters), visit [GoogleCloudPlatform/opentelemetry-samples](https://github.com/GoogleCloudPlatform/opentelemetry-samples/tree/main/javascript).

@@ -47,7 +47,7 @@ const OT_USER_AGENTS = [
   },
 ];
 const OT_REQUEST_HEADER = {
-  'x-opentelemetry-outgoing-request': 0x1,
+  'x-opentelemetry-outgoing-request': '0x1',
 };
 
 /**

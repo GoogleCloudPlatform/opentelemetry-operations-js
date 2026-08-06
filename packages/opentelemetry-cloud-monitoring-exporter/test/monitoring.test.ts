@@ -25,7 +25,7 @@ import {Attributes} from '@opentelemetry/api';
 import type {monitoring_v3} from 'googleapis';
 import {describe} from 'mocha';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
-import {GaxiosPromise} from 'googleapis/build/src/apis/monitoring';
+import {GaxiosPromise} from 'googleapis-common';
 
 describe('MetricExporter', () => {
   beforeEach(() => {

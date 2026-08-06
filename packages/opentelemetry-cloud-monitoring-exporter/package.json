@@ -45,17 +45,18 @@
   },
   "devDependencies": {
     "@google-cloud/ops-js-scripts": "^1.0.0",
-    "@opentelemetry/api": "1.9.0",
-    "@opentelemetry/core": "2.0.1",
-    "@opentelemetry/resources": "2.0.1",
-    "@opentelemetry/sdk-metrics": "2.0.1",
-    "@types/mocha": "10.0.8",
-    "@types/nock": "11.1.0",
+    "@opentelemetry/api": "1.9.1",
+    "@opentelemetry/core": "2.10.0",
+    "@opentelemetry/resources": "2.10.0",
+    "@opentelemetry/sdk-metrics": "2.10.0",
+    "@types/mocha": "10.0.10",
     "@types/node": "18.19.130",
     "@types/sinon": "17.0.4",
+    "google-auth-library": "10.5.0",
+    "googleapis-common": "8.0.3",
     "gts": "6.0.2",
-    "mocha": "11.7.2",
-    "nock": "13.5.6",
+    "mocha": "11.8.0",
+    "nock": "14.0.17",
     "nyc": "17.1.0",
     "sinon": "17.0.2",
     "snap-shot-it": "7.9.10",
@@ -65,8 +66,8 @@
   "dependencies": {
     "@google-cloud/opentelemetry-resource-util": "^3.0.0",
     "@google-cloud/precise-date": "^4.0.0",
-    "google-auth-library": "^9.0.0",
-    "googleapis": "^137.0.0"
+    "google-auth-library": "^10.0.0",
+    "googleapis": "^173.0.0"
   },
   "peerDependencies": {
     "@opentelemetry/api": "^1.9.0",
