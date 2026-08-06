@@ -128,7 +128,7 @@ async function main(): Promise<void> {
 main().catch(console.error);
 ```
 
-*For gRPC export using Application Default Credentials, see the official [`app-grpc-export.ts`](https://github.com/GoogleCloudPlatform/opentelemetry-samples/blob/main/javascript/otlptraceexport/src/app-grpc-export.ts) sample in the `opentelemetry-samples` repository.*
+*For complete runnable examples using Application Default Credentials, see the official [`app-http-proto-export.ts`](https://github.com/GoogleCloudPlatform/opentelemetry-samples/blob/main/javascript/otlptraceexport/src/app-http-proto-export.ts) and [`app-grpc-export.ts`](https://github.com/GoogleCloudPlatform/opentelemetry-samples/blob/main/javascript/otlptraceexport/src/app-grpc-export.ts) samples in the `opentelemetry-samples` repository.*
 
 ### 3. Follow the Migration Guide
 
@@ -195,37 +195,61 @@ We recommend three paths for migration, depending on your operational requiremen
 
 #### 1. Add Dependencies
 
+Install the standard OpenTelemetry OTLP metric exporter, GCP resource detector, and Google authentication dependencies:
+
 ```bash
 npm uninstall @google-cloud/opentelemetry-cloud-monitoring-exporter
-npm install @opentelemetry/exporter-metrics-otlp-proto
+npm install @opentelemetry/exporter-metrics-otlp-proto @opentelemetry/resource-detector-gcp google-auth-library
+# If using gRPC:
+# npm install @opentelemetry/exporter-metrics-otlp-grpc @grpc/grpc-js
+# If using HTTP/JSON:
+# npm install @opentelemetry/exporter-metrics-otlp-http
 ```
 
 #### 2. Configure the SDK
 
-Remember to include the full path suffix (`/v1/metrics`) when providing a `url` explicitly:
+When exporting directly from your application to `https://telemetry.googleapis.com`, configure `google-auth-library` to dynamically supply fresh OAuth2 tokens via the async `headers()` callback:
 
 ```typescript
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-proto';
+import { AuthClient, GoogleAuth } from 'google-auth-library';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 
-const exporter = new OTLPMetricExporter({
-  url: 'https://telemetry.googleapis.com/v1/metrics',
-  // Note: For direct in-app export to GCP, include the async headers() callback
-  // or gRPC credentials shown in the Trace Exporter section above.
-});
+async function getAuthenticatedClient(): Promise<AuthClient> {
+  const auth = new GoogleAuth({
+    scopes: 'https://www.googleapis.com/auth/cloud-platform',
+  });
+  return await auth.getClient();
+}
 
-const sdk = new NodeSDK({
-  metricReaders: [
-    new PeriodicExportingMetricReader({
-      exporter: exporter,
-      exportIntervalMillis: 60000,
-    }),
-  ],
-});
+async function main(): Promise<void> {
+  const authenticatedClient: AuthClient = await getAuthenticatedClient();
 
-sdk.start();
+  const exporter = new OTLPMetricExporter({
+    url: 'https://telemetry.googleapis.com/v1/metrics',
+    async headers(): Promise<{ [index: string]: string }> {
+      const rawHeaders = await authenticatedClient.getRequestHeaders();
+      return Object.fromEntries(rawHeaders.entries());
+    },
+  });
+
+  const sdk = new NodeSDK({
+    metricReaders: [
+      new PeriodicExportingMetricReader({
+        exporter: exporter,
+        exportIntervalMillis: 60000,
+      }),
+    ],
+  });
+
+  sdk.start();
+}
+
+main().catch(console.error);
 ```
+
+*For complete runnable examples using Application Default Credentials, see the official [`javascript/otlpmetricexport`](https://github.com/GoogleCloudPlatform/opentelemetry-samples/tree/main/javascript/otlpmetricexport) sample in the `opentelemetry-samples` repository.*
 
 #### 3. Recording Metrics and Adding Attributes
 
@@ -254,19 +278,20 @@ counter.add(1, { job_type: 'import', status: 'success' });
 Run both the legacy exporter and the OTLP exporter concurrently:
 
 ```typescript
-import { metrics } from '@opentelemetry/api';
-import { MeterProvider, PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { MetricExporter } from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-proto';
 
 const legacyExporter = new MetricExporter();
 const otlpExporter = new OTLPMetricExporter({
   url: 'https://telemetry.googleapis.com/v1/metrics',
+  // Configure authentication as shown in Strategy 1
 });
 
-// Configure MeterProvider with two PeriodicExportingMetricReaders to export to both backends
-const meterProvider = new MeterProvider({
-  readers: [
+// Configure NodeSDK with two PeriodicExportingMetricReaders to export to both backends
+const sdk = new NodeSDK({
+  metricReaders: [
     new PeriodicExportingMetricReader({
       exporter: legacyExporter,
       exportIntervalMillis: 60000,
@@ -278,7 +303,7 @@ const meterProvider = new MeterProvider({
   ],
 });
 
-metrics.setGlobalMeterProvider(meterProvider);
+sdk.start();
 ```
 
 #### Verification and Cutover
