@@ -99,6 +99,7 @@ When exporting OTLP telemetry directly from your application to Google Cloud end
 
 *OTLP/HTTP Dynamic Auth Example:*
 ```typescript
+import { gcpDetector } from '@opentelemetry/resource-detector-gcp';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto'; // or @opentelemetry/exporter-trace-otlp-http
 import { AuthClient, GoogleAuth } from 'google-auth-library';
 import { NodeSDK } from '@opentelemetry/sdk-node';
@@ -114,6 +115,7 @@ async function main(): Promise<void> {
   const authenticatedClient: AuthClient = await getAuthenticatedClient();
 
   const sdk = new NodeSDK({
+    resourceDetectors: [gcpDetector],
     traceExporter: new OTLPTraceExporter({
       async headers(): Promise<{ [index: string]: string }> {
         const rawHeaders = await authenticatedClient.getRequestHeaders();
@@ -224,6 +226,7 @@ export OTEL_RESOURCE_ATTRIBUTES="gcp.project_id=your-project-id"
 When exporting directly from your application to `https://telemetry.googleapis.com`, configure `google-auth-library` to dynamically supply fresh OAuth2 tokens via the async `headers()` callback:
 
 ```typescript
+import { gcpDetector } from '@opentelemetry/resource-detector-gcp';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-proto';
 import { AuthClient, GoogleAuth } from 'google-auth-library';
 import { NodeSDK } from '@opentelemetry/sdk-node';
@@ -247,6 +250,7 @@ async function main(): Promise<void> {
   });
 
   const sdk = new NodeSDK({
+    resourceDetectors: [gcpDetector],
     metricReaders: [
       new PeriodicExportingMetricReader({
         exporter: exporter,
