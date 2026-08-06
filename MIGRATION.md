@@ -142,7 +142,7 @@ For more details and complete walkthroughs, follow the official Google Cloud gui
 | :--- | :--- | :--- |
 | `projectId` | Resource attribute: `gcp.project_id` | Set via `OTEL_RESOURCE_ATTRIBUTES="gcp.project_id=your-project-id"` or detected automatically via `@opentelemetry/resource-detector-gcp`. |
 | `credentials` / `keyFilename` / `keyFile` | OTLP Exporter Configuration | Handled dynamically via `google-auth-library` or externally via the OpenTelemetry Collector. |
-| `apiEndpoint` | `otel.exporter.otlp.endpoint` / `OTEL_EXPORTER_OTLP_ENDPOINT` | Set it to `https://telemetry.googleapis.com`. |
+| `apiEndpoint` | `url` / `OTEL_EXPORTER_OTLP_ENDPOINT` | Set it to `https://telemetry.googleapis.com`. |
 | `resourceFilter` | N/A | Standard OpenTelemetry exports resource attributes attached to the SDK. Regex filtering is unsupported in OTLP. |
 | `stringifyArrayAttributes` | N/A | Array attributes are handled natively according to OTLP specifications. |
 
@@ -402,7 +402,7 @@ sdk.start();
 | `projectId` | Resource attribute: `gcp.project_id` | Set via `OTEL_RESOURCE_ATTRIBUTES` or detected automatically. |
 | `credentials` / `keyFilename` / `keyFile` | OTLP Exporter Configuration | Handled dynamically via `google-auth-library` or externally via the OpenTelemetry Collector. |
 | `prefix` (default `workload.googleapis.com`) | N/A | Legacy ingested under `workload.googleapis.com/`. OTLP ingests under `prometheus.googleapis.com/` by default. See Strategy 3 for preserving prefixes. |
-| `apiEndpoint` | `otel.exporter.otlp.endpoint` / `OTEL_EXPORTER_OTLP_ENDPOINT` | Set it to `https://telemetry.googleapis.com`. |
+| `apiEndpoint` | `url` / `OTEL_EXPORTER_OTLP_ENDPOINT` | Set it to `https://telemetry.googleapis.com`. |
 | `disableCreateMetricDescriptors` | N/A | OTLP endpoints handle descriptors automatically server-side. |
 | `userAgent` | N/A | Custom User-Agent overrides are handled via standard OpenTelemetry resource attributes. |
 
