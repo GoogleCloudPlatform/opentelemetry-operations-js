@@ -1,3 +1,6 @@
+> [!WARNING]
+> This package is **deprecated** and will be archived after October 30th, 2026. Please migrate to community-maintained OTLP exporters (e.g., `@opentelemetry/exporter-metrics-otlp-http` or `@opentelemetry/exporter-metrics-otlp-grpc`). See the [Migration Guide](https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/MIGRATION.md) for details.
+
 # OpenTelemetry Google Cloud Monitoring Exporter
 [![NPM Published Version][npm-img]][npm-url]
 [![Apache License][license-image]][license-image]

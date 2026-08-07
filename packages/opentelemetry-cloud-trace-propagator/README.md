@@ -1,3 +1,6 @@
+> [!WARNING]
+> This package is **deprecated** and will be archived after October 30th, 2026. Google Cloud infrastructure now natively supports standard W3C Trace Context headers. Please use standard W3C Trace Context propagation (e.g., `@opentelemetry/core` `W3CTraceContextPropagator`) instead. See the [Migration Guide](https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/MIGRATION.md) for details.
+
 # OpenTelemetry Google Cloud Trace Propagator
 [![NPM Published Version][npm-img]][npm-url]
 [![Apache License][license-image]][license-image]
@@ -13,6 +16,11 @@ observability](https://cloud.google.com/stackdriver/docs/instrumentation/overvie
 
 Format:
 `TRACE_ID/SPAN_ID;o=TRACE_TRUE`
+
+Note: this package implements the legacy `x-cloud-trace-context` header format.
+Prefer standard W3C Trace Context when your environment supports it, and use
+this propagator when you specifically need compatibility with Google Cloud
+infrastructure that still expects the legacy header.
 
 * {TRACE_ID}
     * is a 32-character hexadecimal value representing a 128-bit number.

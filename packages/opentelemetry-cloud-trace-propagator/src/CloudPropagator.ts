@@ -39,7 +39,9 @@ import {decToHex, hexToDec} from 'hex2dec';
  */
 
 /**
- * Header that carries span context across Google infrastructure.
+ * Legacy Google Cloud Trace header that carries span context across some Google
+ * infrastructure. Prefer W3C Trace Context where possible.
+ *
  * @deprecated This header is legacy and discouraged. Standard W3C Trace Context headers
  * are natively supported by Google Cloud infrastructure.
  */
