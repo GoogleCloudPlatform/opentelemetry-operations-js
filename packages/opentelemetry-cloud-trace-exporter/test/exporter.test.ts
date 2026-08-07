@@ -48,6 +48,27 @@ describe('Google Cloud Trace Exporter', () => {
       assert.strictEqual(id, 'not-real');
     });
 
+    it('should prefer an explicitly configured projectId', async () => {
+      const getProjectIdFake = sinon.fake.resolves('quota-project');
+      class FakeGoogleAuth {
+        getProjectId = getProjectIdFake;
+      }
+      sinon.replaceGetter(
+        googleAuthLibrary,
+        'GoogleAuth',
+        // @ts-expect-error sinon fake
+        () => FakeGoogleAuth,
+      );
+
+      const exporter = new TraceExporter({
+        projectId: 'explicit-project',
+      });
+
+      const id = (await exporter['_projectId']) as string;
+      assert.strictEqual(id, 'explicit-project');
+      assert.ok(getProjectIdFake.notCalled);
+    });
+
     it('should construct exporter in GCE/GCP environment without args', async () => {
       delete process.env.GCLOUD_PROJECT;
       const getProjectIdFake = sinon.fake.resolves('fake-project-id');
@@ -66,6 +87,30 @@ describe('Google Cloud Trace Exporter', () => {
       const id = (await exporter['_projectId']) as string;
       assert.ok(getProjectIdFake.calledOnce);
       assert.strictEqual(id, 'fake-project-id');
+    });
+
+    it('should log and return undefined when projectId lookup fails', async () => {
+      delete process.env.GCLOUD_PROJECT;
+      const err = new Error('lookup failed');
+      const getProjectIdFake = sinon.fake.rejects(err);
+      class FakeGoogleAuth {
+        getProjectId = getProjectIdFake;
+      }
+      sinon.replaceGetter(
+        googleAuthLibrary,
+        'GoogleAuth',
+        // @ts-expect-error sinon fake
+        () => FakeGoogleAuth,
+      );
+      const diagError = sinon.stub(diag, 'error');
+
+      const exporter = new TraceExporter();
+
+      const id = await exporter['_projectId'];
+      assert.ok(getProjectIdFake.calledOnce);
+      assert.strictEqual(id, undefined);
+      assert.ok(diagError.calledOnce);
+      assert.strictEqual(diagError.firstCall.args[0], err);
     });
   });
 
@@ -289,9 +334,9 @@ describe('Google Cloud Trace Exporter', () => {
       await doExport([readableSpan]);
       const authAdapter = createFromGoogleCreds.getCall(0).args[0];
 
-      const mockHeaders = new Headers({
+      const mockHeaders = {
         Authorization: 'Bearer fake-token',
-      });
+      };
       mockClient.getRequestHeaders = sinon.fake.resolves(mockHeaders);
 
       const headers = await authAdapter.getRequestHeaders(

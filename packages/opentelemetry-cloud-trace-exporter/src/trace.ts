@@ -54,11 +54,15 @@ export class TraceExporter implements SpanExporter {
       scopes: ['https://www.googleapis.com/auth/cloud-platform'],
     });
 
-    // Start this async process as early as possible. It will be
-    // awaited on the first export because constructors are synchronous
-    this._projectId = this._auth.getProjectId().catch(err => {
-      diag.error(err);
-    });
+    if (options.projectId) {
+      this._projectId = options.projectId;
+    } else {
+      // Start this async process as early as possible. It will be
+      // awaited on the first export because constructors are synchronous
+      this._projectId = this._auth.getProjectId().catch(err => {
+        diag.error(err);
+      });
+    }
 
     if (options.apiEndpoint) {
       this._apiEndpoint = options.apiEndpoint;
@@ -165,8 +169,26 @@ export class TraceExporter implements SpanExporter {
       async getRequestHeaders(
         url?: string,
       ): Promise<{[index: string]: string}> {
-        const headers = await creds.getRequestHeaders(url);
-        return Object.fromEntries(headers.entries());
+        const headers = (await creds.getRequestHeaders(url)) as unknown;
+        if (
+          typeof headers === 'object' &&
+          headers !== null &&
+          'entries' in headers &&
+          typeof (headers as {entries: () => Iterable<[string, string]>}).entries ===
+            'function'
+        ) {
+          return Object.fromEntries(
+            Array.from(
+              (headers as {entries: () => Iterable<[string, string]>}).entries()
+            )
+          );
+        }
+        return Object.fromEntries(
+          Object.entries(headers as Record<string, string>).map(([key, value]) => [
+            key.toLowerCase(),
+            value,
+          ])
+        );
       },
     });
 
