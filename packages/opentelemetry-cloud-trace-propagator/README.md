@@ -17,6 +17,11 @@ observability](https://cloud.google.com/stackdriver/docs/instrumentation/overvie
 Format:
 `TRACE_ID/SPAN_ID;o=TRACE_TRUE`
 
+Note: this package implements the legacy `x-cloud-trace-context` header format.
+Prefer standard W3C Trace Context when your environment supports it, and use
+this propagator when you specifically need compatibility with Google Cloud
+infrastructure that still expects the legacy header.
+
 * {TRACE_ID}
     * is a 32-character hexadecimal value representing a 128-bit number.
     * It should be unique between your requests, unless you intentionally want to bundle the requests together.
