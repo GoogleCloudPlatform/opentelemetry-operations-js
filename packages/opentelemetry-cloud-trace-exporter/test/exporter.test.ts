@@ -334,9 +334,9 @@ describe('Google Cloud Trace Exporter', () => {
       await doExport([readableSpan]);
       const authAdapter = createFromGoogleCreds.getCall(0).args[0];
 
-      const mockHeaders = new Headers({
+      const mockHeaders = {
         Authorization: 'Bearer fake-token',
-      });
+      };
       mockClient.getRequestHeaders = sinon.fake.resolves(mockHeaders);
 
       const headers = await authAdapter.getRequestHeaders(

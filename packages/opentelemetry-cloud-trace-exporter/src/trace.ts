@@ -169,8 +169,26 @@ export class TraceExporter implements SpanExporter {
       async getRequestHeaders(
         url?: string,
       ): Promise<{[index: string]: string}> {
-        const headers = await creds.getRequestHeaders(url);
-        return Object.fromEntries(headers.entries());
+        const headers = (await creds.getRequestHeaders(url)) as unknown;
+        if (
+          typeof headers === 'object' &&
+          headers !== null &&
+          'entries' in headers &&
+          typeof (headers as {entries: () => Iterable<[string, string]>}).entries ===
+            'function'
+        ) {
+          return Object.fromEntries(
+            Array.from(
+              (headers as {entries: () => Iterable<[string, string]>}).entries()
+            )
+          );
+        }
+        return Object.fromEntries(
+          Object.entries(headers as Record<string, string>).map(([key, value]) => [
+            key.toLowerCase(),
+            value,
+          ])
+        );
       },
     });
 
