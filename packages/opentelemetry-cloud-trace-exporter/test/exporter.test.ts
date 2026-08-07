@@ -48,6 +48,18 @@ describe('Google Cloud Trace Exporter', () => {
       assert.strictEqual(id, 'not-real');
     });
 
+    it('should emit a deprecation warning', () => {
+      const emitWarningStub = sinon.stub(process, 'emitWarning');
+      new TraceExporter();
+      sinon.assert.calledWith(
+        emitWarningStub as sinon.SinonSpy,
+        sinon.match(/deprecated and will be archived/),
+        'DeprecationWarning',
+        'DEP_GCP_OTEL_TRACE_EXPORTER',
+        TraceExporter,
+      );
+    });
+
     it('should construct exporter in GCE/GCP environment without args', async () => {
       delete process.env.GCLOUD_PROJECT;
       const getProjectIdFake = sinon.fake.resolves('fake-project-id');

@@ -41,11 +41,29 @@ import {decToHex, hexToDec} from 'hex2dec';
 /**
  * Legacy Google Cloud Trace header that carries span context across some Google
  * infrastructure. Prefer W3C Trace Context where possible.
+ *
+ * @deprecated This header is legacy and discouraged. Standard W3C Trace Context headers
+ * are natively supported by Google Cloud infrastructure.
  */
 export const X_CLOUD_TRACE_HEADER = 'x-cloud-trace-context';
 const FIELDS = [X_CLOUD_TRACE_HEADER];
 
+/**
+ * @deprecated This propagator is legacy and deprecated and will be archived after October 30th, 2026.
+ * Please use standard W3C Trace Context propagation (e.g., `@opentelemetry/core` `W3CTraceContextPropagator`)
+ * instead. See the {@link https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/MIGRATION.md | Migration Guide}
+ * for more information.
+ */
 export class CloudPropagator implements TextMapPropagator {
+  constructor() {
+    process.emitWarning(
+      'Google Cloud OpenTelemetry Trace Propagator for Node.js is deprecated and will be archived after October 30th, 2026. Please migrate to the standard W3C Trace Context propagator. For migration details, see https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/MIGRATION.md',
+      'DeprecationWarning',
+      'DEP_GCP_OTEL_TRACE_PROPAGATOR',
+      CloudPropagator,
+    );
+  }
+
   inject(
     context: Context,
     carrier: unknown,

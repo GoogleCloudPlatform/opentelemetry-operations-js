@@ -21,6 +21,7 @@ import {
   TraceFlags,
 } from '@opentelemetry/api';
 import * as assert from 'assert';
+import * as sinon from 'sinon';
 import {CloudPropagator, X_CLOUD_TRACE_HEADER} from '../src/CloudPropagator';
 
 describe('CloudPropagator', () => {
@@ -29,6 +30,24 @@ describe('CloudPropagator', () => {
 
   beforeEach(() => {
     carrier = {};
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  describe('constructor', () => {
+    it('should emit a deprecation warning', () => {
+      const emitWarningStub = sinon.stub(process, 'emitWarning');
+      new CloudPropagator();
+      sinon.assert.calledWith(
+        emitWarningStub as sinon.SinonSpy,
+        sinon.match(/deprecated and will be archived/),
+        'DeprecationWarning',
+        'DEP_GCP_OTEL_TRACE_PROPAGATOR',
+        CloudPropagator,
+      );
+    });
   });
 
   describe('.inject()', () => {

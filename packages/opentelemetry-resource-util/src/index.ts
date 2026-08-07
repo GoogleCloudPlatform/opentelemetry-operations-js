@@ -213,6 +213,10 @@ type Mapping = {
 };
 
 type Labels = {[key: string]: string};
+/**
+ * @deprecated This interface is deprecated as it is only used by the legacy exporters
+ * in this repository.
+ */
 export interface MonitoredResource {
   type: string;
   labels: Labels;
@@ -222,6 +226,8 @@ export interface MonitoredResource {
  * Given an OTel resource, return a MonitoredResource. Copied from the collector's
  * implementation in Go:
  * https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/v1.8.0/internal/resourcemapping/resourcemapping.go#L51
+ * @deprecated This function is deprecated as it is only used by the legacy exporters
+ * in this repository.
  *
  * @param resource the OTel Resource
  * @returns the corresponding GCM MonitoredResource
@@ -312,4 +318,8 @@ function createMonitoredResource(
   };
 }
 
+/**
+ * @deprecated The resource detector has been moved upstream to `@opentelemetry/resource-detector-gcp`
+ * and should be used instead.
+ */
 export {GcpDetectorSync} from './detector/detector';
