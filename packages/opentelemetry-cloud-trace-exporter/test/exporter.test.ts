@@ -88,6 +88,30 @@ describe('Google Cloud Trace Exporter', () => {
       assert.ok(getProjectIdFake.calledOnce);
       assert.strictEqual(id, 'fake-project-id');
     });
+
+    it('should log and return undefined when projectId lookup fails', async () => {
+      delete process.env.GCLOUD_PROJECT;
+      const err = new Error('lookup failed');
+      const getProjectIdFake = sinon.fake.rejects(err);
+      class FakeGoogleAuth {
+        getProjectId = getProjectIdFake;
+      }
+      sinon.replaceGetter(
+        googleAuthLibrary,
+        'GoogleAuth',
+        // @ts-expect-error sinon fake
+        () => FakeGoogleAuth,
+      );
+      const diagError = sinon.stub(diag, 'error');
+
+      const exporter = new TraceExporter();
+
+      const id = await exporter['_projectId'];
+      assert.ok(getProjectIdFake.calledOnce);
+      assert.strictEqual(id, undefined);
+      assert.ok(diagError.calledOnce);
+      assert.strictEqual(diagError.firstCall.args[0], err);
+    });
   });
 
   describe('export', () => {

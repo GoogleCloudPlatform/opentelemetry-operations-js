@@ -20,7 +20,7 @@ import * as sinon from 'sinon';
 import {MetricExporter} from '../src';
 import {ExportResult, ExportResultCode} from '@opentelemetry/core';
 import {emptyResourceMetrics, generateMetricsData} from './util';
-import {Attributes} from '@opentelemetry/api';
+import {Attributes, diag} from '@opentelemetry/api';
 import * as googleAuthLibrary from 'google-auth-library';
 
 import type {monitoring_v3} from 'googleapis';
@@ -83,6 +83,30 @@ describe('MetricExporter', () => {
       const id = await exporter['_projectId'];
       assert.strictEqual(id, 'explicit-project');
       assert.ok(getProjectIdFake.notCalled);
+    });
+
+    it('should log and return undefined when projectId lookup fails', async () => {
+      delete process.env.GCLOUD_PROJECT;
+      const err = new Error('lookup failed');
+      const getProjectIdFake = sinon.fake.rejects(err);
+      class FakeGoogleAuth {
+        getProjectId = getProjectIdFake;
+      }
+      sinon.replaceGetter(
+        googleAuthLibrary,
+        'GoogleAuth',
+        // @ts-expect-error sinon fake
+        () => FakeGoogleAuth,
+      );
+      const diagError = sinon.stub(diag, 'error');
+
+      const exporter = new MetricExporter();
+
+      const id = await exporter['_projectId'];
+      assert.ok(getProjectIdFake.calledOnce);
+      assert.strictEqual(id, undefined);
+      assert.ok(diagError.calledOnce);
+      assert.strictEqual(diagError.firstCall.args[0], err);
     });
   });
 
