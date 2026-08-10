@@ -1,3 +1,4 @@
+// @ts-check
 // Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,11 +19,14 @@
 
 // [START opentelemetry_trace_import]
 const opentelemetry = require("@opentelemetry/api");
-const { NodeTracerProvider } = require("@opentelemetry/sdk-trace-node");
-const { BatchSpanProcessor } = require("@opentelemetry/sdk-trace-base");
+const { resourceFromAttributes } = require("@opentelemetry/resources");
+const { NodeSDK } = require("@opentelemetry/sdk-node");
 const {
   TraceExporter,
 } = require("@google-cloud/opentelemetry-cloud-trace-exporter");
+const {
+  GcpDetectorSync,
+} = require("@google-cloud/opentelemetry-resource-util");
 // [END opentelemetry_trace_import]
 
 // [START setup_exporter]
@@ -30,22 +34,30 @@ const {
 // Exporters use Application Default Credentials (ADCs) to authenticate.
 // See https://developers.google.com/identity/protocols/application-default-credentials
 // for more details.
-const provider = new NodeTracerProvider();
 
 // Initialize the exporter. When your application is running on Google Cloud,
 // you don't need to provide auth credentials or a project id.
 const exporter = new TraceExporter();
 
-// Configure the span processor to batch and send spans to the exporter
-provider.addSpanProcessor(new BatchSpanProcessor(exporter));
+// Initialize NodeSDK
+const sdk = new NodeSDK({
+  // Create a resource. Fill the `service.*` attributes in with real values for your service.
+  // GcpDetectorSync will add in resource information about the current environment if you are
+  // running on GCP.
+  resource: resourceFromAttributes({
+    "service.name": "example-trace-service",
+    "service.namespace": "samples",
+    "service.instance.id": "12345",
+  }),
+  resourceDetectors: [new GcpDetectorSync()],
+  traceExporter: exporter,
+});
 
+sdk.start();
 // [END setup_exporter]
 
 // [START opentelemetry_trace_custom_span]
 
-// Initialize the OpenTelemetry APIs to use the
-// NodeTracerProvider bindings
-provider.register();
 const tracer = opentelemetry.trace.getTracer("basic");
 
 // Create a span.
@@ -66,8 +78,8 @@ span.end();
 
 console.log("Done recording traces.");
 
-// Finally shutdown the NodeTracerProvider to finish flushing any batched spans
-provider.shutdown().then(
+// Finally shutdown the NodeSDK to finish flushing any batched spans
+sdk.shutdown().then(
   () => {
     console.log("Successfully shutdown");
   },

@@ -1,6 +1,6 @@
 # Overview
 
-This example shows how to use [@opentelemetry/sdk-metrics](https://github.com/open-telemetry/opentelemetry-js/tree/main/packages/opentelemetry-sdk-metrics) to instrument a simple Node.js application and export metrics to [Google Cloud Monitoring](https://cloud.google.com/monitoring/).
+This example shows how to use [@opentelemetry/sdk-node](https://github.com/open-telemetry/opentelemetry-js/tree/main/packages/opentelemetry-sdk-node) to instrument a simple Node.js application and export metrics to [Google Cloud Monitoring](https://cloud.google.com/monitoring/).
 
 ## Installation
 
