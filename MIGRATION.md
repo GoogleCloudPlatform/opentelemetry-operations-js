@@ -95,9 +95,9 @@ export OTEL_RESOURCE_ATTRIBUTES="gcp.project_id=your-project-id"
 
 #### Configure Authentication (Required for Direct In-App Export)
 
-When exporting OTLP telemetry directly from your application to Google Cloud endpoints (`https://telemetry.googleapis.com`), you must configure `google-auth-library` to supply Application Default Credentials (ADC). Because Google OAuth2 tokens expire after 1 hour, standard OpenTelemetry JS OTLP exporters natively support async header callbacks (for HTTP) and channel credentials wrapping (for gRPC) to dynamically supply fresh tokens:
+When exporting OTLP telemetry directly from your application to Google Cloud endpoints (`https://telemetry.googleapis.com`), you must configure `google-auth-library` to supply Application Default Credentials (ADC). Because Google OAuth2 tokens expire after 1 hour, standard OpenTelemetry JS OTLP exporters natively support dynamic authentication refresh: an async header provider callback (`headers`) for HTTP/protobuf/JSON exporters, and channel credentials wrapping for gRPC exporters. Supplying an async header provider ensures authentication tokens are refreshed automatically when they expire.
 
-*OTLP/HTTP Dynamic Auth Example:*
+*OTLP/HTTP Dynamic Auth Example (Async Header Provider):*
 ```typescript
 import { gcpDetector } from '@opentelemetry/resource-detector-gcp';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto'; // or @opentelemetry/exporter-trace-otlp-http
@@ -129,6 +129,46 @@ async function main(): Promise<void> {
 main().catch(console.error);
 ```
 
+*OTLP/gRPC Dynamic Auth Example (Channel Credentials Header Provider):*
+```typescript
+import { credentials } from '@grpc/grpc-js';
+import { gcpDetector } from '@opentelemetry/resource-detector-gcp';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
+import { AuthClient, GoogleAuth } from 'google-auth-library';
+import { NodeSDK } from '@opentelemetry/sdk-node';
+
+async function getAuthenticatedClient(): Promise<AuthClient> {
+  const auth = new GoogleAuth({
+    scopes: 'https://www.googleapis.com/auth/cloud-platform',
+  });
+  return await auth.getClient();
+}
+
+async function main(): Promise<void> {
+  const authenticatedClient: AuthClient = await getAuthenticatedClient();
+
+  const sdk = new NodeSDK({
+    resourceDetectors: [gcpDetector],
+    traceExporter: new OTLPTraceExporter({
+      credentials: credentials.combineChannelCredentials(
+        credentials.createSsl(),
+        credentials.createFromGoogleCredential({
+          async getRequestHeaders(
+            url?: string,
+          ): Promise<{ [index: string]: string }> {
+            const rawHeaders = await authenticatedClient.getRequestHeaders(url);
+            return Object.fromEntries(rawHeaders.entries());
+          },
+        }),
+      ),
+    }),
+  });
+  sdk.start();
+}
+
+main().catch(console.error);
+```
+
 *For complete runnable examples using Application Default Credentials, see the official [`app-http-proto-export.ts`](https://github.com/GoogleCloudPlatform/opentelemetry-samples/blob/main/javascript/otlptraceexport/src/app-http-proto-export.ts) and [`app-grpc-export.ts`](https://github.com/GoogleCloudPlatform/opentelemetry-samples/blob/main/javascript/otlptraceexport/src/app-grpc-export.ts) samples in the `opentelemetry-samples` repository.*
 
 ### 3. Follow the Migration Guide
@@ -151,7 +191,7 @@ For more details and complete walkthroughs, follow the official Google Cloud gui
 
 * **Resource Attribute Regex Filtering (`resourceFilter`)**: In the legacy `TraceExporter`, `resourceFilter` allowed filtering resource attributes via regex before copying them to span labels. Standard OTLP exports resource attributes attached to the SDK verbatim; regex filtering is not supported in the OTLP exporter.
 * **Array Attribute Stringification (`stringifyArrayAttributes`)**: The legacy exporter provided an option to stringify array attributes. Standard OTLP exporters handle array attributes natively according to protocol specifications.
-* **Custom Pre-configured Clients / Credentials**: Passing pre-configured credentials or client options directly into constructor options is replaced by standard `headers()` async callbacks or gRPC channel credentials.
+* **Custom Pre-configured Clients / Credentials**: Passing pre-configured credentials or client options directly into constructor options is replaced by standard async `headers()` provider callbacks (for HTTP) or gRPC channel credentials wrapping.
 
 #### Data Model Differences & Data Limit Improvements
 
@@ -223,8 +263,9 @@ export OTEL_RESOURCE_ATTRIBUTES="gcp.project_id=your-project-id"
 
 #### Configure Authentication (Required for Direct In-App Export)
 
-When exporting directly from your application to `https://telemetry.googleapis.com`, configure `google-auth-library` to dynamically supply fresh OAuth2 tokens via the async `headers()` callback:
+When exporting directly from your application to `https://telemetry.googleapis.com`, configure `google-auth-library` to dynamically supply fresh OAuth2 tokens via the async `headers()` header provider callback (for HTTP) or channel credentials wrapping (for gRPC):
 
+*OTLP/HTTP Dynamic Auth Example (Async Header Provider):*
 ```typescript
 import { gcpDetector } from '@opentelemetry/resource-detector-gcp';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-proto';
@@ -247,6 +288,55 @@ async function main(): Promise<void> {
       const rawHeaders = await authenticatedClient.getRequestHeaders();
       return Object.fromEntries(rawHeaders.entries());
     },
+  });
+
+  const sdk = new NodeSDK({
+    resourceDetectors: [gcpDetector],
+    metricReaders: [
+      new PeriodicExportingMetricReader({
+        exporter: exporter,
+        exportIntervalMillis: 60000,
+      }),
+    ],
+  });
+
+  sdk.start();
+}
+
+main().catch(console.error);
+```
+
+*OTLP/gRPC Dynamic Auth Example (Channel Credentials Header Provider):*
+```typescript
+import { credentials } from '@grpc/grpc-js';
+import { gcpDetector } from '@opentelemetry/resource-detector-gcp';
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
+import { AuthClient, GoogleAuth } from 'google-auth-library';
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
+
+async function getAuthenticatedClient(): Promise<AuthClient> {
+  const auth = new GoogleAuth({
+    scopes: 'https://www.googleapis.com/auth/cloud-platform',
+  });
+  return await auth.getClient();
+}
+
+async function main(): Promise<void> {
+  const authenticatedClient: AuthClient = await getAuthenticatedClient();
+
+  const exporter = new OTLPMetricExporter({
+    credentials: credentials.combineChannelCredentials(
+      credentials.createSsl(),
+      credentials.createFromGoogleCredential({
+        async getRequestHeaders(
+          url?: string,
+        ): Promise<{ [index: string]: string }> {
+          const rawHeaders = await authenticatedClient.getRequestHeaders(url);
+          return Object.fromEntries(rawHeaders.entries());
+        },
+      }),
+    ),
   });
 
   const sdk = new NodeSDK({
