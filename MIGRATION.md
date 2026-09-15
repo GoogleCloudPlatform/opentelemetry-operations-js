@@ -14,7 +14,7 @@ All packages in this repository (`@google-cloud/opentelemetry-cloud-trace-export
 
 ## Resource Detection (Recommended for All Signals)
 
-When migrating to OTLP exporters, installing the upstream GCP Resource Detector package ([@opentelemetry/resource-detector-gcp](https://www.npmjs.com/package/@opentelemetry/resource-detector-gcp)) automatically populates Google Cloud resource attributes (such as `gcp.project_id`, `cloud.account.id`, `host.id`, `k8s.pod.name`, etc.) for your OpenTelemetry SDK.
+When migrating to OTLP exporters, installing the upstream GCP Resource Detector package ([@opentelemetry/resource-detector-gcp](https://www.npmjs.com/package/@opentelemetry/resource-detector-gcp)) automatically populates Google Cloud resource attributes (such as `cloud.account.id`, `host.id`, `k8s.pod.name`, etc.) for your OpenTelemetry SDK.
 
 ### Installation
 
