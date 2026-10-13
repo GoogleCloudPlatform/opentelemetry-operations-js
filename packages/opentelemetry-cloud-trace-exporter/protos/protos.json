@@ -97,17 +97,20 @@
                         "spanId": {
                           "type": "string",
                           "id": 2,
+                          "protoName": "span_id",
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
                           }
                         },
                         "parentSpanId": {
                           "type": "string",
-                          "id": 3
+                          "id": 3,
+                          "protoName": "parent_span_id"
                         },
                         "displayName": {
                           "type": "TruncatableString",
                           "id": 4,
+                          "protoName": "display_name",
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
                           }
@@ -115,6 +118,7 @@
                         "startTime": {
                           "type": "google.protobuf.Timestamp",
                           "id": 5,
+                          "protoName": "start_time",
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
                           }
@@ -122,6 +126,7 @@
                         "endTime": {
                           "type": "google.protobuf.Timestamp",
                           "id": 6,
+                          "protoName": "end_time",
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
                           }
@@ -132,11 +137,13 @@
                         },
                         "stackTrace": {
                           "type": "StackTrace",
-                          "id": 8
+                          "id": 8,
+                          "protoName": "stack_trace"
                         },
                         "timeEvents": {
                           "type": "TimeEvents",
-                          "id": 9
+                          "id": 9,
+                          "protoName": "time_events"
                         },
                         "links": {
                           "type": "Links",
@@ -152,6 +159,7 @@
                         "sameProcessAsParentSpan": {
                           "type": "google.protobuf.BoolValue",
                           "id": 12,
+                          "protoName": "same_process_as_parent_span",
                           "options": {
                             "(google.api.field_behavior)": "OPTIONAL"
                           }
@@ -159,6 +167,7 @@
                         "childSpanCount": {
                           "type": "google.protobuf.Int32Value",
                           "id": 13,
+                          "protoName": "child_span_count",
                           "options": {
                             "(google.api.field_behavior)": "OPTIONAL"
                           }
@@ -166,6 +175,7 @@
                         "spanKind": {
                           "type": "SpanKind",
                           "id": 14,
+                          "protoName": "span_kind",
                           "options": {
                             "(google.api.field_behavior)": "OPTIONAL"
                           }
@@ -177,11 +187,13 @@
                             "attributeMap": {
                               "keyType": "string",
                               "type": "AttributeValue",
-                              "id": 1
+                              "id": 1,
+                              "protoName": "attribute_map"
                             },
                             "droppedAttributesCount": {
                               "type": "int32",
-                              "id": 2
+                              "id": 2,
+                              "protoName": "dropped_attributes_count"
                             }
                           }
                         },
@@ -205,7 +217,8 @@
                             },
                             "messageEvent": {
                               "type": "MessageEvent",
-                              "id": 3
+                              "id": 3,
+                              "protoName": "message_event"
                             }
                           },
                           "nested": {
@@ -233,11 +246,13 @@
                                 },
                                 "uncompressedSizeBytes": {
                                   "type": "int64",
-                                  "id": 3
+                                  "id": 3,
+                                  "protoName": "uncompressed_size_bytes"
                                 },
                                 "compressedSizeBytes": {
                                   "type": "int64",
-                                  "id": 4
+                                  "id": 4,
+                                  "protoName": "compressed_size_bytes"
                                 }
                               },
                               "nested": {
@@ -257,15 +272,18 @@
                             "timeEvent": {
                               "rule": "repeated",
                               "type": "TimeEvent",
-                              "id": 1
+                              "id": 1,
+                              "protoName": "time_event"
                             },
                             "droppedAnnotationsCount": {
                               "type": "int32",
-                              "id": 2
+                              "id": 2,
+                              "protoName": "dropped_annotations_count"
                             },
                             "droppedMessageEventsCount": {
                               "type": "int32",
-                              "id": 3
+                              "id": 3,
+                              "protoName": "dropped_message_events_count"
                             }
                           }
                         },
@@ -273,11 +291,13 @@
                           "fields": {
                             "traceId": {
                               "type": "string",
-                              "id": 1
+                              "id": 1,
+                              "protoName": "trace_id"
                             },
                             "spanId": {
                               "type": "string",
-                              "id": 2
+                              "id": 2,
+                              "protoName": "span_id"
                             },
                             "type": {
                               "type": "Type",
@@ -307,7 +327,8 @@
                             },
                             "droppedLinksCount": {
                               "type": "int32",
-                              "id": 2
+                              "id": 2,
+                              "protoName": "dropped_links_count"
                             }
                           }
                         },
@@ -336,15 +357,18 @@
                       "fields": {
                         "stringValue": {
                           "type": "TruncatableString",
-                          "id": 1
+                          "id": 1,
+                          "protoName": "string_value"
                         },
                         "intValue": {
                           "type": "int64",
-                          "id": 2
+                          "id": 2,
+                          "protoName": "int_value"
                         },
                         "boolValue": {
                           "type": "bool",
-                          "id": 3
+                          "id": 3,
+                          "protoName": "bool_value"
                         }
                       }
                     },
@@ -352,11 +376,13 @@
                       "fields": {
                         "stackFrames": {
                           "type": "StackFrames",
-                          "id": 1
+                          "id": 1,
+                          "protoName": "stack_frames"
                         },
                         "stackTraceHashId": {
                           "type": "int64",
-                          "id": 2
+                          "id": 2,
+                          "protoName": "stack_trace_hash_id"
                         }
                       },
                       "nested": {
@@ -364,31 +390,38 @@
                           "fields": {
                             "functionName": {
                               "type": "TruncatableString",
-                              "id": 1
+                              "id": 1,
+                              "protoName": "function_name"
                             },
                             "originalFunctionName": {
                               "type": "TruncatableString",
-                              "id": 2
+                              "id": 2,
+                              "protoName": "original_function_name"
                             },
                             "fileName": {
                               "type": "TruncatableString",
-                              "id": 3
+                              "id": 3,
+                              "protoName": "file_name"
                             },
                             "lineNumber": {
                               "type": "int64",
-                              "id": 4
+                              "id": 4,
+                              "protoName": "line_number"
                             },
                             "columnNumber": {
                               "type": "int64",
-                              "id": 5
+                              "id": 5,
+                              "protoName": "column_number"
                             },
                             "loadModule": {
                               "type": "Module",
-                              "id": 6
+                              "id": 6,
+                              "protoName": "load_module"
                             },
                             "sourceVersion": {
                               "type": "TruncatableString",
-                              "id": 7
+                              "id": 7,
+                              "protoName": "source_version"
                             }
                           }
                         },
@@ -401,7 +434,8 @@
                             },
                             "droppedFramesCount": {
                               "type": "int32",
-                              "id": 2
+                              "id": 2,
+                              "protoName": "dropped_frames_count"
                             }
                           }
                         }
@@ -415,7 +449,8 @@
                         },
                         "buildId": {
                           "type": "TruncatableString",
-                          "id": 2
+                          "id": 2,
+                          "protoName": "build_id"
                         }
                       }
                     },
@@ -427,7 +462,8 @@
                         },
                         "truncatedByteCount": {
                           "type": "int32",
-                          "id": 2
+                          "id": 2,
+                          "protoName": "truncated_byte_count"
                         }
                       }
                     }
@@ -460,7 +496,8 @@
                 },
                 "fullyDecodeReservedExpansion": {
                   "type": "bool",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "fully_decode_reserved_expansion"
                 }
               }
             },
@@ -512,12 +549,14 @@
                 },
                 "responseBody": {
                   "type": "string",
-                  "id": 12
+                  "id": 12,
+                  "protoName": "response_body"
                 },
                 "additionalBindings": {
                   "rule": "repeated",
                   "type": "HttpRule",
-                  "id": 11
+                  "id": 11,
+                  "protoName": "additional_bindings"
                 }
               }
             },
@@ -537,28 +576,33 @@
               "rule": "repeated",
               "type": "string",
               "id": 1051,
-              "extend": "google.protobuf.MethodOptions"
+              "extend": "google.protobuf.MethodOptions",
+              "protoName": "method_signature"
             },
             "defaultHost": {
               "type": "string",
               "id": 1049,
-              "extend": "google.protobuf.ServiceOptions"
+              "extend": "google.protobuf.ServiceOptions",
+              "protoName": "default_host"
             },
             "oauthScopes": {
               "type": "string",
               "id": 1050,
-              "extend": "google.protobuf.ServiceOptions"
+              "extend": "google.protobuf.ServiceOptions",
+              "protoName": "oauth_scopes"
             },
             "apiVersion": {
               "type": "string",
               "id": 525000001,
-              "extend": "google.protobuf.ServiceOptions"
+              "extend": "google.protobuf.ServiceOptions",
+              "protoName": "api_version"
             },
             "CommonLanguageSettings": {
               "fields": {
                 "referenceDocsUri": {
                   "type": "string",
                   "id": 1,
+                  "protoName": "reference_docs_uri",
                   "options": {
                     "deprecated": true
                   }
@@ -570,7 +614,8 @@
                 },
                 "selectiveGapicGeneration": {
                   "type": "SelectiveGapicGeneration",
-                  "id": 3
+                  "id": 3,
+                  "protoName": "selective_gapic_generation"
                 }
               }
             },
@@ -582,43 +627,53 @@
                 },
                 "launchStage": {
                   "type": "LaunchStage",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "launch_stage"
                 },
                 "restNumericEnums": {
                   "type": "bool",
-                  "id": 3
+                  "id": 3,
+                  "protoName": "rest_numeric_enums"
                 },
                 "javaSettings": {
                   "type": "JavaSettings",
-                  "id": 21
+                  "id": 21,
+                  "protoName": "java_settings"
                 },
                 "cppSettings": {
                   "type": "CppSettings",
-                  "id": 22
+                  "id": 22,
+                  "protoName": "cpp_settings"
                 },
                 "phpSettings": {
                   "type": "PhpSettings",
-                  "id": 23
+                  "id": 23,
+                  "protoName": "php_settings"
                 },
                 "pythonSettings": {
                   "type": "PythonSettings",
-                  "id": 24
+                  "id": 24,
+                  "protoName": "python_settings"
                 },
                 "nodeSettings": {
                   "type": "NodeSettings",
-                  "id": 25
+                  "id": 25,
+                  "protoName": "node_settings"
                 },
                 "dotnetSettings": {
                   "type": "DotnetSettings",
-                  "id": 26
+                  "id": 26,
+                  "protoName": "dotnet_settings"
                 },
                 "rubySettings": {
                   "type": "RubySettings",
-                  "id": 27
+                  "id": 27,
+                  "protoName": "ruby_settings"
                 },
                 "goSettings": {
                   "type": "GoSettings",
-                  "id": 28
+                  "id": 28,
+                  "protoName": "go_settings"
                 }
               }
             },
@@ -627,32 +682,39 @@
                 "methodSettings": {
                   "rule": "repeated",
                   "type": "MethodSettings",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "method_settings"
                 },
                 "newIssueUri": {
                   "type": "string",
-                  "id": 101
+                  "id": 101,
+                  "protoName": "new_issue_uri"
                 },
                 "documentationUri": {
                   "type": "string",
-                  "id": 102
+                  "id": 102,
+                  "protoName": "documentation_uri"
                 },
                 "apiShortName": {
                   "type": "string",
-                  "id": 103
+                  "id": 103,
+                  "protoName": "api_short_name"
                 },
                 "githubLabel": {
                   "type": "string",
-                  "id": 104
+                  "id": 104,
+                  "protoName": "github_label"
                 },
                 "codeownerGithubTeams": {
                   "rule": "repeated",
                   "type": "string",
-                  "id": 105
+                  "id": 105,
+                  "protoName": "codeowner_github_teams"
                 },
                 "docTagPrefix": {
                   "type": "string",
-                  "id": 106
+                  "id": 106,
+                  "protoName": "doc_tag_prefix"
                 },
                 "organization": {
                   "type": "ClientLibraryOrganization",
@@ -661,15 +723,18 @@
                 "librarySettings": {
                   "rule": "repeated",
                   "type": "ClientLibrarySettings",
-                  "id": 109
+                  "id": 109,
+                  "protoName": "library_settings"
                 },
                 "protoReferenceDocumentationUri": {
                   "type": "string",
-                  "id": 110
+                  "id": 110,
+                  "protoName": "proto_reference_documentation_uri"
                 },
                 "restReferenceDocumentationUri": {
                   "type": "string",
-                  "id": 111
+                  "id": 111,
+                  "protoName": "rest_reference_documentation_uri"
                 }
               }
             },
@@ -677,12 +742,14 @@
               "fields": {
                 "libraryPackage": {
                   "type": "string",
-                  "id": 1
+                  "id": 1,
+                  "protoName": "library_package"
                 },
                 "serviceClassNames": {
                   "keyType": "string",
                   "type": "string",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "service_class_names"
                 },
                 "common": {
                   "type": "CommonLanguageSettings",
@@ -706,7 +773,8 @@
                 },
                 "libraryPackage": {
                   "type": "string",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "library_package"
                 }
               }
             },
@@ -718,7 +786,8 @@
                 },
                 "experimentalFeatures": {
                   "type": "ExperimentalFeatures",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "experimental_features"
                 }
               },
               "nested": {
@@ -726,15 +795,18 @@
                   "fields": {
                     "restAsyncIoEnabled": {
                       "type": "bool",
-                      "id": 1
+                      "id": 1,
+                      "protoName": "rest_async_io_enabled"
                     },
                     "protobufPythonicTypesEnabled": {
                       "type": "bool",
-                      "id": 2
+                      "id": 2,
+                      "protoName": "protobuf_pythonic_types_enabled"
                     },
                     "unversionedPackageDisabled": {
                       "type": "bool",
-                      "id": 3
+                      "id": 3,
+                      "protoName": "unversioned_package_disabled"
                     }
                   }
                 }
@@ -757,27 +829,32 @@
                 "renamedServices": {
                   "keyType": "string",
                   "type": "string",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "renamed_services"
                 },
                 "renamedResources": {
                   "keyType": "string",
                   "type": "string",
-                  "id": 3
+                  "id": 3,
+                  "protoName": "renamed_resources"
                 },
                 "ignoredResources": {
                   "rule": "repeated",
                   "type": "string",
-                  "id": 4
+                  "id": 4,
+                  "protoName": "ignored_resources"
                 },
                 "forcedNamespaceAliases": {
                   "rule": "repeated",
                   "type": "string",
-                  "id": 5
+                  "id": 5,
+                  "protoName": "forced_namespace_aliases"
                 },
                 "handwrittenSignatures": {
                   "rule": "repeated",
                   "type": "string",
-                  "id": 6
+                  "id": 6,
+                  "protoName": "handwritten_signatures"
                 }
               }
             },
@@ -798,7 +875,8 @@
                 "renamedServices": {
                   "keyType": "string",
                   "type": "string",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "renamed_services"
                 }
               }
             },
@@ -810,12 +888,14 @@
                 },
                 "longRunning": {
                   "type": "LongRunning",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "long_running"
                 },
                 "autoPopulatedFields": {
                   "rule": "repeated",
                   "type": "string",
-                  "id": 3
+                  "id": 3,
+                  "protoName": "auto_populated_fields"
                 },
                 "batching": {
                   "type": "BatchingConfigProto",
@@ -827,19 +907,23 @@
                   "fields": {
                     "initialPollDelay": {
                       "type": "google.protobuf.Duration",
-                      "id": 1
+                      "id": 1,
+                      "protoName": "initial_poll_delay"
                     },
                     "pollDelayMultiplier": {
                       "type": "float",
-                      "id": 2
+                      "id": 2,
+                      "protoName": "poll_delay_multiplier"
                     },
                     "maxPollDelay": {
                       "type": "google.protobuf.Duration",
-                      "id": 3
+                      "id": 3,
+                      "protoName": "max_poll_delay"
                     },
                     "totalPollTimeout": {
                       "type": "google.protobuf.Duration",
-                      "id": 4
+                      "id": 4,
+                      "protoName": "total_poll_timeout"
                     }
                   }
                 }
@@ -873,7 +957,8 @@
                 },
                 "generateOmittedAsInternal": {
                   "type": "bool",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "generate_omitted_as_internal"
                 }
               }
             },
@@ -885,7 +970,8 @@
                 },
                 "batchDescriptor": {
                   "type": "BatchingDescriptorProto",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "batch_descriptor"
                 }
               }
             },
@@ -893,35 +979,43 @@
               "fields": {
                 "elementCountThreshold": {
                   "type": "int32",
-                  "id": 1
+                  "id": 1,
+                  "protoName": "element_count_threshold"
                 },
                 "requestByteThreshold": {
                   "type": "int64",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "request_byte_threshold"
                 },
                 "delayThreshold": {
                   "type": "google.protobuf.Duration",
-                  "id": 3
+                  "id": 3,
+                  "protoName": "delay_threshold"
                 },
                 "elementCountLimit": {
                   "type": "int32",
-                  "id": 4
+                  "id": 4,
+                  "protoName": "element_count_limit"
                 },
                 "requestByteLimit": {
                   "type": "int32",
-                  "id": 5
+                  "id": 5,
+                  "protoName": "request_byte_limit"
                 },
                 "flowControlElementLimit": {
                   "type": "int32",
-                  "id": 6
+                  "id": 6,
+                  "protoName": "flow_control_element_limit"
                 },
                 "flowControlByteLimit": {
                   "type": "int32",
-                  "id": 7
+                  "id": 7,
+                  "protoName": "flow_control_byte_limit"
                 },
                 "flowControlLimitExceededBehavior": {
                   "type": "FlowControlLimitExceededBehaviorProto",
-                  "id": 8
+                  "id": 8,
+                  "protoName": "flow_control_limit_exceeded_behavior"
                 }
               }
             },
@@ -937,16 +1031,19 @@
               "fields": {
                 "batchedField": {
                   "type": "string",
-                  "id": 1
+                  "id": 1,
+                  "protoName": "batched_field"
                 },
                 "discriminatorFields": {
                   "rule": "repeated",
                   "type": "string",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "discriminator_fields"
                 },
                 "subresponseField": {
                   "type": "string",
-                  "id": 3
+                  "id": 3,
+                  "protoName": "subresponse_field"
                 }
               }
             },
@@ -967,6 +1064,7 @@
               "type": "google.api.FieldBehavior",
               "id": 1052,
               "extend": "google.protobuf.FieldOptions",
+              "protoName": "field_behavior",
               "options": {
                 "packed": false
               }
@@ -987,13 +1085,15 @@
             "resourceReference": {
               "type": "google.api.ResourceReference",
               "id": 1055,
-              "extend": "google.protobuf.FieldOptions"
+              "extend": "google.protobuf.FieldOptions",
+              "protoName": "resource_reference"
             },
             "resourceDefinition": {
               "rule": "repeated",
               "type": "google.api.ResourceDescriptor",
               "id": 1053,
-              "extend": "google.protobuf.FileOptions"
+              "extend": "google.protobuf.FileOptions",
+              "protoName": "resource_definition"
             },
             "resource": {
               "type": "google.api.ResourceDescriptor",
@@ -1013,7 +1113,8 @@
                 },
                 "nameField": {
                   "type": "string",
-                  "id": 3
+                  "id": 3,
+                  "protoName": "name_field"
                 },
                 "history": {
                   "type": "History",
@@ -1057,7 +1158,8 @@
                 },
                 "childType": {
                   "type": "string",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "child_type"
                 }
               }
             }
@@ -1128,27 +1230,32 @@
                 "publicDependency": {
                   "rule": "repeated",
                   "type": "int32",
-                  "id": 10
+                  "id": 10,
+                  "protoName": "public_dependency"
                 },
                 "weakDependency": {
                   "rule": "repeated",
                   "type": "int32",
-                  "id": 11
+                  "id": 11,
+                  "protoName": "weak_dependency"
                 },
                 "optionDependency": {
                   "rule": "repeated",
                   "type": "string",
-                  "id": 15
+                  "id": 15,
+                  "protoName": "option_dependency"
                 },
                 "messageType": {
                   "rule": "repeated",
                   "type": "DescriptorProto",
-                  "id": 4
+                  "id": 4,
+                  "protoName": "message_type"
                 },
                 "enumType": {
                   "rule": "repeated",
                   "type": "EnumDescriptorProto",
-                  "id": 5
+                  "id": 5,
+                  "protoName": "enum_type"
                 },
                 "service": {
                   "rule": "repeated",
@@ -1166,7 +1273,8 @@
                 },
                 "sourceCodeInfo": {
                   "type": "SourceCodeInfo",
-                  "id": 9
+                  "id": 9,
+                  "protoName": "source_code_info"
                 },
                 "syntax": {
                   "type": "string",
@@ -1198,22 +1306,26 @@
                 "nestedType": {
                   "rule": "repeated",
                   "type": "DescriptorProto",
-                  "id": 3
+                  "id": 3,
+                  "protoName": "nested_type"
                 },
                 "enumType": {
                   "rule": "repeated",
                   "type": "EnumDescriptorProto",
-                  "id": 4
+                  "id": 4,
+                  "protoName": "enum_type"
                 },
                 "extensionRange": {
                   "rule": "repeated",
                   "type": "ExtensionRange",
-                  "id": 5
+                  "id": 5,
+                  "protoName": "extension_range"
                 },
                 "oneofDecl": {
                   "rule": "repeated",
                   "type": "OneofDescriptorProto",
-                  "id": 8
+                  "id": 8,
+                  "protoName": "oneof_decl"
                 },
                 "options": {
                   "type": "MessageOptions",
@@ -1222,12 +1334,14 @@
                 "reservedRange": {
                   "rule": "repeated",
                   "type": "ReservedRange",
-                  "id": 9
+                  "id": 9,
+                  "protoName": "reserved_range"
                 },
                 "reservedName": {
                   "rule": "repeated",
                   "type": "string",
-                  "id": 10
+                  "id": 10,
+                  "protoName": "reserved_name"
                 },
                 "visibility": {
                   "type": "SymbolVisibility",
@@ -1271,7 +1385,8 @@
                 "uninterpretedOption": {
                   "rule": "repeated",
                   "type": "UninterpretedOption",
-                  "id": 999
+                  "id": 999,
+                  "protoName": "uninterpreted_option"
                 },
                 "declaration": {
                   "rule": "repeated",
@@ -1313,7 +1428,8 @@
                     },
                     "fullName": {
                       "type": "string",
-                      "id": 2
+                      "id": 2,
+                      "protoName": "full_name"
                     },
                     "type": {
                       "type": "string",
@@ -1364,7 +1480,8 @@
                 },
                 "typeName": {
                   "type": "string",
-                  "id": 6
+                  "id": 6,
+                  "protoName": "type_name"
                 },
                 "extendee": {
                   "type": "string",
@@ -1372,15 +1489,18 @@
                 },
                 "defaultValue": {
                   "type": "string",
-                  "id": 7
+                  "id": 7,
+                  "protoName": "default_value"
                 },
                 "oneofIndex": {
                   "type": "int32",
-                  "id": 9
+                  "id": 9,
+                  "protoName": "oneof_index"
                 },
                 "jsonName": {
                   "type": "string",
-                  "id": 10
+                  "id": 10,
+                  "protoName": "json_name"
                 },
                 "options": {
                   "type": "FieldOptions",
@@ -1388,7 +1508,8 @@
                 },
                 "proto3Optional": {
                   "type": "bool",
-                  "id": 17
+                  "id": 17,
+                  "protoName": "proto3_optional"
                 }
               },
               "nested": {
@@ -1455,12 +1576,14 @@
                 "reservedRange": {
                   "rule": "repeated",
                   "type": "EnumReservedRange",
-                  "id": 4
+                  "id": 4,
+                  "protoName": "reserved_range"
                 },
                 "reservedName": {
                   "rule": "repeated",
                   "type": "string",
-                  "id": 5
+                  "id": 5,
+                  "protoName": "reserved_name"
                 },
                 "visibility": {
                   "type": "SymbolVisibility",
@@ -1533,11 +1656,13 @@
                 },
                 "inputType": {
                   "type": "string",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "input_type"
                 },
                 "outputType": {
                   "type": "string",
-                  "id": 3
+                  "id": 3,
+                  "protoName": "output_type"
                 },
                 "options": {
                   "type": "MethodOptions",
@@ -1546,6 +1671,7 @@
                 "clientStreaming": {
                   "type": "bool",
                   "id": 5,
+                  "protoName": "client_streaming",
                   "options": {
                     "default": false
                   }
@@ -1553,6 +1679,7 @@
                 "serverStreaming": {
                   "type": "bool",
                   "id": 6,
+                  "protoName": "server_streaming",
                   "options": {
                     "default": false
                   }
@@ -1564,15 +1691,18 @@
               "fields": {
                 "javaPackage": {
                   "type": "string",
-                  "id": 1
+                  "id": 1,
+                  "protoName": "java_package"
                 },
                 "javaOuterClassname": {
                   "type": "string",
-                  "id": 8
+                  "id": 8,
+                  "protoName": "java_outer_classname"
                 },
                 "javaMultipleFiles": {
                   "type": "bool",
                   "id": 10,
+                  "protoName": "java_multiple_files",
                   "options": {
                     "default": false,
                     "feature_support.edition_introduced": "EDITION_PROTO2",
@@ -1583,6 +1713,7 @@
                 "javaGenerateEqualsAndHash": {
                   "type": "bool",
                   "id": 20,
+                  "protoName": "java_generate_equals_and_hash",
                   "options": {
                     "deprecated": true
                   }
@@ -1590,6 +1721,7 @@
                 "javaStringCheckUtf8": {
                   "type": "bool",
                   "id": 27,
+                  "protoName": "java_string_check_utf8",
                   "options": {
                     "default": false
                   }
@@ -1597,17 +1729,20 @@
                 "optimizeFor": {
                   "type": "OptimizeMode",
                   "id": 9,
+                  "protoName": "optimize_for",
                   "options": {
                     "default": "SPEED"
                   }
                 },
                 "goPackage": {
                   "type": "string",
-                  "id": 11
+                  "id": 11,
+                  "protoName": "go_package"
                 },
                 "ccGenericServices": {
                   "type": "bool",
                   "id": 16,
+                  "protoName": "cc_generic_services",
                   "options": {
                     "default": false
                   }
@@ -1615,6 +1750,7 @@
                 "javaGenericServices": {
                   "type": "bool",
                   "id": 17,
+                  "protoName": "java_generic_services",
                   "options": {
                     "default": false
                   }
@@ -1622,6 +1758,7 @@
                 "pyGenericServices": {
                   "type": "bool",
                   "id": 18,
+                  "protoName": "py_generic_services",
                   "options": {
                     "default": false
                   }
@@ -1636,6 +1773,7 @@
                 "ccEnableArenas": {
                   "type": "bool",
                   "id": 31,
+                  "protoName": "cc_enable_arenas",
                   "options": {
                     "default": true,
                     "feature_support.edition_removed": "EDITION_2026",
@@ -1644,31 +1782,38 @@
                 },
                 "objcClassPrefix": {
                   "type": "string",
-                  "id": 36
+                  "id": 36,
+                  "protoName": "objc_class_prefix"
                 },
                 "csharpNamespace": {
                   "type": "string",
-                  "id": 37
+                  "id": 37,
+                  "protoName": "csharp_namespace"
                 },
                 "swiftPrefix": {
                   "type": "string",
-                  "id": 39
+                  "id": 39,
+                  "protoName": "swift_prefix"
                 },
                 "phpClassPrefix": {
                   "type": "string",
-                  "id": 40
+                  "id": 40,
+                  "protoName": "php_class_prefix"
                 },
                 "phpNamespace": {
                   "type": "string",
-                  "id": 41
+                  "id": 41,
+                  "protoName": "php_namespace"
                 },
                 "phpMetadataNamespace": {
                   "type": "string",
-                  "id": 44
+                  "id": 44,
+                  "protoName": "php_metadata_namespace"
                 },
                 "rubyPackage": {
                   "type": "string",
-                  "id": 45
+                  "id": 45,
+                  "protoName": "ruby_package"
                 },
                 "features": {
                   "type": "FeatureSet",
@@ -1677,7 +1822,8 @@
                 "uninterpretedOption": {
                   "rule": "repeated",
                   "type": "UninterpretedOption",
-                  "id": 999
+                  "id": 999,
+                  "protoName": "uninterpreted_option"
                 }
               },
               "extensions": [
@@ -1717,6 +1863,7 @@
                 "messageSetWireFormat": {
                   "type": "bool",
                   "id": 1,
+                  "protoName": "message_set_wire_format",
                   "options": {
                     "default": false
                   }
@@ -1724,6 +1871,7 @@
                 "noStandardDescriptorAccessor": {
                   "type": "bool",
                   "id": 2,
+                  "protoName": "no_standard_descriptor_accessor",
                   "options": {
                     "default": false
                   }
@@ -1737,11 +1885,13 @@
                 },
                 "mapEntry": {
                   "type": "bool",
-                  "id": 7
+                  "id": 7,
+                  "protoName": "map_entry"
                 },
                 "deprecatedLegacyJsonFieldConflicts": {
                   "type": "bool",
                   "id": 11,
+                  "protoName": "deprecated_legacy_json_field_conflicts",
                   "options": {
                     "deprecated": true
                   }
@@ -1753,7 +1903,8 @@
                 "uninterpretedOption": {
                   "rule": "repeated",
                   "type": "UninterpretedOption",
-                  "id": 999
+                  "id": 999,
+                  "protoName": "uninterpreted_option"
                 }
               },
               "extensions": [
@@ -1820,6 +1971,7 @@
                 "unverifiedLazy": {
                   "type": "bool",
                   "id": 15,
+                  "protoName": "unverified_lazy",
                   "options": {
                     "default": false
                   }
@@ -1842,6 +1994,7 @@
                 "debugRedact": {
                   "type": "bool",
                   "id": 16,
+                  "protoName": "debug_redact",
                   "options": {
                     "default": false
                   }
@@ -1858,7 +2011,8 @@
                 "editionDefaults": {
                   "rule": "repeated",
                   "type": "EditionDefault",
-                  "id": 20
+                  "id": 20,
+                  "protoName": "edition_defaults"
                 },
                 "features": {
                   "type": "FeatureSet",
@@ -1866,12 +2020,14 @@
                 },
                 "featureSupport": {
                   "type": "FeatureSupport",
-                  "id": 22
+                  "id": 22,
+                  "protoName": "feature_support"
                 },
                 "uninterpretedOption": {
                   "rule": "repeated",
                   "type": "UninterpretedOption",
-                  "id": 999
+                  "id": 999,
+                  "protoName": "uninterpreted_option"
                 }
               },
               "extensions": [
@@ -1946,23 +2102,28 @@
                   "fields": {
                     "editionIntroduced": {
                       "type": "Edition",
-                      "id": 1
+                      "id": 1,
+                      "protoName": "edition_introduced"
                     },
                     "editionDeprecated": {
                       "type": "Edition",
-                      "id": 2
+                      "id": 2,
+                      "protoName": "edition_deprecated"
                     },
                     "deprecationWarning": {
                       "type": "string",
-                      "id": 3
+                      "id": 3,
+                      "protoName": "deprecation_warning"
                     },
                     "editionRemoved": {
                       "type": "Edition",
-                      "id": 4
+                      "id": 4,
+                      "protoName": "edition_removed"
                     },
                     "removalError": {
                       "type": "string",
-                      "id": 5
+                      "id": 5,
+                      "protoName": "removal_error"
                     }
                   }
                 }
@@ -1978,7 +2139,8 @@
                 "uninterpretedOption": {
                   "rule": "repeated",
                   "type": "UninterpretedOption",
-                  "id": 999
+                  "id": 999,
+                  "protoName": "uninterpreted_option"
                 }
               },
               "extensions": [
@@ -1997,7 +2159,8 @@
               "fields": {
                 "allowAlias": {
                   "type": "bool",
-                  "id": 2
+                  "id": 2,
+                  "protoName": "allow_alias"
                 },
                 "deprecated": {
                   "type": "bool",
@@ -2009,6 +2172,7 @@
                 "deprecatedLegacyJsonFieldConflicts": {
                   "type": "bool",
                   "id": 6,
+                  "protoName": "deprecated_legacy_json_field_conflicts",
                   "options": {
                     "deprecated": true
                   }
@@ -2020,7 +2184,8 @@
                 "uninterpretedOption": {
                   "rule": "repeated",
                   "type": "UninterpretedOption",
-                  "id": 999
+                  "id": 999,
+                  "protoName": "uninterpreted_option"
                 }
               },
               "extensions": [
@@ -2057,18 +2222,21 @@
                 "debugRedact": {
                   "type": "bool",
                   "id": 3,
+                  "protoName": "debug_redact",
                   "options": {
                     "default": false
                   }
                 },
                 "featureSupport": {
                   "type": "FieldOptions.FeatureSupport",
-                  "id": 4
+                  "id": 4,
+                  "protoName": "feature_support"
                 },
                 "uninterpretedOption": {
                   "rule": "repeated",
                   "type": "UninterpretedOption",
-                  "id": 999
+                  "id": 999,
+                  "protoName": "uninterpreted_option"
                 }
               },
               "extensions": [
@@ -2099,7 +2267,8 @@
                 "uninterpretedOption": {
                   "rule": "repeated",
                   "type": "UninterpretedOption",
-                  "id": 999
+                  "id": 999,
+                  "protoName": "uninterpreted_option"
                 }
               },
               "extensions": [
@@ -2126,6 +2295,7 @@
                 "idempotencyLevel": {
                   "type": "IdempotencyLevel",
                   "id": 34,
+                  "protoName": "idempotency_level",
                   "options": {
                     "default": "IDEMPOTENCY_UNKNOWN"
                   }
@@ -2137,7 +2307,8 @@
                 "uninterpretedOption": {
                   "rule": "repeated",
                   "type": "UninterpretedOption",
-                  "id": 999
+                  "id": 999,
+                  "protoName": "uninterpreted_option"
                 }
               },
               "extensions": [
@@ -2170,27 +2341,33 @@
                 },
                 "identifierValue": {
                   "type": "string",
-                  "id": 3
+                  "id": 3,
+                  "protoName": "identifier_value"
                 },
                 "positiveIntValue": {
                   "type": "uint64",
-                  "id": 4
+                  "id": 4,
+                  "protoName": "positive_int_value"
                 },
                 "negativeIntValue": {
                   "type": "int64",
-                  "id": 5
+                  "id": 5,
+                  "protoName": "negative_int_value"
                 },
                 "doubleValue": {
                   "type": "double",
-                  "id": 6
+                  "id": 6,
+                  "protoName": "double_value"
                 },
                 "stringValue": {
                   "type": "bytes",
-                  "id": 7
+                  "id": 7,
+                  "protoName": "string_value"
                 },
                 "aggregateValue": {
                   "type": "string",
-                  "id": 8
+                  "id": 8,
+                  "protoName": "aggregate_value"
                 }
               },
               "nested": {
@@ -2199,12 +2376,14 @@
                     "namePart": {
                       "rule": "required",
                       "type": "string",
-                      "id": 1
+                      "id": 1,
+                      "protoName": "name_part"
                     },
                     "isExtension": {
                       "rule": "required",
                       "type": "bool",
-                      "id": 2
+                      "id": 2,
+                      "protoName": "is_extension"
                     }
                   }
                 }
@@ -2216,6 +2395,7 @@
                 "fieldPresence": {
                   "type": "FieldPresence",
                   "id": 1,
+                  "protoName": "field_presence",
                   "options": {
                     "retention": "RETENTION_RUNTIME",
                     "targets": "TARGET_TYPE_FILE",
@@ -2227,6 +2407,7 @@
                 "enumType": {
                   "type": "EnumType",
                   "id": 2,
+                  "protoName": "enum_type",
                   "options": {
                     "retention": "RETENTION_RUNTIME",
                     "targets": "TARGET_TYPE_FILE",
@@ -2238,6 +2419,7 @@
                 "repeatedFieldEncoding": {
                   "type": "RepeatedFieldEncoding",
                   "id": 3,
+                  "protoName": "repeated_field_encoding",
                   "options": {
                     "retention": "RETENTION_RUNTIME",
                     "targets": "TARGET_TYPE_FILE",
@@ -2249,6 +2431,7 @@
                 "utf8Validation": {
                   "type": "Utf8Validation",
                   "id": 4,
+                  "protoName": "utf8_validation",
                   "options": {
                     "retention": "RETENTION_RUNTIME",
                     "targets": "TARGET_TYPE_FILE",
@@ -2260,6 +2443,7 @@
                 "messageEncoding": {
                   "type": "MessageEncoding",
                   "id": 5,
+                  "protoName": "message_encoding",
                   "options": {
                     "retention": "RETENTION_RUNTIME",
                     "targets": "TARGET_TYPE_FILE",
@@ -2271,6 +2455,7 @@
                 "jsonFormat": {
                   "type": "JsonFormat",
                   "id": 6,
+                  "protoName": "json_format",
                   "options": {
                     "retention": "RETENTION_RUNTIME",
                     "targets": "TARGET_TYPE_FILE",
@@ -2282,6 +2467,7 @@
                 "enforceNamingStyle": {
                   "type": "EnforceNamingStyle",
                   "id": 7,
+                  "protoName": "enforce_naming_style",
                   "options": {
                     "retention": "RETENTION_SOURCE",
                     "targets": "TARGET_TYPE_METHOD",
@@ -2293,6 +2479,7 @@
                 "defaultSymbolVisibility": {
                   "type": "VisibilityFeature.DefaultSymbolVisibility",
                   "id": 8,
+                  "protoName": "default_symbol_visibility",
                   "options": {
                     "retention": "RETENTION_SOURCE",
                     "targets": "TARGET_TYPE_FILE",
@@ -2304,6 +2491,7 @@
                 "enforceProtoLimits": {
                   "type": "ProtoLimitsFeature.EnforceProtoLimits",
                   "id": 9,
+                  "protoName": "enforce_proto_limits",
                   "options": {
                     "retention": "RETENTION_SOURCE",
                     "targets": "TARGET_TYPE_ONEOF",
@@ -2435,11 +2623,13 @@
                 },
                 "minimumEdition": {
                   "type": "Edition",
-                  "id": 4
+                  "id": 4,
+                  "protoName": "minimum_edition"
                 },
                 "maximumEdition": {
                   "type": "Edition",
-                  "id": 5
+                  "id": 5,
+                  "protoName": "maximum_edition"
                 }
               },
               "nested": {
@@ -2451,11 +2641,13 @@
                     },
                     "overridableFeatures": {
                       "type": "FeatureSet",
-                      "id": 4
+                      "id": 4,
+                      "protoName": "overridable_features"
                     },
                     "fixedFeatures": {
                       "type": "FeatureSet",
-                      "id": 5
+                      "id": 5,
+                      "protoName": "fixed_features"
                     }
                   },
                   "reserved": [
@@ -2508,16 +2700,19 @@
                     },
                     "leadingComments": {
                       "type": "string",
-                      "id": 3
+                      "id": 3,
+                      "protoName": "leading_comments"
                     },
                     "trailingComments": {
                       "type": "string",
-                      "id": 4
+                      "id": 4,
+                      "protoName": "trailing_comments"
                     },
                     "leadingDetachedComments": {
                       "rule": "repeated",
                       "type": "string",
-                      "id": 6
+                      "id": 6,
+                      "protoName": "leading_detached_comments"
                     }
                   }
                 }
@@ -2545,7 +2740,8 @@
                     },
                     "sourceFile": {
                       "type": "string",
-                      "id": 2
+                      "id": 2,
+                      "protoName": "source_file"
                     },
                     "begin": {
                       "type": "int32",
