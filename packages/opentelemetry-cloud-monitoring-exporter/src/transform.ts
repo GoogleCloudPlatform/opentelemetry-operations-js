@@ -259,7 +259,7 @@ function transformHistogramValue(
 function transformExponentialHistogramValue(
   value: ExponentialHistogram,
 ): monitoring_v3.Schema$TypedValue {
-  // Adapated from reference impl in Go which has more explanatory comments
+  // Adapted from reference impl in Go which has more explanatory comments
   // https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/v1.8.0/exporter/collector/metrics.go#L582
   const underflow =
     value.zeroCount +
