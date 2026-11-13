@@ -14,7 +14,7 @@
 steps:
   # Cloud Functions doesn't play nice with lerna monorepos, so bundle in the local dependencies
   # before creating the zip file.
-  - name: node:20-alpine
+  - name: node:22-alpine
     id: build
     script: |
       set -x
@@ -46,14 +46,14 @@ steps:
     args:
       - cloud-functions-gen2
       - --functionsource=/workspace/e2e-test-server/dist/function-source.zip
-      - --runtime=nodejs20
+      - --runtime=nodejs22
       - --entrypoint=cloudFunctionHandler
       - --skip-cleanup
 
 logsBucket: gs://opentelemetry-ops-e2e-cloud-build-logs
 timeout: 20m
 substitutions:
-  _TEST_RUNNER_IMAGE: us-central1-docker.pkg.dev/${PROJECT_ID}/e2e-testing/opentelemetry-operations-e2e-testing:0.22.0
+  _TEST_RUNNER_IMAGE: us-central1-docker.pkg.dev/${PROJECT_ID}/e2e-testing/opentelemetry-operations-e2e-testing:0.23.0
   _TEST_SERVER_IMAGE: us-central1-docker.pkg.dev/${PROJECT_ID}/e2e-testing/opentelemetry-operations-js-e2e-test-server:${SHORT_SHA}
 
 options:
