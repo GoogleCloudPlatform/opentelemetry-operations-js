@@ -53,6 +53,25 @@
         "google-auth-library"
       ],
       "enabled": false
+    },
+    // Keep OpenTelemetry packages on the OTel JS 2.x / Node >=18 line until OTel 3.x / Node >=22.15 migration.
+    {
+      "matchPackageNames": [
+        "@opentelemetry/api"
+      ],
+      "allowedVersions": "<1.10.0"
+    },
+    {
+      "matchPackageNames": [
+        "@opentelemetry/sdk-node"
+      ],
+      "allowedVersions": "<0.300.0"
+    },
+    {
+      "matchPackageNames": [
+        "@opentelemetry/resource-detector-gcp"
+      ],
+      "allowedVersions": "<0.59.0"
     }
   ]
 }
