@@ -57,7 +57,7 @@
     "protobufjs-cli": "2.7.1",
     "sinon": "22.1.0",
     "ts-mocha": "11.1.0",
-    "typescript": "5.9.3"
+    "typescript": "7.0.2"
   },
   "dependencies": {
     "@google-cloud/opentelemetry-resource-util": "^3.1.0",
