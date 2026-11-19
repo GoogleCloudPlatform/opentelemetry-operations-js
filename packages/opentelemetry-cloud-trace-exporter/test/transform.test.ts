@@ -71,6 +71,12 @@ describe('transform', () => {
               value: `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`,
             },
           },
+          'otel.scope.name': {
+            stringValue: {value: 'default'},
+          },
+          'otel.scope.version': {
+            stringValue: {value: '0.0.1'},
+          },
           'g.co/r/generic_node/location': {
             stringValue: {
               value: 'global',
@@ -158,6 +164,42 @@ describe('transform', () => {
     assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 3);
   });
 
+  it('should preserve explicit instrumentation scope attributes', () => {
+    readableSpan.attributes['otel.scope.name'] = 'custom-name';
+    readableSpan.attributes['otel.scope.version'] = 'custom-version';
+
+    const result = transformer(readableSpan);
+
+    assert.deepStrictEqual(
+      result.attributes!.attributeMap!['otel.scope.name'],
+      {
+        stringValue: {value: 'custom-name'},
+      },
+    );
+    assert.deepStrictEqual(
+      result.attributes!.attributeMap!['otel.scope.version'],
+      {stringValue: {value: 'custom-version'}},
+    );
+  });
+
+  it('should omit an empty instrumentation scope version', () => {
+    readableSpan = {
+      ...readableSpan,
+      instrumentationScope: {name: 'default'},
+    };
+
+    const result = transformer(readableSpan);
+
+    assert.deepStrictEqual(
+      result.attributes!.attributeMap!['otel.scope.name'],
+      {stringValue: {value: 'default'}},
+    );
+    assert.strictEqual(
+      result.attributes!.attributeMap!['otel.scope.version'],
+      undefined,
+    );
+  });
+
   it('should transform attributes while stringifying arrays', () => {
     readableSpan.attributes.testBool = true;
     readableSpan.attributes.testInt = 3;
@@ -216,8 +258,8 @@ describe('transform', () => {
     readableSpan.attributes.testUnknownType = {message: 'dropped'};
     const result = transformer(readableSpan);
     assert.deepStrictEqual(result.attributes!.droppedAttributesCount, 1);
-    // count of 4 for the g.co/agent attribute + three g.co/r/generic_node/{label} labels
-    assert.strictEqual(Object.keys(result.attributes!.attributeMap!).length, 4);
+    // count of 6 for the agent and scope attributes + three g.co/r/generic_node/{label} labels
+    assert.strictEqual(Object.keys(result.attributes!.attributeMap!).length, 6);
   });
 
   it('should transform links', () => {
@@ -398,6 +440,12 @@ describe('transform', () => {
             value: `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`,
           },
         },
+        'otel.scope.name': {
+          stringValue: {value: 'default'},
+        },
+        'otel.scope.version': {
+          stringValue: {value: '0.0.1'},
+        },
         'g.co/r/gce_instance/instance_id': {
           stringValue: {
             value: 'foobar.com',
@@ -443,6 +491,12 @@ describe('transform', () => {
           stringValue: {
             value: `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`,
           },
+        },
+        'otel.scope.name': {
+          stringValue: {value: 'default'},
+        },
+        'otel.scope.version': {
+          stringValue: {value: '0.0.1'},
         },
         'g.co/r/generic_node/location': {
           stringValue: {

@@ -33,6 +33,8 @@ import {VERSION, OT_VERSION} from './version';
 
 const AGENT_LABEL_KEY = 'g.co/agent';
 const AGENT_LABEL_VALUE = `opentelemetry-js ${OT_VERSION}; google-cloud-trace-exporter ${VERSION}`;
+const INSTRUMENTATION_SCOPE_NAME_ATTRIBUTE = 'otel.scope.name';
+const INSTRUMENTATION_SCOPE_VERSION_ATTRIBUTE = 'otel.scope.version';
 
 export function getReadableSpanTransformer(
   projectId: string,
@@ -40,15 +42,26 @@ export function getReadableSpanTransformer(
   stringifyArrayAttributes?: boolean,
 ): (span: ReadableSpan) => Span {
   return span => {
+    const spanAttributes: ot.SpanAttributes = {
+      ...span.attributes,
+      [AGENT_LABEL_KEY]: AGENT_LABEL_VALUE,
+    };
+
+    if (spanAttributes[INSTRUMENTATION_SCOPE_NAME_ATTRIBUTE] === undefined) {
+      spanAttributes[INSTRUMENTATION_SCOPE_NAME_ATTRIBUTE] =
+        span.instrumentationScope.name;
+    }
+    if (
+      spanAttributes[INSTRUMENTATION_SCOPE_VERSION_ATTRIBUTE] === undefined &&
+      span.instrumentationScope.version
+    ) {
+      spanAttributes[INSTRUMENTATION_SCOPE_VERSION_ATTRIBUTE] =
+        span.instrumentationScope.version;
+    }
+
     // @todo get dropped attribute count from sdk ReadableSpan
     const attributes = mergeAttributes(
-      transformAttributes(
-        {
-          ...span.attributes,
-          [AGENT_LABEL_KEY]: AGENT_LABEL_VALUE,
-        },
-        stringifyArrayAttributes,
-      ),
+      transformAttributes(spanAttributes, stringifyArrayAttributes),
       // Add in special g.co/r resource labels
       transformResourceToAttributes(
         span.resource,
