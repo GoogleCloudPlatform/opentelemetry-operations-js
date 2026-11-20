@@ -60,6 +60,24 @@ function pubSubPull() {
     'Listening on subscription %s for pubsub message',
     constants.REQUEST_SUBSCRIPTION_NAME,
   );
+
+  if (constants.PUSH_PORT !== undefined) {
+    express()
+      // Health checks for GAE. See:
+      // https://cloud.google.com/appengine/docs/flexible/reference/app-yaml#updated_health_checks
+      .get('/alive', (_, res) => {
+        res.sendStatus(200);
+      })
+      .get('/ready', (_, res) => {
+        res.sendStatus(200);
+      })
+      .listen(constants.PUSH_PORT, () => {
+        logger.info(
+          'Listening on port %s for health checks',
+          constants.PUSH_PORT,
+        );
+      });
+  }
 }
 
 /**
