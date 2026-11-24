@@ -55,7 +55,4 @@ export const PROJECT_ID = envOrThrow('PROJECT_ID');
 export const REQUEST_SUBSCRIPTION_NAME =
   process.env.REQUEST_SUBSCRIPTION_NAME ?? '';
 export const RESPONSE_TOPIC_NAME = envOrThrow('RESPONSE_TOPIC_NAME');
-export const PUSH_PORT =
-  SUBSCRIPTION_MODE === SubscriptionMode.PUSH
-    ? envOrThrow('PUSH_PORT')
-    : undefined;
+export const PUSH_PORT = process.env.PUSH_PORT ?? process.env.PORT;
