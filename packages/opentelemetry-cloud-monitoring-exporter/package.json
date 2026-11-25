@@ -65,7 +65,7 @@
   },
   "dependencies": {
     "@google-cloud/opentelemetry-resource-util": "^3.1.0",
-    "@google-cloud/precise-date": "^4.0.0",
+    "@google-cloud/precise-date": "^6.0.0",
     "google-auth-library": "^10.0.0",
     "googleapis": "^173.0.0"
   },
