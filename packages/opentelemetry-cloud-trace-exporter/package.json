@@ -46,7 +46,7 @@
     "@opentelemetry/resources": "2.12.1",
     "@opentelemetry/sdk-trace-base": "2.12.1",
     "@types/mocha": "10.0.10",
-    "@types/node": "18.19.130",
+    "@types/node": "26.6.11",
     "@types/sinon": "22.0.2",
     "gcp-metadata": "9.2.3",
     "google-auth-library": "10.5.0",
